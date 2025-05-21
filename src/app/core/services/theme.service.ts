@@ -20,10 +20,10 @@ export class ThemeService {
   
   initialize(): void {
     // First check if theme is saved in localStorage
-    const savedTheme = this.localStorageService.getItem<boolean>(THEME_KEY);
+    const savedTheme = this.localStorageService.getItem<string>(THEME_KEY); // Read as string
     
     if (savedTheme !== null) {
-      this.darkModeSignal.set(savedTheme);
+      this.darkModeSignal.set(savedTheme === 'true'); // Convert to boolean
     } else {
       // If not in localStorage, check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
