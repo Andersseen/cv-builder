@@ -1,30 +1,33 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { NgOptimizedImage } from "@angular/common";
 import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-landing",
-  standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, NgOptimizedImage],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white dark:bg-gray-900">
       <!-- Hero section -->
       <section class="relative overflow-hidden">
-        <div class="container mx-auto px-4 py-16 sm:py-24">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="max-w-lg">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:px-8 md:py-24">
+          <div class="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
+            <div class="max-w-xl text-center md:text-left">
               <h1
-                class="text-4xl sm:text-5xl font-bold tracking-tight mb-6 animate-fade-in"
+                class="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:mb-8 animate-fade-in"
               >
                 Create stunning resumes that stand out
               </h1>
               <p
-                class="text-xl text-gray-600 dark:text-gray-300 mb-8 animate-slide-up"
+                class="mb-8 text-xl text-gray-600 dark:text-gray-300 animate-slide-up"
               >
                 Build professional resumes with our easy-to-use editor. Choose
                 from modern templates, customize them to your needs, and export
                 as PDF.
               </p>
-              <div class="flex flex-col sm:flex-row gap-4 animate-slide-up">
+              <div
+                class="flex flex-col gap-4 animate-slide-up sm:flex-row sm:justify-center md:justify-start"
+              >
                 <a
                   routerLink="/editor"
                   class="btn btn-primary px-8 py-3 text-base font-medium"
@@ -39,12 +42,15 @@ import { RouterLink } from "@angular/router";
                 </a>
               </div>
             </div>
-            <div class="hidden lg:block relative">
-              <div class="relative rounded-lg overflow-hidden shadow-xl">
+            <div class="relative hidden md:block">
+              <div class="relative overflow-hidden rounded-lg shadow-xl">
                 <img
-                  src="https://images.pexels.com/photos/6355/desk-white-black-header.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  ngSrc="https://images.pexels.com/photos/6355/desk-white-black-header.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  width="1260"
+                  height="750"
                   alt="Resume preview"
-                  class="w-full object-cover"
+                  class="h-auto w-full object-cover"
+                  priority
                 />
               </div>
             </div>
@@ -53,22 +59,22 @@ import { RouterLink } from "@angular/router";
       </section>
 
       <!-- Features section -->
-      <section class="py-16 bg-gray-50 dark:bg-gray-800">
-        <div class="container mx-auto px-4">
-          <div class="max-w-3xl mx-auto text-center mb-12">
-            <h2 class="text-3xl font-bold mb-4">Powerful Features</h2>
+      <section class="bg-gray-50 py-16 dark:bg-gray-800">
+        <div class="mx-auto max-w-7xl px-6 md:px-8">
+          <div class="mx-auto mb-12 max-w-3xl text-center">
+            <h2 class="mb-4 text-3xl font-bold">Powerful Features</h2>
             <p class="text-lg text-gray-600 dark:text-gray-300">
               Everything you need to create the perfect resume
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             <!-- Feature 1 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -94,10 +100,10 @@ import { RouterLink } from "@angular/router";
 
             <!-- Feature 2 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -123,10 +129,10 @@ import { RouterLink } from "@angular/router";
 
             <!-- Feature 3 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -152,10 +158,10 @@ import { RouterLink } from "@angular/router";
 
             <!-- Feature 4 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -187,10 +193,10 @@ import { RouterLink } from "@angular/router";
 
             <!-- Feature 5 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -216,10 +222,10 @@ import { RouterLink } from "@angular/router";
 
             <!-- Feature 6 -->
             <div
-              class="bg-white dark:bg-gray-700 rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              class="rounded-lg bg-white p-6 shadow transition-transform hover:scale-105 dark:bg-gray-700 sm:p-8"
             >
               <div
-                class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4"
+                class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -247,18 +253,18 @@ import { RouterLink } from "@angular/router";
       </section>
 
       <!-- CTA section -->
-      <section class="py-16 bg-primary-600 dark:bg-primary-800">
-        <div class="container mx-auto px-4 text-center">
-          <h2 class="text-3xl font-bold text-white mb-6">
+      <section class="bg-primary-600 py-16 dark:bg-primary-800">
+        <div class="mx-auto max-w-7xl px-6 text-center md:px-8">
+          <h2 class="mb-6 text-3xl font-bold text-white">
             Ready to create your professional resume?
           </h2>
-          <p class="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
+          <p class="mx-auto mb-8 max-w-2xl text-xl text-primary-100">
             Join thousands of job seekers who have successfully landed
             interviews with resumes created using our platform.
           </p>
           <a
             routerLink="/editor"
-            class="btn bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 text-base font-medium inline-block"
+            class="btn inline-block bg-white px-8 py-3 text-base font-medium text-primary-600 hover:bg-gray-100"
           >
             Get Started — It's Free!
           </a>
