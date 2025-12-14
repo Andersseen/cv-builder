@@ -5,46 +5,59 @@ import { RouterLink } from "@angular/router";
   selector: "app-cta",
   imports: [RouterLink],
   template: `
-    <section class="bg-primary">
-      <div
-        class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:flex lg:items-center lg:justify-between lg:px-8 lg:py-16"
-      >
-        <div>
+    <section
+      class="relative isolate overflow-hidden bg-foreground py-24 sm:py-32"
+    >
+      <div class="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
           <h2
-            class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl"
+            class="text-3xl font-bold tracking-tight text-background sm:text-4xl text-balance font-display"
           >
-            <span class="block text-primary-foreground"
-              >Ready to create your professional resume?</span
-            >
-            <span class="block text-primary-100 dark:text-primary-200"
-              >Start building for free today.</span
-            >
+            Ready to land your dream job?
+            <br />
+            Start building for free today.
           </h2>
-          <p
-            class="mt-4 text-lg leading-6 text-primary-100 dark:text-primary-200"
-          >
-            Join thousands of users who have landed their dream jobs.
+          <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-background/80">
+            Join thousands of professionals who have advanced their careers with
+            our resume builder. No credit card required.
           </p>
-        </div>
-        <div class="mt-8 flex lg:mt-0 lg:shrink-0">
-          <div class="inline-flex rounded-md shadow">
+          <div class="mt-10 flex items-center justify-center gap-x-6">
             <a
               routerLink="/editor"
-              class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-5 py-3 text-base font-medium text-primary hover:bg-surface-hover transition-colors"
+              class="rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all hover:scale-105"
             >
-              Get Started
+              Get started
             </a>
-          </div>
-          <div class="ml-3 inline-flex rounded-md shadow">
             <a
               routerLink="/templates"
-              class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-700 px-5 py-3 text-base font-medium text-white hover:bg-primary-800 transition-colors"
+              class="text-sm font-semibold leading-6 text-white hover:text-primary transition-colors"
             >
-              View Templates
+              Browse templates <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>
       </div>
+      <svg
+        viewBox="0 0 1024 1024"
+        class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]"
+        aria-hidden="true"
+      >
+        <circle
+          cx="512"
+          cy="512"
+          r="512"
+          fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)"
+          fill-opacity="0.7"
+        />
+        <defs>
+          <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
+            <stop stop-color="#4f46e5" />
+            <!-- Primary color -->
+            <stop offset="1" stop-color="#171717" />
+            <!-- Dark bg color -->
+          </radialGradient>
+        </defs>
+      </svg>
     </section>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
