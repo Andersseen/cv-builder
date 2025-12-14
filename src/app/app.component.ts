@@ -30,10 +30,8 @@ import { ToastService } from "./core/services/toast.service";
 })
 export class AppComponent {
   private themeService = inject(ThemeService);
-  private toastService = inject(ToastService);
 
   constructor() {
-    // Initialize theme from localStorage
     this.themeService.initialize();
   }
 }
