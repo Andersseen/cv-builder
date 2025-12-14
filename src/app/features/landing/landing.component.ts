@@ -8,7 +8,7 @@ import { CtaComponent } from "./components/cta/cta.component";
   imports: [HeroComponent, FeaturesComponent, CtaComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main class="bg-white dark:bg-gray-900 min-h-screen">
+    <main class="bg-background min-h-screen">
       <app-hero />
       <app-features />
       <app-cta />

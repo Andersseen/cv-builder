@@ -3,22 +3,18 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 @Component({
   selector: "app-features",
   template: `
-    <section class="py-24 bg-gray-50 dark:bg-gray-800/50">
+    <section class="py-24 bg-muted/50">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-16">
           <h2
-            class="text-base font-semibold text-primary-600 dark:text-primary-400 tracking-wide uppercase"
+            class="text-base font-semibold text-primary tracking-wide uppercase"
           >
             Features
           </h2>
-          <p
-            class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl"
-          >
+          <p class="mt-2 text-3xl font-extrabold text-foreground sm:text-4xl">
             Everything you need for the perfect resume
           </p>
-          <p
-            class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 mx-auto"
-          >
+          <p class="mt-4 max-w-2xl text-xl text-muted-foreground mx-auto">
             Powerful tools designed to help you build a professional resume in
             minutes.
           </p>
@@ -26,18 +22,18 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           @for (feature of features; track feature.title) {
           <div
-            class="relative group bg-white dark:bg-gray-800 p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-500 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
+            class="relative group bg-surface p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-border"
           >
             <div
-              class="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 mb-6 group-hover:scale-110 transition-transform duration-300"
+              class="flex items-center justify-center h-12 w-12 rounded-lg bg-primary/10 text-primary mb-6 group-hover:scale-110 transition-transform duration-300"
             >
               <span [innerHTML]="feature.icon"></span>
             </div>
             <div class="mt-0">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+              <h3 class="text-lg font-medium text-foreground">
                 {{ feature.title }}
               </h3>
-              <p class="mt-2 text-base text-gray-500 dark:text-gray-400">
+              <p class="mt-2 text-base text-muted-foreground">
                 {{ feature.description }}
               </p>
             </div>
