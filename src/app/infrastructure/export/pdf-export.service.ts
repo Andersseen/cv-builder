@@ -4,36 +4,42 @@ import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 
 /**
- * 100% client-side PDF export.
- * Strategy: html-to-image (PNG @ 3x) → jsPDF embed at A4.
+ * 100 % client-side PDF export.
+ * Strategy: html-to-image (PNG @ 3×) → jsPDF, preserving the
+ * natural aspect ratio and splitting across pages when needed.
  */
 @Injectable({ providedIn: "root" })
 export class PdfExportService {
   /** A4 width in px at 96 DPI */
   private readonly A4_PX_WIDTH = 794;
 
-  /**
-   * Export the resume preview DOM element to PDF and trigger download.
-   * @param cv       The CV data (used for filename).
-   * @param element  The DOM element to capture (the template root).
-   */
   async exportToPdf(cv: Cv, element: HTMLElement): Promise<void> {
-    // A4 dimensions in mm
-    const a4Width = 210;
-    const a4Height = 297;
+    // A4 in mm
+    const a4W = 210;
+    const a4H = 297;
 
-    // Lock element to A4 width so capture is consistent
-    const originalWidth = element.style.width;
-    const originalMaxWidth = element.style.maxWidth;
+    // 1. Lock element to consistent A4 width
+    const origW = element.style.width;
+    const origMaxW = element.style.maxWidth;
+    const origMinH = element.style.minHeight;
     element.style.width = `${this.A4_PX_WIDTH}px`;
     element.style.maxWidth = `${this.A4_PX_WIDTH}px`;
+    element.style.minHeight = "auto";
 
     try {
-      // Render at 3x pixel ratio with PNG (lossless) for crisp text
+      // 2. Capture high-DPI PNG
       const dataUrl = await toPng(element, {
         backgroundColor: "#ffffff",
         pixelRatio: 3,
       });
+
+      // 3. Decode the image to get its actual pixel size
+      const img = await this.loadImage(dataUrl);
+      const imgW = img.width;
+      const imgH = img.height;
+
+      // 4. The image maps to a4W; compute rendered height in mm
+      const renderedH = (imgH / imgW) * a4W;
 
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -41,7 +47,22 @@ export class PdfExportService {
         format: "a4",
       });
 
-      pdf.addImage(dataUrl, "PNG", 0, 0, a4Width, a4Height);
+      if (renderedH <= a4H) {
+        // Content fits on a single page
+        pdf.addImage(dataUrl, "PNG", 0, 0, a4W, renderedH);
+      } else {
+        // Content spans multiple pages — slice the image
+        const totalPages = Math.ceil(renderedH / a4H);
+
+        for (let page = 0; page < totalPages; page++) {
+          if (page > 0) pdf.addPage();
+
+          // We draw the *full* image offset upward so that only
+          // the current page's slice is visible.
+          const yOffset = -(page * a4H);
+          pdf.addImage(dataUrl, "PNG", 0, yOffset, a4W, renderedH);
+        }
+      }
 
       const filename = cv.name
         ? `${cv.name.replace(/\s+/g, "_")}_Resume.pdf`
@@ -49,9 +70,19 @@ export class PdfExportService {
 
       pdf.save(filename);
     } finally {
-      // Restore original styles
-      element.style.width = originalWidth;
-      element.style.maxWidth = originalMaxWidth;
+      element.style.width = origW;
+      element.style.maxWidth = origMaxW;
+      element.style.minHeight = origMinH;
     }
+  }
+
+  /** Load an image data URL and resolve with the HTMLImageElement once ready. */
+  private loadImage(dataUrl: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
   }
 }

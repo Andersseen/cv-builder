@@ -47,10 +47,13 @@ export class ThemeService {
   }
 
   private updateTheme(isDark: boolean): void {
+    const root = document.documentElement;
     if (isDark) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
+      root.classList.remove("light");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
+      root.classList.add("light");
     }
   }
 }
