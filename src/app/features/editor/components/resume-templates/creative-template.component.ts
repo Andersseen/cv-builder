@@ -14,8 +14,18 @@ import { Cv } from "../../../../domain/models/cv.model";
       style="font-family: 'Inter', system-ui, sans-serif;"
     >
       <div class="flex min-h-[600px]">
-        <!-- Sidebar — dark with amber accents -->
+        <!-- Sidebar — dark with accent color accents -->
         <div class="w-[38%] bg-gray-900 text-white p-6 space-y-6">
+          @if (cv.sections.personal.avatarUrl) {
+            <div class="flex justify-center mb-2">
+              <img
+                [src]="cv.sections.personal.avatarUrl"
+                alt="Profile photo"
+                class="w-20 h-20 rounded-full object-cover shadow-lg"
+                [style.border]="'2px solid ' + accentColor"
+              />
+            </div>
+          }
           <div>
             <h1 class="text-xl font-bold leading-tight mb-3">
               {{ cv.sections.personal.fullName || "Your Name" }}
@@ -24,7 +34,9 @@ import { Cv } from "../../../../domain/models/cv.model";
               @if (cv.sections.personal.email) {
                 <p class="flex items-center gap-2">
                   <span
-                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    class="w-4 h-4 rounded flex items-center justify-center text-[10px]"
+                    [style.background-color]="accentColor + '33'"
+                    [style.color]="accentColor"
                     >&#64;</span
                   >
                   {{ cv.sections.personal.email }}
@@ -33,7 +45,9 @@ import { Cv } from "../../../../domain/models/cv.model";
               @if (cv.sections.personal.phone) {
                 <p class="flex items-center gap-2">
                   <span
-                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    class="w-4 h-4 rounded flex items-center justify-center text-[10px]"
+                    [style.background-color]="accentColor + '33'"
+                    [style.color]="accentColor"
                     >#</span
                   >
                   {{ cv.sections.personal.phone }}
@@ -42,7 +56,9 @@ import { Cv } from "../../../../domain/models/cv.model";
               @if (cv.sections.personal.location) {
                 <p class="flex items-center gap-2">
                   <span
-                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    class="w-4 h-4 rounded flex items-center justify-center text-[10px]"
+                    [style.background-color]="accentColor + '33'"
+                    [style.color]="accentColor"
                     >⌂</span
                   >
                   {{ cv.sections.personal.location }}
@@ -51,7 +67,9 @@ import { Cv } from "../../../../domain/models/cv.model";
               @if (cv.sections.personal.website) {
                 <p class="flex items-center gap-2">
                   <span
-                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    class="w-4 h-4 rounded flex items-center justify-center text-[10px]"
+                    [style.background-color]="accentColor + '33'"
+                    [style.color]="accentColor"
                     >◉</span
                   >
                   {{ cv.sections.personal.website }}
@@ -60,7 +78,9 @@ import { Cv } from "../../../../domain/models/cv.model";
               @if (cv.sections.personal.linkedin) {
                 <p class="flex items-center gap-2">
                   <span
-                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    class="w-4 h-4 rounded flex items-center justify-center text-[10px]"
+                    [style.background-color]="accentColor + '33'"
+                    [style.color]="accentColor"
                     >in</span
                   >
                   {{ cv.sections.personal.linkedin }}
@@ -72,7 +92,8 @@ import { Cv } from "../../../../domain/models/cv.model";
           @if (cv.sections.skills.length > 0) {
             <div>
               <h2
-                class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3"
+                class="text-xs font-bold uppercase tracking-wider mb-3"
+                [style.color]="accentColor"
               >
                 Skills
               </h2>
@@ -86,8 +107,9 @@ import { Cv } from "../../../../domain/models/cv.model";
                   </div>
                   <div class="w-full bg-gray-700 rounded-full h-1.5">
                     <div
-                      class="bg-amber-400 h-1.5 rounded-full transition-all"
+                      class="h-1.5 rounded-full transition-all"
                       [style.width]="getSkillWidth(skill.level)"
+                      [style.background-color]="accentColor"
                     ></div>
                   </div>
                 </div>
@@ -98,7 +120,8 @@ import { Cv } from "../../../../domain/models/cv.model";
           @if (cv.sections.education.length > 0) {
             <div>
               <h2
-                class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3"
+                class="text-xs font-bold uppercase tracking-wider mb-3"
+                [style.color]="accentColor"
               >
                 Education
               </h2>
@@ -112,7 +135,7 @@ import { Cv } from "../../../../domain/models/cv.model";
                     {{ formatDate(edu.graduationDate) }}
                   </p>
                   @if (edu.gpa) {
-                    <p class="text-amber-400/70 text-[10px]">
+                    <p class="text-[10px]" [style.color]="accentColor + 'b3'">
                       GPA: {{ edu.gpa }}
                     </p>
                   }
@@ -128,7 +151,8 @@ import { Cv } from "../../../../domain/models/cv.model";
             <section>
               <h2 class="text-sm font-bold text-gray-800 mb-2 relative pl-4">
                 <span
-                  class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-full"
+                  class="absolute left-0 top-0 bottom-0 w-1 rounded-full"
+                  [style.background-color]="accentColor"
                 ></span>
                 About Me
               </h2>
@@ -142,7 +166,8 @@ import { Cv } from "../../../../domain/models/cv.model";
             <section>
               <h2 class="text-sm font-bold text-gray-800 mb-4 relative pl-4">
                 <span
-                  class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-full"
+                  class="absolute left-0 top-0 bottom-0 w-1 rounded-full"
+                  [style.background-color]="accentColor"
                 ></span>
                 Experience
               </h2>
@@ -154,7 +179,8 @@ import { Cv } from "../../../../domain/models/cv.model";
                 <div class="mb-4 relative pl-5" [class.pb-4]="!last">
                   <!-- Timeline -->
                   <div
-                    class="absolute left-0 top-1.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white shadow-sm"
+                    class="absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full border-2 border-white shadow-sm"
+                    [style.background-color]="accentColor"
                   ></div>
                   @if (!last) {
                     <div
@@ -199,6 +225,7 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class CreativeTemplateComponent {
   @Input() cv!: Cv;
+  @Input() accentColor: string = "#f59e0b";
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

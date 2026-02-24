@@ -3,6 +3,7 @@ import {
   input,
   output,
   effect,
+  signal,
   ChangeDetectionStrategy,
 } from "@angular/core";
 import {
@@ -24,6 +25,67 @@ import { PersonalInfo } from "../../../domain/models/cv.model";
       <h2 class="text-lg font-semibold text-foreground mb-4">
         Personal Information
       </h2>
+
+      <!-- Avatar upload -->
+      <div class="flex items-center gap-4">
+        <div
+          class="relative w-20 h-20 rounded-full overflow-hidden bg-surface-alt border-2 border-border flex items-center justify-center shrink-0"
+        >
+          @if (avatarPreview()) {
+            <img
+              [src]="avatarPreview()"
+              alt="Avatar"
+              class="w-full h-full object-cover"
+            />
+          } @else {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-8 h-8 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+          }
+        </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-foreground/80"
+            >Profile Photo</label
+          >
+          <div class="flex items-center gap-2">
+            <label
+              class="px-3 py-1.5 bg-surface-alt border border-border rounded-lg text-foreground text-sm
+                     hover:bg-surface-hover cursor-pointer transition-all duration-200"
+            >
+              Upload
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                (change)="onAvatarSelected($event)"
+              />
+            </label>
+            @if (avatarPreview()) {
+              <button
+                type="button"
+                (click)="removeAvatar()"
+                class="px-3 py-1.5 text-sm text-danger hover:text-danger/80 transition-colors"
+              >
+                Remove
+              </button>
+            }
+          </div>
+          <p class="text-xs text-muted-foreground">
+            Only shown in Creative, Modern & Executive templates
+          </p>
+        </div>
+      </div>
 
       <form [formGroup]="form" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -149,6 +211,8 @@ export class PersonalInfoFormComponent {
   data = input.required<PersonalInfo>();
   changed = output<PersonalInfo>();
 
+  avatarPreview = signal<string>("");
+
   form = new FormGroup({
     fullName: new FormControl("", {
       nonNullable: true,
@@ -175,10 +239,40 @@ export class PersonalInfoFormComponent {
     effect(() => {
       const d = this.data();
       this.form.patchValue(d, { emitEvent: false });
+      this.avatarPreview.set(d.avatarUrl || "");
     });
 
     this.form.valueChanges.subscribe(() => {
-      this.changed.emit(this.form.getRawValue() as PersonalInfo);
+      this.changed.emit({
+        ...(this.form.getRawValue() as any),
+        avatarUrl: this.avatarPreview(),
+      } as PersonalInfo);
     });
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      this.avatarPreview.set(dataUrl);
+      this.emitCurrentState();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeAvatar(): void {
+    this.avatarPreview.set("");
+    this.emitCurrentState();
+  }
+
+  private emitCurrentState(): void {
+    this.changed.emit({
+      ...(this.form.getRawValue() as any),
+      avatarUrl: this.avatarPreview(),
+    } as PersonalInfo);
   }
 }

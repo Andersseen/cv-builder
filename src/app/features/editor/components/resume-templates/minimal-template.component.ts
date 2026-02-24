@@ -49,7 +49,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.experience.length > 0) {
           <section class="mb-10">
             <h2
-              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-5"
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
+              [style.color]="accentColor"
             >
               Experience
             </h2>
@@ -83,7 +84,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.education.length > 0) {
           <section class="mb-10">
             <h2
-              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-5"
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
+              [style.color]="accentColor"
             >
               Education
             </h2>
@@ -114,7 +116,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.skills.length > 0) {
           <section>
             <h2
-              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-4"
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-4"
+              [style.color]="accentColor"
             >
               Skills
             </h2>
@@ -136,6 +139,7 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class MinimalTemplateComponent {
   @Input() cv!: Cv;
+  @Input() accentColor: string = "#171717";
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

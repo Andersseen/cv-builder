@@ -42,6 +42,7 @@ export function createDefaultPersonalInfo(): PersonalInfo {
     website: "",
     linkedin: "",
     summary: "",
+    avatarUrl: "",
   };
 }
 

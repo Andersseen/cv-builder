@@ -32,6 +32,7 @@ export interface PersonalInfo {
   website: string;
   linkedin: string;
   summary: string;
+  avatarUrl: string;
 }
 
 export interface Experience {

@@ -14,21 +14,30 @@ import { Cv } from "../../../../domain/models/cv.model";
       style="font-family: 'Inter', system-ui, sans-serif;"
     >
       <!-- Header — bold dark block -->
-      <div class="bg-gray-900 text-white p-8">
+      <div class="text-white p-8" [style.background-color]="headerBg">
         <div class="flex justify-between items-start">
-          <div>
-            <h1 class="text-3xl font-extrabold tracking-tight mb-1">
-              {{ cv.sections.personal.fullName || "Your Name" }}
-            </h1>
-            @if (cv.sections.personal.summary) {
-              <p
-                class="text-gray-300 text-sm italic max-w-md leading-relaxed mt-2"
-              >
-                {{ cv.sections.personal.summary }}
-              </p>
+          <div class="flex items-center gap-5">
+            @if (cv.sections.personal.avatarUrl) {
+              <img
+                [src]="cv.sections.personal.avatarUrl"
+                alt="Profile photo"
+                class="w-20 h-20 rounded-full object-cover border-2 border-white/20 shadow-lg shrink-0"
+              />
             }
+            <div>
+              <h1 class="text-3xl font-extrabold tracking-tight mb-1">
+                {{ cv.sections.personal.fullName || "Your Name" }}
+              </h1>
+              @if (cv.sections.personal.summary) {
+                <p
+                  class="text-white/60 text-sm italic max-w-md leading-relaxed mt-2"
+                >
+                  {{ cv.sections.personal.summary }}
+                </p>
+              }
+            </div>
           </div>
-          <div class="text-right text-xs space-y-1 text-gray-300 shrink-0 ml-6">
+          <div class="text-right text-xs space-y-1 text-white/60 shrink-0 ml-6">
             @if (cv.sections.personal.email) {
               <p>{{ cv.sections.personal.email }}</p>
             }
@@ -53,7 +62,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.experience.length > 0) {
           <section>
             <h2
-              class="text-base font-extrabold text-gray-900 mb-5 pb-2 border-b-[3px] border-gray-900 uppercase tracking-wide"
+              class="text-base font-extrabold text-gray-900 mb-5 pb-2 uppercase tracking-wide"
+              [style.border-bottom]="'3px solid ' + accentColor"
             >
               Professional Experience
             </h2>
@@ -95,7 +105,8 @@ import { Cv } from "../../../../domain/models/cv.model";
           @if (cv.sections.education.length > 0) {
             <section>
               <h2
-                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 uppercase tracking-wide"
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor"
               >
                 Education
               </h2>
@@ -127,18 +138,21 @@ import { Cv } from "../../../../domain/models/cv.model";
           @if (cv.sections.skills.length > 0) {
             <section>
               <h2
-                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900 uppercase tracking-wide"
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor"
               >
                 Core Competencies
               </h2>
               <div class="space-y-2">
                 @for (skill of cv.sections.skills; track skill.id) {
                   <div
-                    class="bg-gray-900 text-white px-3 py-2 rounded-md flex justify-between items-center"
+                    class="text-white px-3 py-2 rounded-md flex justify-between items-center"
+                    [style.background-color]="accentColor"
                   >
                     <span class="font-semibold text-xs">{{ skill.name }}</span>
                     <span
-                      class="text-[10px] bg-white text-gray-900 px-2 py-0.5 rounded-full font-bold"
+                      class="text-[10px] bg-white px-2 py-0.5 rounded-full font-bold"
+                      [style.color]="accentColor"
                       >{{ skill.level }}</span
                     >
                   </div>
@@ -153,6 +167,11 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ExecutiveTemplateComponent {
   @Input() cv!: Cv;
+  @Input() accentColor: string = "#111827";
+
+  get headerBg(): string {
+    return this.accentColor;
+  }
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

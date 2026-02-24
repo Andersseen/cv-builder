@@ -56,7 +56,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.personal.summary) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] border-b border-gray-200 pb-1"
+              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor + '40'"
             >
               Summary
             </h2>
@@ -70,7 +71,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.experience.length > 0) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] border-b border-gray-200 pb-1"
+              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor + '40'"
             >
               Professional Experience
             </h2>
@@ -105,7 +107,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.education.length > 0) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] border-b border-gray-200 pb-1"
+              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor + '40'"
             >
               Education
             </h2>
@@ -137,7 +140,8 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.skills.length > 0) {
           <section>
             <h2
-              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] border-b border-gray-200 pb-1"
+              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor + '40'"
             >
               Skills
             </h2>
@@ -162,6 +166,7 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ClassicTemplateComponent {
   @Input() cv!: Cv;
+  @Input() accentColor: string = "#475569";
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

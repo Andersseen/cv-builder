@@ -161,7 +161,9 @@ type EditorTab =
                   @case ("template") {
                     <app-template-selector
                       [selectedTemplateId]="cvStore.activeCv()!.templateId"
+                      [accentColor]="cvStore.activeCv()!.settings.accentColor"
                       (templateSelected)="onTemplateChange($event)"
+                      (colorChanged)="onAccentColorChange($event)"
                     />
                   }
                 }
@@ -251,6 +253,10 @@ export default class EditorComponent implements OnInit, OnDestroy {
 
   onTemplateChange(templateId: string) {
     this.cvStore.updateActiveCv({ templateId });
+  }
+
+  onAccentColorChange(accentColor: string) {
+    this.cvStore.updateActiveCv({ settings: { accentColor } });
   }
 
   async exportPdf() {

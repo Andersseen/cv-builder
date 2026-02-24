@@ -33,19 +33,34 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
       >
         @switch (cv().templateId) {
           @case ("modern") {
-            <app-modern-template [cv]="cv()" />
+            <app-modern-template
+              [cv]="cv()"
+              [accentColor]="cv().settings.accentColor"
+            />
           }
           @case ("classic") {
-            <app-classic-template [cv]="cv()" />
+            <app-classic-template
+              [cv]="cv()"
+              [accentColor]="cv().settings.accentColor"
+            />
           }
           @case ("minimal") {
-            <app-minimal-template [cv]="cv()" />
+            <app-minimal-template
+              [cv]="cv()"
+              [accentColor]="cv().settings.accentColor"
+            />
           }
           @case ("creative") {
-            <app-creative-template [cv]="cv()" />
+            <app-creative-template
+              [cv]="cv()"
+              [accentColor]="cv().settings.accentColor"
+            />
           }
           @case ("executive") {
-            <app-executive-template [cv]="cv()" />
+            <app-executive-template
+              [cv]="cv()"
+              [accentColor]="cv().settings.accentColor"
+            />
           }
         }
       </div>
