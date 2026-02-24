@@ -17,24 +17,24 @@ import { Cv } from "../../domain/models/cv.model";
   imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-    >
+    <div class="min-h-screen bg-background">
       <div class="max-w-6xl mx-auto px-4 py-12">
         <!-- Header -->
         <div
           class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10"
         >
           <div>
-            <h1 class="text-3xl font-bold text-white mb-1">My Resumes</h1>
-            <p class="text-slate-400 text-sm">
+            <h1 class="text-3xl font-display font-bold text-foreground mb-1">
+              My Resumes
+            </h1>
+            <p class="text-muted-foreground text-sm">
               Create, manage, and export your resumes
             </p>
           </div>
           <button
             (click)="createNew()"
-            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold
-                   transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40
+            class="px-6 py-3 bg-primary hover:bg-primary-700 text-primary-foreground rounded-xl font-semibold
+                   transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40
                    flex items-center gap-2"
           >
             <span class="text-lg">+</span> New Resume
@@ -45,7 +45,7 @@ import { Cv } from "../../domain/models/cv.model";
         @if (cvStore.loading()) {
           <div class="flex items-center justify-center py-24">
             <div
-              class="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent"
+              class="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent"
             ></div>
           </div>
         }
@@ -54,21 +54,21 @@ import { Cv } from "../../domain/models/cv.model";
         @if (!cvStore.loading() && cvStore.cvs().length === 0) {
           <div class="text-center py-24">
             <div
-              class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-700/50 flex items-center justify-center"
+              class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-surface flex items-center justify-center border border-border"
             >
               <span class="text-3xl">📄</span>
             </div>
-            <h2 class="text-xl font-semibold text-white mb-2">
+            <h2 class="text-xl font-semibold text-foreground mb-2">
               No resumes yet
             </h2>
-            <p class="text-slate-400 mb-8 max-w-md mx-auto">
+            <p class="text-muted-foreground mb-8 max-w-md mx-auto">
               Create your first resume and start building your professional
               profile.
             </p>
             <button
               (click)="createNew()"
-              class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold
-                     transition-all duration-200 shadow-lg shadow-blue-600/25"
+              class="px-8 py-3 bg-primary hover:bg-primary-700 text-primary-foreground rounded-xl font-semibold
+                     transition-all duration-200 shadow-lg shadow-primary/25"
             >
               Create Your First Resume
             </button>
@@ -80,20 +80,20 @@ import { Cv } from "../../domain/models/cv.model";
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @for (cv of cvStore.cvs(); track cv.id) {
               <div
-                class="group relative bg-slate-800/60 backdrop-blur-sm border border-slate-700/50
+                class="group relative bg-surface border border-border
                        rounded-2xl overflow-hidden transition-all duration-300
-                       hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1"
+                       hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1"
               >
                 <!-- Card preview area -->
                 <div
-                  class="h-40 bg-gradient-to-br from-slate-700/40 to-slate-800/40 flex items-center
+                  class="h-40 bg-surface-alt flex items-center
                          justify-center cursor-pointer relative"
                   (click)="openEditor(cv.id)"
                 >
                   <div class="text-center">
                     <div class="text-4xl mb-2 opacity-40">📝</div>
                     <span
-                      class="text-xs text-slate-500 uppercase tracking-wider font-medium"
+                      class="text-xs text-muted-foreground uppercase tracking-wider font-medium"
                     >
                       {{ cv.templateId }} template
                     </span>
@@ -101,11 +101,11 @@ import { Cv } from "../../domain/models/cv.model";
 
                   <!-- Hover overlay -->
                   <div
-                    class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100
+                    class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100
                               transition-opacity duration-300 flex items-center justify-center"
                   >
                     <span
-                      class="text-white font-semibold bg-blue-600 px-4 py-2 rounded-lg
+                      class="text-primary-foreground font-semibold bg-primary px-4 py-2 rounded-lg
                                  shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300
                                  transform translate-y-2 group-hover:translate-y-0"
                     >
@@ -126,13 +126,13 @@ import { Cv } from "../../domain/models/cv.model";
                       (blur)="stopEditing()"
                       (keydown.enter)="stopEditing()"
                       (keydown.escape)="stopEditing()"
-                      class="w-full bg-slate-700 text-white px-3 py-1.5 rounded-lg text-base font-semibold
-                             outline-none ring-2 ring-blue-500 mb-2"
+                      class="w-full bg-surface-hover text-foreground px-3 py-1.5 rounded-lg text-base font-semibold
+                             outline-none ring-2 ring-primary mb-2"
                     />
                   } @else {
                     <h3
-                      class="text-base font-semibold text-white mb-2 truncate cursor-pointer
-                             hover:text-blue-400 transition-colors"
+                      class="text-base font-semibold text-foreground mb-2 truncate cursor-pointer
+                             hover:text-primary transition-colors"
                       (dblclick)="startEditing(cv.id)"
                       title="Double-click to rename"
                     >
@@ -140,7 +140,7 @@ import { Cv } from "../../domain/models/cv.model";
                     </h3>
                   }
 
-                  <p class="text-xs text-slate-500 mb-4">
+                  <p class="text-xs text-muted-foreground mb-4">
                     Updated {{ formatDate(cv.updatedAt) }}
                   </p>
 
@@ -148,23 +148,23 @@ import { Cv } from "../../domain/models/cv.model";
                   <div class="flex gap-2">
                     <button
                       (click)="openEditor(cv.id)"
-                      class="flex-1 px-3 py-2 bg-blue-600/15 text-blue-400 text-sm font-medium
-                             rounded-lg hover:bg-blue-600/25 transition-colors"
+                      class="flex-1 px-3 py-2 bg-primary/15 text-primary text-sm font-medium
+                             rounded-lg hover:bg-primary/25 transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       (click)="duplicateCv(cv.id)"
-                      class="px-3 py-2 bg-slate-700/50 text-slate-300 text-sm rounded-lg
-                             hover:bg-slate-700 transition-colors"
+                      class="px-3 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg
+                             hover:bg-surface-hover transition-colors"
                       title="Duplicate"
                     >
                       ⧉
                     </button>
                     <button
                       (click)="deleteCv(cv)"
-                      class="px-3 py-2 bg-red-500/10 text-red-400 text-sm rounded-lg
-                             hover:bg-red-500/20 transition-colors"
+                      class="px-3 py-2 bg-danger/10 text-danger text-sm rounded-lg
+                             hover:bg-danger/20 transition-colors"
                       title="Delete"
                     >
                       ✕

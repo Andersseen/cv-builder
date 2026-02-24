@@ -20,17 +20,15 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
     ExecutiveTemplateComponent,
   ],
   template: `
-    <div
-      class="bg-slate-800/60 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4"
-    >
+    <div class="bg-surface rounded-xl border border-border p-4">
       <h2
-        class="text-sm font-medium text-slate-400 mb-3 uppercase tracking-wider"
+        class="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider"
       >
         Preview
       </h2>
 
       <div
-        class="bg-white rounded-lg overflow-hidden shadow-2xl shadow-black/20"
+        class="bg-white rounded-lg overflow-hidden shadow-2xl shadow-foreground/10"
         style="transform-origin: top center;"
       >
         @switch (cv().templateId) {

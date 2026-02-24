@@ -47,12 +47,10 @@ type EditorTab =
     ResumePreviewComponent,
   ],
   template: `
-    <div
-      class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-    >
+    <div class="min-h-screen bg-background">
       <!-- Top Bar -->
       <div
-        class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-30"
+        class="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-30"
       >
         <div
           class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between gap-4"
@@ -61,13 +59,13 @@ type EditorTab =
           <div class="flex items-center gap-3 min-w-0">
             <button
               (click)="goBack()"
-              class="text-slate-400 hover:text-white transition-colors shrink-0"
+              class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
               title="Back to dashboard"
             >
               &larr; Back
             </button>
             @if (cvStore.activeCv()) {
-              <span class="text-white font-semibold truncate">{{
+              <span class="text-foreground font-semibold truncate">{{
                 cvStore.activeCv()!.name
               }}</span>
             }
@@ -76,21 +74,23 @@ type EditorTab =
           <!-- Right: autosave indicator + export -->
           <div class="flex items-center gap-4 shrink-0">
             @if (autosaveService.saving()) {
-              <span class="text-xs text-slate-400 flex items-center gap-1.5">
+              <span
+                class="text-xs text-muted-foreground flex items-center gap-1.5"
+              >
                 <span
-                  class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                  class="w-2 h-2 rounded-full bg-warning animate-pulse"
                 ></span>
                 Saving...
               </span>
             } @else if (autosaveService.lastSavedAt()) {
-              <span class="text-xs text-slate-500"> Saved &check; </span>
+              <span class="text-xs text-muted-foreground"> Saved &check; </span>
             }
             <button
               (click)="exportPdf()"
               [disabled]="isExporting()"
-              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50
-                     text-white text-sm font-medium rounded-lg transition-all duration-200
-                     shadow-lg shadow-emerald-600/20"
+              class="px-4 py-2 bg-accent hover:bg-accent/90 disabled:opacity-50
+                     text-accent-foreground text-sm font-medium rounded-lg transition-all duration-200
+                     shadow-lg shadow-accent/20"
             >
               {{ isExporting() ? "Exporting..." : "Download PDF" }}
             </button>
@@ -101,7 +101,7 @@ type EditorTab =
       @if (cvStore.loading()) {
         <div class="flex items-center justify-center py-24">
           <div
-            class="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent"
+            class="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent"
           ></div>
         </div>
       } @else if (cvStore.activeCv()) {
@@ -112,7 +112,7 @@ type EditorTab =
             <div class="space-y-0">
               <!-- Tabs -->
               <div
-                class="flex gap-1 bg-slate-800/60 rounded-t-xl p-1.5 border border-slate-700/50 border-b-0 overflow-x-auto"
+                class="flex gap-1 bg-surface rounded-t-xl p-1.5 border border-border border-b-0 overflow-x-auto"
               >
                 @for (tab of tabs; track tab.id) {
                   <button
@@ -120,8 +120,8 @@ type EditorTab =
                     class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
                     [class]="
                       activeTab() === tab.id
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
                     "
                   >
                     {{ tab.label }}
@@ -131,7 +131,7 @@ type EditorTab =
 
               <!-- Tab content -->
               <div
-                class="bg-slate-800/60 backdrop-blur-sm rounded-b-xl border border-slate-700/50 p-6"
+                class="bg-surface backdrop-blur-sm rounded-b-xl border border-border p-6"
               >
                 @switch (activeTab()) {
                   @case ("personal") {
@@ -177,10 +177,10 @@ type EditorTab =
       } @else {
         <!-- No CV found -->
         <div class="text-center py-24">
-          <p class="text-slate-400 mb-4">Resume not found</p>
+          <p class="text-muted-foreground mb-4">Resume not found</p>
           <button
             (click)="goBack()"
-            class="text-blue-400 hover:text-blue-300 transition-colors"
+            class="text-primary hover:text-primary-700 transition-colors"
           >
             &larr; Back to dashboard
           </button>
@@ -208,24 +208,18 @@ export default class EditorComponent implements OnInit, OnDestroy {
     { id: "template", label: "Template" },
   ];
 
-  // Autosave effect
   private autosaveEffect = effect(() => {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
-    // Trigger autosave scheduling (the service does the debounce)
     this.autosaveService["scheduleAutosave"](cv);
   });
 
   async ngOnInit() {
     await this.cvStore.loadAll();
-
-    // Read CV id from query params
     const cvId = this.route.snapshot.queryParamMap.get("cv");
     if (cvId) {
       this.cvStore.setActive(cvId);
     }
-
-    // If no active CV, redirect to dashboard
     if (!this.cvStore.activeCv()) {
       this.router.navigate(["/dashboard"]);
     }
@@ -238,8 +232,6 @@ export default class EditorComponent implements OnInit, OnDestroy {
   goBack() {
     this.router.navigate(["/dashboard"]);
   }
-
-  // ─── Form change handlers ──────────────────────────────────
 
   onPersonalInfoChange(personal: PersonalInfo) {
     this.cvStore.updateActiveCv({ sections: { personal } });
@@ -261,18 +253,14 @@ export default class EditorComponent implements OnInit, OnDestroy {
     this.cvStore.updateActiveCv({ templateId });
   }
 
-  // ─── PDF export ────────────────────────────────────────────
-
   async exportPdf() {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
-
     const el = document.getElementById("resume-content");
     if (!el) {
       this.toastService.show("Preview not ready", "error");
       return;
     }
-
     this.isExporting.set(true);
     try {
       await this.pdfExportService.exportToPdf(cv, el);

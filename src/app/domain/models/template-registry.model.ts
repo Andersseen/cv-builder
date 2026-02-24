@@ -5,32 +5,42 @@ import { TemplateInfo } from "./cv.model";
  * To add a new template:
  *   1. Create a standalone component in resume-templates/
  *   2. Add an entry here
- *   3. Register it in TemplateRegistryService
+ *   3. Register it in ResumePreviewComponent's @switch block
  */
 export const TEMPLATES: TemplateInfo[] = [
   {
     id: "modern",
     name: "Modern",
-    description: "Clean and contemporary design",
+    description: "Gradient header with card-based sections",
+    accentColor: "#4f46e5",
+    previewLayout: "header-accent",
   },
   {
     id: "classic",
     name: "Classic",
-    description: "Traditional professional layout",
+    description: "Traditional centered layout with serif feel",
+    accentColor: "#475569",
+    previewLayout: "single-column",
   },
   {
     id: "minimal",
     name: "Minimal",
-    description: "Simple and elegant",
+    description: "Maximum whitespace, clean typography",
+    accentColor: "#171717",
+    previewLayout: "single-column",
   },
   {
     id: "creative",
     name: "Creative",
-    description: "Unique and eye-catching",
+    description: "Dark sidebar with timeline and progress bars",
+    accentColor: "#f59e0b",
+    previewLayout: "sidebar-left",
   },
   {
     id: "executive",
     name: "Executive",
-    description: "Sophisticated and formal",
+    description: "Bold dark header with pill badges",
+    accentColor: "#111827",
+    previewLayout: "header-accent",
   },
 ];

@@ -8,41 +8,66 @@ import { Cv } from "../../../../domain/models/cv.model";
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="max-w-4xl mx-auto bg-white" id="resume-content">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
-        <h1 class="text-4xl font-bold mb-2">
+    <div
+      class="max-w-4xl mx-auto bg-white"
+      id="resume-content"
+      style="font-family: 'Inter', system-ui, sans-serif;"
+    >
+      <!-- Header — bold gradient -->
+      <div
+        class="p-8"
+        style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);"
+      >
+        <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">
           {{ cv.sections.personal.fullName || "Your Name" }}
         </h1>
-        <div class="flex flex-wrap gap-4 text-sm">
+        <div
+          class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-indigo-100 mt-3"
+        >
           @if (cv.sections.personal.email) {
-            <span>✉ {{ cv.sections.personal.email }}</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1 h-1 rounded-full bg-indigo-200"></span>
+              {{ cv.sections.personal.email }}
+            </span>
           }
           @if (cv.sections.personal.phone) {
-            <span>📞 {{ cv.sections.personal.phone }}</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1 h-1 rounded-full bg-indigo-200"></span>
+              {{ cv.sections.personal.phone }}
+            </span>
           }
           @if (cv.sections.personal.location) {
-            <span>📍 {{ cv.sections.personal.location }}</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1 h-1 rounded-full bg-indigo-200"></span>
+              {{ cv.sections.personal.location }}
+            </span>
           }
           @if (cv.sections.personal.website) {
-            <span>🌐 {{ cv.sections.personal.website }}</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1 h-1 rounded-full bg-indigo-200"></span>
+              {{ cv.sections.personal.website }}
+            </span>
           }
           @if (cv.sections.personal.linkedin) {
-            <span>💼 {{ cv.sections.personal.linkedin }}</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1 h-1 rounded-full bg-indigo-200"></span>
+              {{ cv.sections.personal.linkedin }}
+            </span>
           }
         </div>
       </div>
 
-      <div class="p-8">
+      <div class="p-8 space-y-8">
         <!-- Summary -->
         @if (cv.sections.personal.summary) {
-          <section class="mb-8">
+          <section>
             <h2
-              class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2"
+              class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
             >
+              <span class="w-8 h-0.5 bg-indigo-600 rounded-full"></span>
               Professional Summary
             </h2>
-            <p class="text-gray-700 leading-relaxed">
+            <p class="text-gray-600 leading-relaxed text-sm">
               {{ cv.sections.personal.summary }}
             </p>
           </section>
@@ -50,24 +75,27 @@ import { Cv } from "../../../../domain/models/cv.model";
 
         <!-- Experience -->
         @if (cv.sections.experience.length > 0) {
-          <section class="mb-8">
+          <section>
             <h2
-              class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2"
+              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
             >
+              <span class="w-8 h-0.5 bg-indigo-600 rounded-full"></span>
               Experience
             </h2>
             @for (exp of cv.sections.experience; track exp.id) {
-              <div class="mb-6">
-                <div class="flex justify-between items-start mb-2">
+              <div class="mb-5 pl-4 border-l-2 border-indigo-100">
+                <div class="flex justify-between items-start mb-1">
                   <div>
-                    <h3 class="text-xl font-semibold text-gray-800">
+                    <h3 class="text-base font-semibold text-gray-900">
                       {{ exp.jobTitle }}
                     </h3>
-                    <p class="text-blue-600 font-medium">{{ exp.company }}</p>
+                    <p class="text-indigo-600 font-medium text-sm">
+                      {{ exp.company }}
+                    </p>
                   </div>
-                  <div class="text-right text-sm text-gray-600">
+                  <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
                     <p>
-                      {{ formatDate(exp.startDate) }} -
+                      {{ formatDate(exp.startDate) }} –
                       {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                     </p>
                     @if (exp.location) {
@@ -76,7 +104,7 @@ import { Cv } from "../../../../domain/models/cv.model";
                   </div>
                 </div>
                 @if (exp.description) {
-                  <p class="text-gray-700 leading-relaxed">
+                  <p class="text-gray-600 text-sm leading-relaxed mt-2">
                     {{ exp.description }}
                   </p>
                 }
@@ -87,25 +115,28 @@ import { Cv } from "../../../../domain/models/cv.model";
 
         <!-- Education -->
         @if (cv.sections.education.length > 0) {
-          <section class="mb-8">
+          <section>
             <h2
-              class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2"
+              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
             >
+              <span class="w-8 h-0.5 bg-indigo-600 rounded-full"></span>
               Education
             </h2>
             @for (edu of cv.sections.education; track edu.id) {
-              <div class="mb-4">
+              <div class="mb-3 p-3 bg-gray-50 rounded-lg">
                 <div class="flex justify-between items-start">
                   <div>
-                    <h3 class="text-lg font-semibold text-gray-800">
+                    <h3 class="font-semibold text-gray-900 text-sm">
                       {{ edu.degree }}
                     </h3>
-                    <p class="text-blue-600">{{ edu.institution }}</p>
+                    <p class="text-indigo-600 text-sm">{{ edu.institution }}</p>
                     @if (edu.gpa) {
-                      <p class="text-sm text-gray-600">GPA: {{ edu.gpa }}</p>
+                      <p class="text-xs text-gray-500 mt-0.5">
+                        GPA: {{ edu.gpa }}
+                      </p>
                     }
                   </div>
-                  <div class="text-right text-sm text-gray-600">
+                  <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
                     <p>{{ formatDate(edu.graduationDate) }}</p>
                     @if (edu.location) {
                       <p>{{ edu.location }}</p>
@@ -121,16 +152,19 @@ import { Cv } from "../../../../domain/models/cv.model";
         @if (cv.sections.skills.length > 0) {
           <section>
             <h2
-              class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2"
+              class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
             >
+              <span class="w-8 h-0.5 bg-indigo-600 rounded-full"></span>
               Skills
             </h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="flex flex-wrap gap-2">
               @for (skill of cv.sections.skills; track skill.id) {
-                <div class="bg-gray-50 p-3 rounded-lg">
-                  <p class="font-medium text-gray-800">{{ skill.name }}</p>
-                  <p class="text-sm text-blue-600">{{ skill.level }}</p>
-                </div>
+                <span
+                  class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-100"
+                >
+                  {{ skill.name }}
+                  <span class="text-indigo-400 ml-1">· {{ skill.level }}</span>
+                </span>
               }
             </div>
           </section>

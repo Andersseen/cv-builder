@@ -23,14 +23,14 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
   template: `
     <div class="space-y-5">
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold text-white">Education</h2>
+        <h2 class="text-lg font-semibold text-foreground">Education</h2>
         <button
           (click)="toggleForm()"
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
             showForm()
-              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-secondary text-secondary-foreground hover:bg-surface-hover'
+              : 'bg-primary text-primary-foreground hover:bg-primary-700'
           "
         >
           {{ showForm() ? "Cancel" : "+ Add Education" }}
@@ -41,86 +41,84 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="space-y-4 bg-slate-700/30 rounded-xl p-5 border border-slate-600/50"
+          class="space-y-4 bg-surface-alt rounded-xl p-5 border border-border"
         >
-          <h3 class="text-sm font-medium text-slate-300">
+          <h3 class="text-sm font-medium text-muted-foreground">
             {{ editingId() ? "Edit Education" : "New Education" }}
           </h3>
-
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1.5"
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Degree *</label
               >
               <input
                 type="text"
                 formControlName="degree"
-                class="w-full px-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white
-                       placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Bachelor of Science"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1.5"
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Institution *</label
               >
               <input
                 type="text"
                 formControlName="institution"
-                class="w-full px-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white
-                       placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="MIT"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1.5"
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Location</label
               >
               <input
                 type="text"
                 formControlName="location"
-                class="w-full px-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white
-                       placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Cambridge, MA"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1.5"
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Graduation Date *</label
               >
               <input
                 type="month"
                 formControlName="graduationDate"
-                class="w-full px-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1.5"
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >GPA</label
               >
               <input
                 type="text"
                 formControlName="gpa"
-                class="w-full px-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white
-                       placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="3.8 / 4.0"
               />
             </div>
           </div>
-
           <div class="flex justify-end gap-2">
             <button
               type="button"
               (click)="cancelEdit()"
-              class="px-4 py-2 text-sm text-slate-300 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-surface-hover transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               [disabled]="form.invalid"
-              class="px-4 py-2 text-sm text-white bg-emerald-600 rounded-lg hover:bg-emerald-700
+              class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ editingId() ? "Update" : "Add" }}
@@ -132,21 +130,21 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
       <div class="space-y-3">
         @for (edu of items(); track edu.id) {
           <div
-            class="p-4 bg-slate-700/30 border border-slate-600/50 rounded-xl group
-                      hover:border-blue-500/30 transition-all duration-200"
+            class="p-4 bg-surface-alt border border-border rounded-xl group
+                      hover:border-primary/30 transition-all duration-200"
           >
             <div class="flex justify-between items-start">
               <div class="cursor-pointer flex-grow" (click)="edit(edu)">
                 <h3
-                  class="font-semibold text-white group-hover:text-blue-400 transition-colors"
+                  class="font-semibold text-foreground group-hover:text-primary transition-colors"
                 >
                   {{ edu.degree }}
                 </h3>
-                <p class="text-slate-400 text-sm">
+                <p class="text-muted-foreground text-sm">
                   {{ edu.institution
                   }}{{ edu.location ? " — " + edu.location : "" }}
                 </p>
-                <p class="text-xs text-slate-500 mt-1">
+                <p class="text-xs text-muted-foreground/70 mt-1">
                   {{ formatDate(edu.graduationDate) }}
                   {{ edu.gpa ? " · GPA: " + edu.gpa : "" }}
                 </p>
@@ -156,13 +154,13 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
               >
                 <button
                   (click)="edit(edu)"
-                  class="px-2.5 py-1 text-xs text-blue-400 hover:bg-blue-500/15 rounded-md transition-colors"
+                  class="px-2.5 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   (click)="remove(edu.id)"
-                  class="px-2.5 py-1 text-xs text-red-400 hover:bg-red-500/15 rounded-md transition-colors"
+                  class="px-2.5 py-1 text-xs text-danger hover:bg-danger/15 rounded-md transition-colors"
                 >
                   Remove
                 </button>
@@ -171,7 +169,7 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
           </div>
         }
         @if (items().length === 0) {
-          <p class="text-slate-500 text-sm text-center py-6">
+          <p class="text-muted-foreground text-sm text-center py-6">
             No education added yet.
           </p>
         }
@@ -182,7 +180,6 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
 export class EducationFormComponent {
   items = input.required<Education[]>();
   itemsChange = output<Education[]>();
-
   showForm = signal(false);
   editingId = signal<string | null>(null);
 
@@ -205,58 +202,44 @@ export class EducationFormComponent {
   });
 
   toggleForm() {
-    if (this.showForm()) {
-      this.cancelEdit();
-    } else {
-      this.startNew();
-    }
+    this.showForm() ? this.cancelEdit() : this.startNew();
   }
-
   startNew() {
     this.editingId.set(null);
-    const defaults = createDefaultEducation();
-    this.form.reset({ id: defaults.id });
+    this.form.reset({ id: createDefaultEducation().id });
     this.showForm.set(true);
   }
-
   edit(edu: Education) {
     this.editingId.set(edu.id);
     this.form.patchValue(edu);
     this.showForm.set(true);
   }
-
   cancelEdit() {
     this.showForm.set(false);
     this.editingId.set(null);
     this.form.reset();
   }
-
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
     const value = this.form.getRawValue() as Education;
-
     if (this.editingId()) {
-      const updated = this.items().map((edu) =>
-        edu.id === this.editingId() ? value : edu,
+      this.itemsChange.emit(
+        this.items().map((e) => (e.id === this.editingId() ? value : e)),
       );
-      this.itemsChange.emit(updated);
     } else {
       this.itemsChange.emit([...this.items(), value]);
     }
     this.cancelEdit();
   }
-
   remove(id: string) {
     if (confirm("Delete this education entry?")) {
-      this.itemsChange.emit(this.items().filter((edu) => edu.id !== id));
+      this.itemsChange.emit(this.items().filter((e) => e.id !== id));
       if (this.editingId() === id) this.cancelEdit();
     }
   }
-
   formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);

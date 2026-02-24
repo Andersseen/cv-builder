@@ -8,57 +8,85 @@ import { Cv } from "../../../../domain/models/cv.model";
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="max-w-4xl mx-auto bg-white shadow-lg" id="resume-content">
-      <div class="flex">
-        <!-- Sidebar -->
-        <div class="w-1/3 bg-gray-800 text-white p-6">
-          <div class="mb-8">
-            <h1 class="text-2xl font-bold mb-2">
+    <div
+      class="max-w-4xl mx-auto bg-white"
+      id="resume-content"
+      style="font-family: 'Inter', system-ui, sans-serif;"
+    >
+      <div class="flex min-h-[600px]">
+        <!-- Sidebar — dark with amber accents -->
+        <div class="w-[38%] bg-gray-900 text-white p-6 space-y-6">
+          <div>
+            <h1 class="text-xl font-bold leading-tight mb-3">
               {{ cv.sections.personal.fullName || "Your Name" }}
             </h1>
-            <div class="space-y-2 text-sm">
+            <div class="space-y-1.5 text-xs text-gray-300">
               @if (cv.sections.personal.email) {
-                <p class="flex items-center">
-                  <span class="mr-2">✉</span>{{ cv.sections.personal.email }}
+                <p class="flex items-center gap-2">
+                  <span
+                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    >&#64;</span
+                  >
+                  {{ cv.sections.personal.email }}
                 </p>
               }
               @if (cv.sections.personal.phone) {
-                <p class="flex items-center">
-                  <span class="mr-2">📞</span>{{ cv.sections.personal.phone }}
+                <p class="flex items-center gap-2">
+                  <span
+                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    >#</span
+                  >
+                  {{ cv.sections.personal.phone }}
                 </p>
               }
               @if (cv.sections.personal.location) {
-                <p class="flex items-center">
-                  <span class="mr-2">📍</span
-                  >{{ cv.sections.personal.location }}
+                <p class="flex items-center gap-2">
+                  <span
+                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    >⌂</span
+                  >
+                  {{ cv.sections.personal.location }}
                 </p>
               }
               @if (cv.sections.personal.website) {
-                <p class="flex items-center">
-                  <span class="mr-2">🌐</span>{{ cv.sections.personal.website }}
+                <p class="flex items-center gap-2">
+                  <span
+                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    >◉</span
+                  >
+                  {{ cv.sections.personal.website }}
                 </p>
               }
               @if (cv.sections.personal.linkedin) {
-                <p class="flex items-center">
-                  <span class="mr-2">💼</span
-                  >{{ cv.sections.personal.linkedin }}
+                <p class="flex items-center gap-2">
+                  <span
+                    class="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px]"
+                    >in</span
+                  >
+                  {{ cv.sections.personal.linkedin }}
                 </p>
               }
             </div>
           </div>
 
           @if (cv.sections.skills.length > 0) {
-            <div class="mb-8">
-              <h2 class="text-lg font-bold mb-4 text-yellow-400">Skills</h2>
+            <div>
+              <h2
+                class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3"
+              >
+                Skills
+              </h2>
               @for (skill of cv.sections.skills; track skill.id) {
-                <div class="mb-3">
+                <div class="mb-2.5">
                   <div class="flex justify-between mb-1">
-                    <span class="text-sm">{{ skill.name }}</span>
-                    <span class="text-xs text-gray-300">{{ skill.level }}</span>
+                    <span class="text-xs text-gray-200">{{ skill.name }}</span>
+                    <span class="text-[10px] text-gray-400">{{
+                      skill.level
+                    }}</span>
                   </div>
-                  <div class="w-full bg-gray-700 rounded-full h-2">
+                  <div class="w-full bg-gray-700 rounded-full h-1.5">
                     <div
-                      class="bg-yellow-400 h-2 rounded-full"
+                      class="bg-amber-400 h-1.5 rounded-full transition-all"
                       [style.width]="getSkillWidth(skill.level)"
                     ></div>
                   </div>
@@ -69,16 +97,24 @@ import { Cv } from "../../../../domain/models/cv.model";
 
           @if (cv.sections.education.length > 0) {
             <div>
-              <h2 class="text-lg font-bold mb-4 text-yellow-400">Education</h2>
+              <h2
+                class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3"
+              >
+                Education
+              </h2>
               @for (edu of cv.sections.education; track edu.id) {
-                <div class="mb-4">
-                  <h3 class="font-semibold text-sm">{{ edu.degree }}</h3>
-                  <p class="text-gray-300 text-xs">{{ edu.institution }}</p>
-                  <p class="text-gray-400 text-xs">
+                <div class="mb-3">
+                  <h3 class="font-semibold text-xs text-white">
+                    {{ edu.degree }}
+                  </h3>
+                  <p class="text-gray-400 text-[11px]">{{ edu.institution }}</p>
+                  <p class="text-gray-500 text-[10px]">
                     {{ formatDate(edu.graduationDate) }}
                   </p>
                   @if (edu.gpa) {
-                    <p class="text-yellow-400 text-xs">GPA: {{ edu.gpa }}</p>
+                    <p class="text-amber-400/70 text-[10px]">
+                      GPA: {{ edu.gpa }}
+                    </p>
                   }
                 </div>
               }
@@ -87,16 +123,16 @@ import { Cv } from "../../../../domain/models/cv.model";
         </div>
 
         <!-- Main Content -->
-        <div class="w-2/3 p-6">
+        <div class="w-[62%] p-6 space-y-6">
           @if (cv.sections.personal.summary) {
-            <section class="mb-8">
-              <h2 class="text-xl font-bold text-gray-800 mb-4 relative">
+            <section>
+              <h2 class="text-sm font-bold text-gray-800 mb-2 relative pl-4">
                 <span
-                  class="bg-yellow-400 h-1 w-12 absolute -bottom-2 left-0"
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-full"
                 ></span>
                 About Me
               </h2>
-              <p class="text-gray-700 leading-relaxed">
+              <p class="text-gray-600 leading-relaxed text-xs">
                 {{ cv.sections.personal.summary }}
               </p>
             </section>
@@ -104,31 +140,42 @@ import { Cv } from "../../../../domain/models/cv.model";
 
           @if (cv.sections.experience.length > 0) {
             <section>
-              <h2 class="text-xl font-bold text-gray-800 mb-6 relative">
+              <h2 class="text-sm font-bold text-gray-800 mb-4 relative pl-4">
                 <span
-                  class="bg-yellow-400 h-1 w-12 absolute -bottom-2 left-0"
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-full"
                 ></span>
                 Experience
               </h2>
-              @for (exp of cv.sections.experience; track exp.id) {
-                <div class="mb-6 relative pl-6">
+              @for (
+                exp of cv.sections.experience;
+                track exp.id;
+                let last = $last
+              ) {
+                <div class="mb-4 relative pl-5" [class.pb-4]="!last">
+                  <!-- Timeline -->
                   <div
-                    class="absolute left-0 top-2 w-3 h-3 bg-yellow-400 rounded-full"
+                    class="absolute left-0 top-1.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white shadow-sm"
                   ></div>
-                  <div
-                    class="absolute left-1.5 top-5 w-0.5 h-full bg-gray-300"
-                  ></div>
+                  @if (!last) {
+                    <div
+                      class="absolute left-[4px] top-4 w-0.5 h-full bg-gray-200"
+                    ></div>
+                  }
 
-                  <div class="flex justify-between items-start mb-2">
+                  <div class="flex justify-between items-start mb-1">
                     <div>
-                      <h3 class="text-lg font-semibold text-gray-800">
+                      <h3 class="text-sm font-semibold text-gray-800">
                         {{ exp.jobTitle }}
                       </h3>
-                      <p class="text-gray-600 font-medium">{{ exp.company }}</p>
+                      <p class="text-xs text-gray-500 font-medium">
+                        {{ exp.company }}
+                      </p>
                     </div>
-                    <div class="text-right text-sm text-gray-500">
+                    <div
+                      class="text-right text-[10px] text-gray-400 shrink-0 ml-3"
+                    >
                       <p>
-                        {{ formatDate(exp.startDate) }} -
+                        {{ formatDate(exp.startDate) }} –
                         {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                       </p>
                       @if (exp.location) {
@@ -137,7 +184,7 @@ import { Cv } from "../../../../domain/models/cv.model";
                     </div>
                   </div>
                   @if (exp.description) {
-                    <p class="text-gray-700 leading-relaxed text-sm">
+                    <p class="text-gray-500 text-xs leading-relaxed mt-1">
                       {{ exp.description }}
                     </p>
                   }

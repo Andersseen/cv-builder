@@ -75,6 +75,13 @@ export interface TemplateInfo {
   id: string;
   name: string;
   description: string;
+  accentColor: string;
+  previewLayout:
+    | "single-column"
+    | "sidebar-left"
+    | "sidebar-right"
+    | "two-column"
+    | "header-accent";
 }
 
 // ─── Utility type for partial deep updates ───────────────────

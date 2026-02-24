@@ -8,60 +8,70 @@ import { Cv } from "../../../../domain/models/cv.model";
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="max-w-4xl mx-auto bg-white shadow-lg" id="resume-content">
-      <div class="p-8">
-        <!-- Header -->
-        <div class="mb-8">
-          <h1 class="text-2xl font-light text-gray-900 mb-4">
+    <div
+      class="max-w-4xl mx-auto bg-white"
+      id="resume-content"
+      style="font-family: 'Inter', system-ui, sans-serif;"
+    >
+      <div class="p-10">
+        <!-- Header — ultra-minimal -->
+        <div class="mb-10">
+          <h1 class="text-2xl font-light text-gray-900 tracking-tight">
             {{ cv.sections.personal.fullName || "Your Name" }}
           </h1>
-          <div class="space-y-1 text-sm text-gray-600">
+          <div class="flex flex-wrap gap-x-4 mt-2 text-xs text-gray-400">
             @if (cv.sections.personal.email) {
-              <p>{{ cv.sections.personal.email }}</p>
+              <span>{{ cv.sections.personal.email }}</span>
             }
             @if (cv.sections.personal.phone) {
-              <p>{{ cv.sections.personal.phone }}</p>
+              <span>{{ cv.sections.personal.phone }}</span>
             }
             @if (cv.sections.personal.location) {
-              <p>{{ cv.sections.personal.location }}</p>
+              <span>{{ cv.sections.personal.location }}</span>
             }
             @if (cv.sections.personal.website) {
-              <p>{{ cv.sections.personal.website }}</p>
+              <span>{{ cv.sections.personal.website }}</span>
             }
             @if (cv.sections.personal.linkedin) {
-              <p>{{ cv.sections.personal.linkedin }}</p>
+              <span>{{ cv.sections.personal.linkedin }}</span>
             }
           </div>
         </div>
 
         @if (cv.sections.personal.summary) {
-          <section class="mb-8">
-            <p class="text-gray-700 leading-relaxed">
+          <section class="mb-10">
+            <p class="text-gray-500 leading-relaxed text-sm max-w-2xl">
               {{ cv.sections.personal.summary }}
             </p>
           </section>
         }
 
         @if (cv.sections.experience.length > 0) {
-          <section class="mb-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Experience</h2>
+          <section class="mb-10">
+            <h2
+              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-5"
+            >
+              Experience
+            </h2>
             @for (exp of cv.sections.experience; track exp.id) {
               <div class="mb-6">
-                <div class="flex justify-between items-baseline mb-1">
-                  <h3 class="font-medium text-gray-900">{{ exp.jobTitle }}</h3>
-                  <span class="text-sm text-gray-500">
+                <div class="flex justify-between items-baseline mb-0.5">
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ exp.jobTitle }}
+                  </h3>
+                  <span class="text-xs text-gray-400 shrink-0 ml-4">
                     {{ formatDate(exp.startDate) }} –
                     {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                   </span>
                 </div>
-                <p class="text-gray-600 mb-2">
+                <p class="text-xs text-gray-500 mb-1.5">
                   {{ exp.company }}
                   @if (exp.location) {
-                    • {{ exp.location }}
+                    · {{ exp.location }}
                   }
                 </p>
                 @if (exp.description) {
-                  <p class="text-gray-700 text-sm leading-relaxed">
+                  <p class="text-gray-500 text-xs leading-relaxed">
                     {{ exp.description }}
                   </p>
                 }
@@ -71,24 +81,30 @@ import { Cv } from "../../../../domain/models/cv.model";
         }
 
         @if (cv.sections.education.length > 0) {
-          <section class="mb-8">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Education</h2>
+          <section class="mb-10">
+            <h2
+              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-5"
+            >
+              Education
+            </h2>
             @for (edu of cv.sections.education; track edu.id) {
               <div class="mb-4">
-                <div class="flex justify-between items-baseline mb-1">
-                  <h3 class="font-medium text-gray-900">{{ edu.degree }}</h3>
-                  <span class="text-sm text-gray-500">{{
+                <div class="flex justify-between items-baseline mb-0.5">
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ edu.degree }}
+                  </h3>
+                  <span class="text-xs text-gray-400 shrink-0 ml-4">{{
                     formatDate(edu.graduationDate)
                   }}</span>
                 </div>
-                <p class="text-gray-600">
+                <p class="text-xs text-gray-500">
                   {{ edu.institution }}
                   @if (edu.location) {
-                    • {{ edu.location }}
+                    · {{ edu.location }}
                   }
                 </p>
                 @if (edu.gpa) {
-                  <p class="text-sm text-gray-500">{{ edu.gpa }}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">{{ edu.gpa }}</p>
                 }
               </div>
             }
@@ -97,12 +113,18 @@ import { Cv } from "../../../../domain/models/cv.model";
 
         @if (cv.sections.skills.length > 0) {
           <section>
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Skills</h2>
-            <div class="space-y-2">
+            <h2
+              class="text-xs font-medium text-gray-400 uppercase tracking-[0.15em] mb-4"
+            >
+              Skills
+            </h2>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
               @for (skill of cv.sections.skills; track skill.id) {
-                <div class="flex justify-between">
-                  <span class="text-gray-700">{{ skill.name }}</span>
-                  <span class="text-gray-500 text-sm">{{ skill.level }}</span>
+                <div>
+                  <span class="text-xs text-gray-700">{{ skill.name }}</span>
+                  <span class="text-xs text-gray-300 ml-1">{{
+                    skill.level
+                  }}</span>
                 </div>
               }
             </div>
