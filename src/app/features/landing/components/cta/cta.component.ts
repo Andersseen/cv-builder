@@ -23,13 +23,13 @@ import { RouterLink } from "@angular/router";
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
             <a
-              routerLink="/editor"
+              routerLink="/dashboard"
               class="rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all hover:scale-105"
             >
               Get started
             </a>
             <a
-              routerLink="/templates"
+              routerLink="/dashboard"
               class="text-sm font-semibold leading-6 text-white hover:text-primary transition-colors"
             >
               Browse templates <span aria-hidden="true">→</span>

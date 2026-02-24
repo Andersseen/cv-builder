@@ -1,15 +1,42 @@
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ChangeDetectionStrategy,
+  effect,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
-import { EducationFormComponent } from "./components/education-form.component";
-import { ExperienceFormComponent } from "./components/experience-form.component";
+import { ActivatedRoute, Router } from "@angular/router";
+import { CvStore } from "../../application/state/cv.store";
+import { AutosaveService } from "../../application/services/autosave.service";
+import { PdfExportService } from "../../infrastructure/export/pdf-export.service";
 import { PersonalInfoFormComponent } from "./components/personal-info-form.component";
-import { ResumePreviewComponent } from "./components/resume-preview.component";
+import { ExperienceFormComponent } from "./components/experience-form.component";
+import { EducationFormComponent } from "./components/education-form.component";
 import { SkillsFormComponent } from "./components/skills-form.component";
 import { TemplateSelectorComponent } from "./components/template-selector.component";
+import { ResumePreviewComponent } from "./components/resume-preview.component";
+import {
+  PersonalInfo,
+  Experience,
+  Education,
+  Skill,
+} from "../../domain/models/cv.model";
+import { ToastService } from "../../core/services/toast.service";
+
+type EditorTab =
+  | "personal"
+  | "experience"
+  | "education"
+  | "skills"
+  | "template";
 
 @Component({
   selector: "app-editor",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     PersonalInfoFormComponent,
@@ -20,64 +47,241 @@ import { TemplateSelectorComponent } from "./components/template-selector.compon
     ResumePreviewComponent,
   ],
   template: `
-    <div class="min-h-screen bg-gray-50">
-      <!-- Header -->
-
-      <!-- Main Content -->
-      <main class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Forms Section -->
-          <div
-            class="space-y-6"
-            [class.hidden]="showMobilePreview() && isMobile()"
-          >
-            <app-template-selector></app-template-selector>
-            <app-personal-info-form></app-personal-info-form>
-            <app-experience-form></app-experience-form>
-            <app-education-form></app-education-form>
-            <app-skills-form></app-skills-form>
+    <div
+      class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+    >
+      <!-- Top Bar -->
+      <div
+        class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-30"
+      >
+        <div
+          class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between gap-4"
+        >
+          <!-- Left: back + title -->
+          <div class="flex items-center gap-3 min-w-0">
+            <button
+              (click)="goBack()"
+              class="text-slate-400 hover:text-white transition-colors shrink-0"
+              title="Back to dashboard"
+            >
+              &larr; Back
+            </button>
+            @if (cvStore.activeCv()) {
+              <span class="text-white font-semibold truncate">{{
+                cvStore.activeCv()!.name
+              }}</span>
+            }
           </div>
 
-          <!-- Preview Section -->
-          <div
-            class="sticky top-8"
-            [class.hidden]="!showMobilePreview() && isMobile()"
-          >
-            <app-resume-preview></app-resume-preview>
+          <!-- Right: autosave indicator + export -->
+          <div class="flex items-center gap-4 shrink-0">
+            @if (autosaveService.saving()) {
+              <span class="text-xs text-slate-400 flex items-center gap-1.5">
+                <span
+                  class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                ></span>
+                Saving...
+              </span>
+            } @else if (autosaveService.lastSavedAt()) {
+              <span class="text-xs text-slate-500"> Saved &check; </span>
+            }
+            <button
+              (click)="exportPdf()"
+              [disabled]="isExporting()"
+              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50
+                     text-white text-sm font-medium rounded-lg transition-all duration-200
+                     shadow-lg shadow-emerald-600/20"
+            >
+              {{ isExporting() ? "Exporting..." : "Download PDF" }}
+            </button>
           </div>
         </div>
-      </main>
+      </div>
 
-      <!-- Footer -->
-      <footer class="bg-white border-t border-gray-200 mt-16">
-        <div class="max-w-7xl mx-auto px-4 py-8">
-          <div class="text-center">
-            <p class="text-gray-600">Built with Angular 20 & Tailwind CSS</p>
-            <p class="text-sm text-gray-500 mt-2">
-              Export your resume as PDF directly in your browser
-            </p>
+      @if (cvStore.loading()) {
+        <div class="flex items-center justify-center py-24">
+          <div
+            class="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent"
+          ></div>
+        </div>
+      } @else if (cvStore.activeCv()) {
+        <!-- Main layout -->
+        <div class="max-w-[1600px] mx-auto px-4 py-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- LEFT: Forms -->
+            <div class="space-y-0">
+              <!-- Tabs -->
+              <div
+                class="flex gap-1 bg-slate-800/60 rounded-t-xl p-1.5 border border-slate-700/50 border-b-0 overflow-x-auto"
+              >
+                @for (tab of tabs; track tab.id) {
+                  <button
+                    (click)="activeTab.set(tab.id)"
+                    class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
+                    [class]="
+                      activeTab() === tab.id
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    "
+                  >
+                    {{ tab.label }}
+                  </button>
+                }
+              </div>
+
+              <!-- Tab content -->
+              <div
+                class="bg-slate-800/60 backdrop-blur-sm rounded-b-xl border border-slate-700/50 p-6"
+              >
+                @switch (activeTab()) {
+                  @case ("personal") {
+                    <app-personal-info-form
+                      [data]="cvStore.activeCv()!.sections.personal"
+                      (changed)="onPersonalInfoChange($event)"
+                    />
+                  }
+                  @case ("experience") {
+                    <app-experience-form
+                      [items]="cvStore.activeCv()!.sections.experience"
+                      (itemsChange)="onExperienceChange($event)"
+                    />
+                  }
+                  @case ("education") {
+                    <app-education-form
+                      [items]="cvStore.activeCv()!.sections.education"
+                      (itemsChange)="onEducationChange($event)"
+                    />
+                  }
+                  @case ("skills") {
+                    <app-skills-form
+                      [items]="cvStore.activeCv()!.sections.skills"
+                      (itemsChange)="onSkillsChange($event)"
+                    />
+                  }
+                  @case ("template") {
+                    <app-template-selector
+                      [selectedTemplateId]="cvStore.activeCv()!.templateId"
+                      (templateSelected)="onTemplateChange($event)"
+                    />
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- RIGHT: Preview -->
+            <div class="lg:sticky lg:top-20 lg:self-start">
+              <app-resume-preview [cv]="cvStore.activeCv()!" />
+            </div>
           </div>
         </div>
-      </footer>
+      } @else {
+        <!-- No CV found -->
+        <div class="text-center py-24">
+          <p class="text-slate-400 mb-4">Resume not found</p>
+          <button
+            (click)="goBack()"
+            class="text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            &larr; Back to dashboard
+          </button>
+        </div>
+      }
     </div>
   `,
 })
-export default class EditorComponent implements OnInit {
-  showMobilePreview = signal(false);
-  private screenWidth = signal(window.innerWidth);
+export default class EditorComponent implements OnInit, OnDestroy {
+  readonly cvStore = inject(CvStore);
+  readonly autosaveService = inject(AutosaveService);
+  private pdfExportService = inject(PdfExportService);
+  private toastService = inject(ToastService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  ngOnInit() {
-    // Listen for window resize events
-    window.addEventListener("resize", () => {
-      this.screenWidth.set(window.innerWidth);
-    });
+  isExporting = signal(false);
+  activeTab = signal<EditorTab>("personal");
+
+  readonly tabs: { id: EditorTab; label: string }[] = [
+    { id: "personal", label: "Personal" },
+    { id: "experience", label: "Experience" },
+    { id: "education", label: "Education" },
+    { id: "skills", label: "Skills" },
+    { id: "template", label: "Template" },
+  ];
+
+  // Autosave effect
+  private autosaveEffect = effect(() => {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    // Trigger autosave scheduling (the service does the debounce)
+    this.autosaveService["scheduleAutosave"](cv);
+  });
+
+  async ngOnInit() {
+    await this.cvStore.loadAll();
+
+    // Read CV id from query params
+    const cvId = this.route.snapshot.queryParamMap.get("cv");
+    if (cvId) {
+      this.cvStore.setActive(cvId);
+    }
+
+    // If no active CV, redirect to dashboard
+    if (!this.cvStore.activeCv()) {
+      this.router.navigate(["/dashboard"]);
+    }
   }
 
-  toggleMobileView() {
-    this.showMobilePreview.update((show) => !show);
+  ngOnDestroy() {
+    this.autosaveService.destroy();
   }
 
-  isMobile(): boolean {
-    return this.screenWidth() < 1024; // lg breakpoint
+  goBack() {
+    this.router.navigate(["/dashboard"]);
+  }
+
+  // ─── Form change handlers ──────────────────────────────────
+
+  onPersonalInfoChange(personal: PersonalInfo) {
+    this.cvStore.updateActiveCv({ sections: { personal } });
+  }
+
+  onExperienceChange(experience: Experience[]) {
+    this.cvStore.updateActiveCv({ sections: { experience } });
+  }
+
+  onEducationChange(education: Education[]) {
+    this.cvStore.updateActiveCv({ sections: { education } });
+  }
+
+  onSkillsChange(skills: Skill[]) {
+    this.cvStore.updateActiveCv({ sections: { skills } });
+  }
+
+  onTemplateChange(templateId: string) {
+    this.cvStore.updateActiveCv({ templateId });
+  }
+
+  // ─── PDF export ────────────────────────────────────────────
+
+  async exportPdf() {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+
+    const el = document.getElementById("resume-content");
+    if (!el) {
+      this.toastService.show("Preview not ready", "error");
+      return;
+    }
+
+    this.isExporting.set(true);
+    try {
+      await this.pdfExportService.exportToPdf(cv, el);
+      this.toastService.show("PDF exported successfully", "success");
+    } catch (err) {
+      console.error("PDF export error:", err);
+      this.toastService.show("Error exporting PDF", "error");
+    } finally {
+      this.isExporting.set(false);
+    }
   }
 }

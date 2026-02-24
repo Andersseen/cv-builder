@@ -1,17 +1,16 @@
-import { Component, ViewChild, ElementRef } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ResumeService } from "../services/resume.service";
+import { Cv } from "../../../domain/models/cv.model";
 import { ModernTemplateComponent } from "./resume-templates/modern-template.component";
 import { ClassicTemplateComponent } from "./resume-templates/classic-template.component";
 import { MinimalTemplateComponent } from "./resume-templates/minimal-template.component";
 import { CreativeTemplateComponent } from "./resume-templates/creative-template.component";
 import { ExecutiveTemplateComponent } from "./resume-templates/executive-template.component";
 
-declare const html2pdf: any;
-
 @Component({
   selector: "app-resume-preview",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     ModernTemplateComponent,
@@ -21,85 +20,40 @@ declare const html2pdf: any;
     ExecutiveTemplateComponent,
   ],
   template: `
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Resume Preview</h2>
-        <button
-          (click)="downloadPDF()"
-          class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 font-semibold"
-          [disabled]="isGenerating"
-        >
-          {{ isGenerating ? "Generating PDF..." : "Download as PDF" }}
-        </button>
-      </div>
+    <div
+      class="bg-slate-800/60 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4"
+    >
+      <h2
+        class="text-sm font-medium text-slate-400 mb-3 uppercase tracking-wider"
+      >
+        Preview
+      </h2>
 
       <div
-        class="border border-gray-200 rounded-lg overflow-hidden"
-        #previewContainer
+        class="bg-white rounded-lg overflow-hidden shadow-2xl shadow-black/20"
+        style="transform-origin: top center;"
       >
-        @switch (resumeService.currentTemplate()) { @case ('modern') {
-        <app-modern-template
-          [resume]="resumeService.resume()"
-        ></app-modern-template>
-        } @case ('classic') {
-        <app-classic-template
-          [resume]="resumeService.resume()"
-        ></app-classic-template>
-        } @case ('minimal') {
-        <app-minimal-template
-          [resume]="resumeService.resume()"
-        ></app-minimal-template>
-        } @case ('creative') {
-        <app-creative-template
-          [resume]="resumeService.resume()"
-        ></app-creative-template>
-        } @case ('executive') {
-        <app-executive-template
-          [resume]="resumeService.resume()"
-        ></app-executive-template>
-        } }
+        @switch (cv().templateId) {
+          @case ("modern") {
+            <app-modern-template [cv]="cv()" />
+          }
+          @case ("classic") {
+            <app-classic-template [cv]="cv()" />
+          }
+          @case ("minimal") {
+            <app-minimal-template [cv]="cv()" />
+          }
+          @case ("creative") {
+            <app-creative-template [cv]="cv()" />
+          }
+          @case ("executive") {
+            <app-executive-template [cv]="cv()" />
+          }
+        }
       </div>
     </div>
   `,
 })
 export class ResumePreviewComponent {
-  @ViewChild("previewContainer") previewContainer!: ElementRef;
-  isGenerating = false;
-
-  constructor(public resumeService: ResumeService) {}
-
-  async downloadPDF() {
-    this.isGenerating = true;
-
-    try {
-      const element =
-        this.previewContainer.nativeElement.querySelector("#resume-content");
-      const fullName =
-        this.resumeService.resume().personalInfo.fullName || "Resume";
-      const filename = `${fullName.replace(/\s+/g, "_")}_Resume.pdf`;
-
-      const options = {
-        margin: 0.5,
-        filename: filename,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-        },
-        jsPDF: {
-          unit: "in",
-          format: "letter",
-          orientation: "portrait",
-        },
-      };
-
-      await html2pdf().set(options).from(element).save();
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("There was an error generating the PDF. Please try again.");
-    } finally {
-      this.isGenerating = false;
-    }
-  }
+  cv = input.required<Cv>();
 }

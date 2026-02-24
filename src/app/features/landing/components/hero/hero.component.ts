@@ -52,7 +52,7 @@ import { NgOptimizedImage } from "@angular/common";
             style="animation-delay: 300ms;"
           >
             <a
-              routerLink="/editor"
+              routerLink="/dashboard"
               class="inline-flex items-center justify-center rounded-lg bg-foreground px-8 py-4 text-base font-semibold text-background shadow-lg hover:bg-foreground/90 transition-all hover:scale-105"
             >
               Start Building Free
@@ -72,7 +72,7 @@ import { NgOptimizedImage } from "@angular/common";
               </svg>
             </a>
             <a
-              routerLink="/templates"
+              routerLink="/dashboard"
               class="inline-flex items-center justify-center rounded-lg px-8 py-4 text-base font-semibold text-foreground ring-1 ring-border hover:bg-surface hover:ring-foreground/20 transition-all"
             >
               View Examples
