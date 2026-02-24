@@ -6,44 +6,47 @@ import { ThemeService } from "../../../core/services/theme.service";
   selector: "app-header",
   imports: [RouterLink, RouterLinkActive],
   template: `
-    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
+    <header
+      class="bg-surface/80 backdrop-blur-lg border-b border-border sticky top-0 z-50 transition-colors duration-300"
+    >
       <div
-        class="container mx-auto px-4 py-4 flex items-center justify-between"
+        class="container mx-auto max-w-7xl px-6 lg:px-8 h-16 flex items-center justify-between"
       >
-        <div class="flex items-center">
-          <a
-            routerLink="/"
-            class="text-2xl font-display font-bold text-primary-600 dark:text-primary-400"
-          >
-            CV Builder
-          </a>
-        </div>
+        <!-- Logo -->
+        <a
+          routerLink="/"
+          class="text-xl font-display font-bold text-primary tracking-tight hover:opacity-80 transition-opacity"
+        >
+          CV Builder
+        </a>
 
-        <nav class="hidden md:flex items-center space-x-6">
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-1">
           <a
             routerLink="/"
-            routerLinkActive="text-primary-600 dark:text-primary-400"
+            routerLinkActive="text-foreground bg-surface-alt"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
           >
             Home
           </a>
-
           <a
             routerLink="/dashboard"
-            routerLinkActive="text-primary-600 dark:text-primary-400"
-            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            routerLinkActive="text-foreground bg-surface-alt"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
           >
             My Resumes
           </a>
         </nav>
 
-        <div class="flex items-center space-x-3">
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Theme toggle -->
           <button
             (click)="themeService.toggleDarkMode()"
-            class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="relative p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            aria-label="Toggle dark mode"
           >
-            <span class="sr-only">Toggle dark mode</span>
             @if (themeService.darkMode()) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -71,56 +74,59 @@ import { ThemeService } from "../../../core/services/theme.service";
             }
           </button>
 
+          <!-- CTA -->
           <a
             routerLink="/dashboard"
-            class="hidden sm:inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="hidden sm:inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold
+                   shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/25 hover:brightness-110
+                   transition-all duration-200"
           >
             Create Resume
           </a>
-        </div>
 
-        <!-- Mobile menu button -->
-        <button
-          class="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          (click)="toggleMobileMenu()"
-        >
-          <span class="sr-only">Open menu</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          <!-- Mobile hamburger -->
+          <button
+            class="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            (click)="toggleMobileMenu()"
+            aria-label="Open menu"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Mobile menu -->
       @if (mobileMenuOpen) {
         <div
-          class="md:hidden bg-white dark:bg-gray-800 shadow-md pb-2 animate-slide-down"
+          class="md:hidden border-t border-border bg-surface animate-slide-up"
         >
-          <nav class="px-4 pt-2 pb-3 space-y-1">
+          <nav class="px-6 py-3 space-y-1">
             <a
               routerLink="/"
-              routerLinkActive="text-primary-600 dark:text-primary-400 bg-gray-50 dark:bg-gray-700"
+              routerLinkActive="text-primary bg-primary/5"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
               (click)="mobileMenuOpen = false"
             >
               Home
             </a>
             <a
               routerLink="/dashboard"
-              routerLinkActive="text-primary-600 dark:text-primary-400 bg-gray-50 dark:bg-gray-700"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              routerLinkActive="text-primary bg-primary/5"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
               (click)="mobileMenuOpen = false"
             >
               My Resumes
