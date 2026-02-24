@@ -1,65 +1,99 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Resume } from '../../interfaces/resume.interface';
+import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
-  selector: 'app-executive-template',
+  selector: "app-executive-template",
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="max-w-4xl mx-auto bg-white shadow-lg" id="resume-content">
-      <!-- Header -->
-      <div class="bg-gray-900 text-white p-8">
+    <div
+      class="max-w-4xl mx-auto bg-white"
+      id="resume-content"
+      style="font-family: 'Inter', system-ui, sans-serif;"
+    >
+      <!-- Header — bold dark block -->
+      <div class="text-white p-8" [style.background-color]="headerBg">
         <div class="flex justify-between items-start">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">{{ resume.personalInfo.fullName }}</h1>
-            @if (resume.personalInfo.summary) {
-              <p class="text-gray-300 text-lg italic">{{ resume.personalInfo.summary }}</p>
+          <div class="flex items-center gap-5">
+            @if (cv.sections.personal.avatarUrl) {
+              <img
+                [src]="cv.sections.personal.avatarUrl"
+                alt="Profile photo"
+                class="w-20 h-20 rounded-full object-cover border-2 border-white/20 shadow-lg shrink-0"
+              />
             }
+            <div>
+              <h1 class="text-3xl font-extrabold tracking-tight mb-1">
+                {{ cv.sections.personal.fullName || "Your Name" }}
+              </h1>
+              @if (cv.sections.personal.summary) {
+                <p
+                  class="text-white/60 text-sm italic max-w-md leading-relaxed mt-2"
+                >
+                  {{ cv.sections.personal.summary }}
+                </p>
+              }
+            </div>
           </div>
-          <div class="text-right text-sm space-y-1">
-            @if (resume.personalInfo.email) {
-              <p>{{ resume.personalInfo.email }}</p>
+          <div class="text-right text-xs space-y-1 text-white/60 shrink-0 ml-6">
+            @if (cv.sections.personal.email) {
+              <p>{{ cv.sections.personal.email }}</p>
             }
-            @if (resume.personalInfo.phone) {
-              <p>{{ resume.personalInfo.phone }}</p>
+            @if (cv.sections.personal.phone) {
+              <p>{{ cv.sections.personal.phone }}</p>
             }
-            @if (resume.personalInfo.location) {
-              <p>{{ resume.personalInfo.location }}</p>
+            @if (cv.sections.personal.location) {
+              <p>{{ cv.sections.personal.location }}</p>
             }
-            @if (resume.personalInfo.website) {
-              <p>{{ resume.personalInfo.website }}</p>
+            @if (cv.sections.personal.website) {
+              <p>{{ cv.sections.personal.website }}</p>
             }
-            @if (resume.personalInfo.linkedin) {
-              <p>{{ resume.personalInfo.linkedin }}</p>
+            @if (cv.sections.personal.linkedin) {
+              <p>{{ cv.sections.personal.linkedin }}</p>
             }
           </div>
         </div>
       </div>
 
-      <div class="p-8">
+      <div class="p-8 space-y-8">
         <!-- Experience -->
-        @if (resume.experience.length > 0) {
-          <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b-4 border-gray-900">Professional Experience</h2>
-            @for (exp of resume.experience; track exp.id) {
-              <div class="mb-8">
-                <div class="bg-gray-50 p-4 rounded-lg mb-3">
-                  <div class="flex justify-between items-start mb-2">
+        @if (cv.sections.experience.length > 0) {
+          <section>
+            <h2
+              class="text-base font-extrabold text-gray-900 mb-5 pb-2 uppercase tracking-wide"
+              [style.border-bottom]="'3px solid ' + accentColor"
+            >
+              Professional Experience
+            </h2>
+            @for (exp of cv.sections.experience; track exp.id) {
+              <div class="mb-6">
+                <div class="bg-gray-50 p-4 rounded-md mb-2">
+                  <div class="flex justify-between items-start">
                     <div>
-                      <h3 class="text-xl font-bold text-gray-900">{{ exp.jobTitle }}</h3>
-                      <p class="text-lg text-gray-700 font-semibold">{{ exp.company }}</p>
+                      <h3 class="text-sm font-bold text-gray-900 uppercase">
+                        {{ exp.jobTitle }}
+                      </h3>
+                      <p class="text-sm text-gray-600 font-semibold">
+                        {{ exp.company }}
+                      </p>
                     </div>
-                    <div class="text-right">
-                      <p class="font-semibold text-gray-900">{{ formatDate(exp.startDate) }} - {{ exp.current ? 'Present' : formatDate(exp.endDate) }}</p>
+                    <div class="text-right shrink-0 ml-4">
+                      <p class="text-xs font-bold text-gray-800">
+                        {{ formatDate(exp.startDate) }} –
+                        {{ exp.current ? "Present" : formatDate(exp.endDate) }}
+                      </p>
                       @if (exp.location) {
-                        <p class="text-gray-600">{{ exp.location }}</p>
+                        <p class="text-xs text-gray-500">{{ exp.location }}</p>
                       }
                     </div>
                   </div>
                 </div>
                 @if (exp.description) {
-                  <p class="text-gray-700 leading-relaxed ml-4">{{ exp.description }}</p>
+                  <p class="text-gray-600 text-sm leading-relaxed pl-4">
+                    {{ exp.description }}
+                  </p>
                 }
               </div>
             }
@@ -68,21 +102,32 @@ import { Resume } from '../../interfaces/resume.interface';
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Education -->
-          @if (resume.education.length > 0) {
+          @if (cv.sections.education.length > 0) {
             <section>
-              <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900">Education</h2>
-              @for (edu of resume.education; track edu.id) {
-                <div class="mb-4 bg-gray-50 p-4 rounded-lg">
-                  <h3 class="font-bold text-gray-900">{{ edu.degree }}</h3>
-                  <p class="text-gray-700 font-semibold">{{ edu.institution }}</p>
-                  <div class="flex justify-between text-sm text-gray-600 mt-1">
+              <h2
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor"
+              >
+                Education
+              </h2>
+              @for (edu of cv.sections.education; track edu.id) {
+                <div class="mb-3 bg-gray-50 p-3 rounded-md">
+                  <h3 class="font-bold text-gray-900 text-xs uppercase">
+                    {{ edu.degree }}
+                  </h3>
+                  <p class="text-gray-600 text-xs font-semibold">
+                    {{ edu.institution }}
+                  </p>
+                  <div
+                    class="flex justify-between text-[10px] text-gray-500 mt-1"
+                  >
                     <span>{{ formatDate(edu.graduationDate) }}</span>
                     @if (edu.gpa) {
                       <span>GPA: {{ edu.gpa }}</span>
                     }
                   </div>
                   @if (edu.location) {
-                    <p class="text-sm text-gray-600">{{ edu.location }}</p>
+                    <p class="text-[10px] text-gray-400">{{ edu.location }}</p>
                   }
                 </div>
               }
@@ -90,14 +135,26 @@ import { Resume } from '../../interfaces/resume.interface';
           }
 
           <!-- Skills -->
-          @if (resume.skills.length > 0) {
+          @if (cv.sections.skills.length > 0) {
             <section>
-              <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-900">Core Competencies</h2>
+              <h2
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor"
+              >
+                Core Competencies
+              </h2>
               <div class="space-y-2">
-                @for (skill of resume.skills; track skill.id) {
-                  <div class="bg-gray-900 text-white px-4 py-2 rounded-lg flex justify-between items-center">
-                    <span class="font-semibold">{{ skill.name }}</span>
-                    <span class="text-xs bg-white text-gray-900 px-2 py-1 rounded">{{ skill.level }}</span>
+                @for (skill of cv.sections.skills; track skill.id) {
+                  <div
+                    class="text-white px-3 py-2 rounded-md flex justify-between items-center"
+                    [style.background-color]="accentColor"
+                  >
+                    <span class="font-semibold text-xs">{{ skill.name }}</span>
+                    <span
+                      class="text-[10px] bg-white px-2 py-0.5 rounded-full font-bold"
+                      [style.color]="accentColor"
+                      >{{ skill.level }}</span
+                    >
                   </div>
                 }
               </div>
@@ -106,14 +163,23 @@ import { Resume } from '../../interfaces/resume.interface';
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class ExecutiveTemplateComponent {
-  @Input() resume!: Resume;
+  @Input() cv!: Cv;
+  @Input() accentColor: string = "#111827";
+
+  get headerBg(): string {
+    return this.accentColor;
+  }
 
   formatDate(dateString: string): string {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
   }
 }

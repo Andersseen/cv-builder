@@ -1,189 +1,249 @@
-import { Component, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import {
+  Component,
+  input,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+  Validators,
+} from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { Education } from "../interfaces/resume.interface";
-import { ResumeService } from "../services/resume.service";
+import { Education } from "../../../domain/models/cv.model";
+import { createDefaultEducation } from "../../../domain/models/cv.defaults";
 
 @Component({
   selector: "app-education-form",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-gray-800">Education</h2>
+    <div class="space-y-5">
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-foreground">Education</h2>
         <button
-          (click)="toggleAddForm()"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+          (click)="toggleForm()"
+          class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+          [class]="
+            showForm()
+              ? 'bg-secondary text-secondary-foreground hover:bg-surface-hover'
+              : 'bg-primary text-primary-foreground hover:bg-primary-700'
+          "
         >
-          {{ showAddForm() ? "Cancel" : "Add Education" }}
+          {{ showForm() ? "Cancel" : "+ Add Education" }}
         </button>
       </div>
 
-      <!-- Add Education Form -->
-      @if (showAddForm()) {
-      <form
-        (ngSubmit)="addEducation()"
-        class="space-y-4 mb-6 p-4 bg-gray-50 rounded-lg"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Degree *</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="newEducation().degree"
-              name="degree"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Bachelor of Science in Computer Science"
-              required
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Institution *</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="newEducation().institution"
-              name="institution"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="University of Technology"
-              required
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Location</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="newEducation().location"
-              name="location"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Boston, MA"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Graduation Date *</label
-            >
-            <input
-              type="month"
-              [(ngModel)]="newEducation().graduationDate"
-              name="graduationDate"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >GPA (Optional)</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="newEducation().gpa"
-              name="gpa"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="3.8/4.0"
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
+      @if (showForm()) {
+        <form
+          [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4 bg-surface-alt rounded-xl p-5 border border-border"
         >
-          Add Education
-        </button>
-      </form>
-      }
-
-      <!-- Education List -->
-      <div class="space-y-4">
-        @for (edu of resumeService.resume().education; track edu.id) {
-        <div class="p-4 border border-gray-200 rounded-lg">
-          <div class="flex justify-between items-start mb-2">
+          <h3 class="text-sm font-medium text-muted-foreground">
+            {{ editingId() ? "Edit Education" : "New Education" }}
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 class="font-semibold text-gray-800">{{ edu.degree }}</h3>
-              <p class="text-gray-600">
-                {{ edu.institution }} - {{ edu.location }}
-              </p>
-              <p class="text-sm text-gray-500">
-                {{ formatDate(edu.graduationDate) }}
-              </p>
-              @if (edu.gpa) {
-              <p class="text-sm text-gray-500">GPA: {{ edu.gpa }}</p>
-              }
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
+                >Degree *</label
+              >
+              <input
+                type="text"
+                formControlName="degree"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                placeholder="Bachelor of Science"
+              />
             </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
+                >Institution *</label
+              >
+              <input
+                type="text"
+                formControlName="institution"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                placeholder="MIT"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
+                >Location</label
+              >
+              <input
+                type="text"
+                formControlName="location"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                placeholder="Cambridge, MA"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
+                >Graduation Date *</label
+              >
+              <input
+                type="month"
+                formControlName="graduationDate"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground/80 mb-1.5"
+                >GPA</label
+              >
+              <input
+                type="text"
+                formControlName="gpa"
+                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                placeholder="3.8 / 4.0"
+              />
+            </div>
+          </div>
+          <div class="flex justify-end gap-2">
             <button
-              (click)="removeEducation(edu.id)"
-              class="text-red-600 hover:text-red-800 transition-colors duration-200"
+              type="button"
+              (click)="cancelEdit()"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-surface-hover transition-colors"
             >
-              Remove
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="form.invalid"
+              class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
+                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {{ editingId() ? "Update" : "Add" }}
             </button>
           </div>
-        </div>
-        } @if (resumeService.resume().education.length === 0) {
-        <p class="text-gray-500 text-center py-8">No education added yet.</p>
+        </form>
+      }
+
+      <div class="space-y-3">
+        @for (edu of items(); track edu.id) {
+          <div
+            class="p-4 bg-surface-alt border border-border rounded-xl group
+                      hover:border-primary/30 transition-all duration-200"
+          >
+            <div class="flex justify-between items-start">
+              <div class="cursor-pointer flex-grow" (click)="edit(edu)">
+                <h3
+                  class="font-semibold text-foreground group-hover:text-primary transition-colors"
+                >
+                  {{ edu.degree }}
+                </h3>
+                <p class="text-muted-foreground text-sm">
+                  {{ edu.institution
+                  }}{{ edu.location ? " — " + edu.location : "" }}
+                </p>
+                <p class="text-xs text-muted-foreground/70 mt-1">
+                  {{ formatDate(edu.graduationDate) }}
+                  {{ edu.gpa ? " · GPA: " + edu.gpa : "" }}
+                </p>
+              </div>
+              <div
+                class="flex gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <button
+                  (click)="edit(edu)"
+                  class="px-2.5 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
+                >
+                  Edit
+                </button>
+                <button
+                  (click)="remove(edu.id)"
+                  class="px-2.5 py-1 text-xs text-danger hover:bg-danger/15 rounded-md transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+        @if (items().length === 0) {
+          <p class="text-muted-foreground text-sm text-center py-6">
+            No education added yet.
+          </p>
         }
       </div>
     </div>
   `,
 })
 export class EducationFormComponent {
-  showAddForm = signal(false);
-  newEducation = signal<Education>({
-    id: "",
-    degree: "",
-    institution: "",
-    location: "",
-    graduationDate: "",
-    gpa: "",
+  items = input.required<Education[]>();
+  itemsChange = output<Education[]>();
+  showForm = signal(false);
+  editingId = signal<string | null>(null);
+
+  form = new FormGroup({
+    id: new FormControl("", { nonNullable: true }),
+    degree: new FormControl("", {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    institution: new FormControl("", {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    location: new FormControl("", { nonNullable: true }),
+    graduationDate: new FormControl("", {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    gpa: new FormControl("", { nonNullable: true }),
   });
 
-  constructor(public resumeService: ResumeService) {}
-
-  toggleAddForm() {
-    this.showAddForm.update((show) => !show);
-    if (!this.showAddForm()) {
-      this.resetForm();
+  toggleForm() {
+    this.showForm() ? this.cancelEdit() : this.startNew();
+  }
+  startNew() {
+    this.editingId.set(null);
+    this.form.reset({ id: createDefaultEducation().id });
+    this.showForm.set(true);
+  }
+  edit(edu: Education) {
+    this.editingId.set(edu.id);
+    this.form.patchValue(edu);
+    this.showForm.set(true);
+  }
+  cancelEdit() {
+    this.showForm.set(false);
+    this.editingId.set(null);
+    this.form.reset();
+  }
+  onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const value = this.form.getRawValue() as Education;
+    if (this.editingId()) {
+      this.itemsChange.emit(
+        this.items().map((e) => (e.id === this.editingId() ? value : e)),
+      );
+    } else {
+      this.itemsChange.emit([...this.items(), value]);
+    }
+    this.cancelEdit();
+  }
+  remove(id: string) {
+    if (confirm("Delete this education entry?")) {
+      this.itemsChange.emit(this.items().filter((e) => e.id !== id));
+      if (this.editingId() === id) this.cancelEdit();
     }
   }
-
-  addEducation() {
-    const education = {
-      ...this.newEducation(),
-      id: this.resumeService.generateId(),
-    };
-    this.resumeService.addEducation(education);
-    this.resetForm();
-    this.showAddForm.set(false);
-  }
-
-  removeEducation(id: string) {
-    this.resumeService.removeEducation(id);
-  }
-
-  resetForm() {
-    this.newEducation.set({
-      id: "",
-      degree: "",
-      institution: "",
-      location: "",
-      graduationDate: "",
-      gpa: "",
-    });
-  }
-
   formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",

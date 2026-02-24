@@ -6,10 +6,13 @@ export const routes: Routes = [
     loadComponent: () => import("./features/landing/landing.component"),
   },
   {
+    path: "dashboard",
+    loadComponent: () => import("./features/dashboard/dashboard.component"),
+  },
+  {
     path: "editor",
     loadComponent: () => import("./features/editor/editor.component"),
   },
-
   {
     path: "**",
     redirectTo: "",
