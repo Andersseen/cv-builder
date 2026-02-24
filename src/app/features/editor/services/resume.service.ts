@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from "@angular/core";
+import { Injectable, signal, computed, effect } from "@angular/core";
 import {
   Resume,
   PersonalInfo,
@@ -12,20 +12,9 @@ import {
   providedIn: "root",
 })
 export class ResumeService {
-  private resumeData = signal<Resume>({
-    personalInfo: {
-      fullName: "",
-      email: "",
-      phone: "",
-      location: "",
-      website: "",
-      linkedin: "",
-      summary: "",
-    },
-    experience: [],
-    education: [],
-    skills: [],
-  });
+  private readonly STORAGE_KEY = "cv-builder-data";
+
+  private resumeData = signal<Resume>(this.loadFromStorage());
 
   private selectedTemplate = signal<string>("modern");
 
@@ -57,6 +46,43 @@ export class ResumeService {
     },
   ];
 
+  constructor() {
+    // Auto-save effect
+    effect(() => {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.resumeData()));
+    });
+  }
+
+  private loadFromStorage(): Resume {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error("Failed to parse stored resume data", e);
+      }
+    }
+    return {
+      personalInfo: {
+        fullName: "",
+        email: "",
+        phone: "",
+        location: "",
+        website: "",
+        linkedin: "",
+        summary: "",
+      },
+      experience: [],
+      education: [],
+      skills: [],
+    };
+  }
+
+  resetData() {
+    localStorage.removeItem(this.STORAGE_KEY);
+    this.resumeData.set(this.loadFromStorage());
+  }
+
   updatePersonalInfo(personalInfo: PersonalInfo) {
     this.resumeData.update((resume) => ({
       ...resume,
@@ -75,7 +101,7 @@ export class ResumeService {
     this.resumeData.update((resume) => ({
       ...resume,
       experience: resume.experience.map((exp) =>
-        exp.id === id ? updatedExperience : exp
+        exp.id === id ? updatedExperience : exp,
       ),
     }));
   }
@@ -98,7 +124,7 @@ export class ResumeService {
     this.resumeData.update((resume) => ({
       ...resume,
       education: resume.education.map((edu) =>
-        edu.id === id ? updatedEducation : edu
+        edu.id === id ? updatedEducation : edu,
       ),
     }));
   }
@@ -121,7 +147,7 @@ export class ResumeService {
     this.resumeData.update((resume) => ({
       ...resume,
       skills: resume.skills.map((skill) =>
-        skill.id === id ? updatedSkill : skill
+        skill.id === id ? updatedSkill : skill,
       ),
     }));
   }
