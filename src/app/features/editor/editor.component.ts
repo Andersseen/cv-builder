@@ -66,31 +66,54 @@ type EditorTab =
       } @else if (cvStore.activeCv()) {
         <!-- Main layout -->
         <div class="max-w-[1600px] mx-auto px-4 py-6">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- LEFT: Forms -->
-            <div class="space-y-0">
-              <!-- Tabs -->
+          <div class="flex gap-6">
+            <!-- LEFT: Sidebar Tabs + Form Content -->
+            <div class="flex-1 min-w-0 flex gap-0">
+              <!-- Vertical Sidebar Tabs -->
               <div
-                class="flex gap-1 bg-surface rounded-t-xl p-1.5 border border-border border-b-0 overflow-x-auto"
+                class="hidden md:flex flex-col gap-1 bg-surface rounded-l-xl p-2 border border-border border-r-0 shrink-0"
+                style="width: 160px;"
               >
                 @for (tab of tabs; track tab.id) {
                   <button
                     (click)="activeTab.set(tab.id)"
-                    class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
+                    class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-left w-full"
                     [class]="
                       activeTab() === tab.id
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
                         : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
                     "
                   >
-                    {{ tab.label }}
+                    <span class="text-base shrink-0">{{ tab.icon }}</span>
+                    <span class="truncate">{{ tab.label }}</span>
                   </button>
                 }
               </div>
 
-              <!-- Tab content -->
+              <!-- Mobile: horizontal tabs -->
               <div
-                class="bg-surface backdrop-blur-sm rounded-b-xl border border-border p-6"
+                class="flex md:hidden gap-1 bg-surface rounded-t-xl p-1.5 border border-border border-b-0 overflow-x-auto mb-0"
+              >
+                @for (tab of tabs; track tab.id) {
+                  <button
+                    (click)="activeTab.set(tab.id)"
+                    class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
+                    [class]="
+                      activeTab() === tab.id
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                    "
+                  >
+                    <span>{{ tab.icon }}</span>
+                    <span>{{ tab.label }}</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Form content -->
+              <div
+                class="flex-1 min-w-0 bg-surface backdrop-blur-sm border border-border p-6
+                       md:rounded-r-xl md:rounded-l-none rounded-b-xl md:rounded-b-xl"
               >
                 @switch (activeTab()) {
                   @case ("personal") {
@@ -121,20 +144,42 @@ type EditorTab =
                     <app-template-selector
                       [selectedTemplateId]="cvStore.activeCv()!.templateId"
                       [accentColor]="cvStore.activeCv()!.settings.accentColor"
+                      [backgroundColor]="
+                        cvStore.activeCv()!.settings.backgroundColor
+                      "
+                      [primaryColor]="cvStore.activeCv()!.settings.primaryColor"
                       (templateSelected)="onTemplateChange($event)"
                       (colorChanged)="onAccentColorChange($event)"
+                      (backgroundColorChanged)="onBackgroundColorChange($event)"
+                      (primaryColorChanged)="onPrimaryColorChange($event)"
                     />
                   }
                 }
               </div>
             </div>
 
-            <!-- RIGHT: Preview -->
-            <div class="lg:sticky lg:top-20 lg:self-start">
-              <app-resume-preview [cv]="cvStore.activeCv()!" />
-            </div>
+            <!-- RIGHT: Preview (collapsible) -->
+            @if (previewOpen()) {
+              <div
+                class="hidden lg:block w-[45%] shrink-0 lg:sticky lg:top-20 lg:self-start"
+              >
+                <app-resume-preview [cv]="cvStore.activeCv()!" />
+              </div>
+            }
           </div>
         </div>
+
+        <!-- Preview toggle button -->
+        <button
+          (click)="previewOpen.set(!previewOpen())"
+          class="hidden lg:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full
+                 bg-surface border border-border shadow-xl shadow-foreground/10
+                 hover:bg-surface-hover transition-all duration-200 text-sm font-medium text-foreground"
+          [title]="previewOpen() ? 'Hide preview' : 'Show preview'"
+        >
+          <span class="text-base">{{ previewOpen() ? "👁️" : "👁️‍🗨️" }}</span>
+          {{ previewOpen() ? "Hide Preview" : "Show Preview" }}
+        </button>
       } @else {
         <!-- No CV found -->
         <div class="text-center py-24">
@@ -160,13 +205,14 @@ export default class EditorComponent implements OnInit, OnDestroy {
 
   isExporting = signal(false);
   activeTab = signal<EditorTab>("personal");
+  previewOpen = signal(true);
 
-  readonly tabs: { id: EditorTab; label: string }[] = [
-    { id: "personal", label: "Personal" },
-    { id: "experience", label: "Experience" },
-    { id: "education", label: "Education" },
-    { id: "skills", label: "Skills" },
-    { id: "template", label: "Template" },
+  readonly tabs: { id: EditorTab; label: string; icon: string }[] = [
+    { id: "personal", label: "Personal", icon: "👤" },
+    { id: "experience", label: "Experience", icon: "💼" },
+    { id: "education", label: "Education", icon: "🎓" },
+    { id: "skills", label: "Skills", icon: "⚡" },
+    { id: "template", label: "Template", icon: "🎨" },
   ];
 
   private autosaveEffect = effect(() => {
@@ -216,6 +262,14 @@ export default class EditorComponent implements OnInit, OnDestroy {
 
   onAccentColorChange(accentColor: string) {
     this.cvStore.updateActiveCv({ settings: { accentColor } });
+  }
+
+  onBackgroundColorChange(backgroundColor: string) {
+    this.cvStore.updateActiveCv({ settings: { backgroundColor } });
+  }
+
+  onPrimaryColorChange(primaryColor: string) {
+    this.cvStore.updateActiveCv({ settings: { primaryColor } });
   }
 
   async exportPdf() {

@@ -6,9 +6,10 @@ import { Cv } from "../../../../domain/models/cv.model";
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="max-w-4xl mx-auto bg-white"
+      class="max-w-4xl mx-auto"
       id="resume-content"
-      style="font-family: 'Georgia', 'Times New Roman', serif;"
+      [style.background-color]="backgroundColor"
+      [style.font-family]="'Georgia, Times New Roman, serif'"
     >
       <div class="p-8">
         <!-- Header — centered, traditional -->
@@ -163,7 +164,9 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ClassicTemplateComponent {
   @Input() cv!: Cv;
-  @Input() accentColor: string = "#475569";
+  @Input() accentColor = "#475569";
+  @Input() backgroundColor = "#ffffff";
+  @Input() primaryColor = "#111827";
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

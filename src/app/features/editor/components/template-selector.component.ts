@@ -6,11 +6,11 @@ import {
 } from "@angular/core";
 
 import { TEMPLATES } from "../../../domain/models/template-registry.model";
-import { AccentColorPickerComponent } from "./accent-color-picker.component";
+import { ColorPickerComponent, ColorPreset } from "./color-picker.component";
 
 @Component({
   selector: "app-template-selector",
-  imports: [AccentColorPickerComponent],
+  imports: [ColorPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -30,30 +30,28 @@ import { AccentColorPickerComponent } from "./accent-color-picker.component";
             "
             (click)="selectTemplate(template.id)"
           >
-            <!-- Selected badge -->
             @if (selectedTemplateId() === template.id) {
               <div
-                class="absolute -top-2 -right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-lg"
+                class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md z-10"
               >
                 <svg
-                  class="w-3 h-3 text-primary-foreground"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="3"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5 text-primary-foreground"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M5 13l4 4L19 7"
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
                   />
                 </svg>
               </div>
             }
 
-            <!-- Mini layout preview SVG -->
+            <!-- Template preview SVG -->
             <div
-              class="w-full aspect-[3/4] mb-3 rounded-lg overflow-hidden border border-border/50 bg-white"
+              class="bg-white border border-border/50 rounded-lg overflow-hidden mb-3 aspect-[3/4] flex items-stretch"
             >
               <svg
                 viewBox="0 0 120 160"
@@ -61,392 +59,456 @@ import { AccentColorPickerComponent } from "./accent-color-picker.component";
                 xmlns="http://www.w3.org/2000/svg"
               >
                 @switch (template.previewLayout) {
-                  @case ("header-accent") {
+                  @case ("single-column") {
+                    <rect width="120" height="30" fill="#3b82f6" />
                     <rect
-                      width="120"
-                      height="35"
-                      [attr.fill]="template.accentColor"
-                    />
-                    <rect
-                      x="12"
-                      y="10"
-                      width="50"
-                      height="6"
+                      x="10"
+                      y="8"
+                      width="60"
+                      height="5"
                       rx="2"
                       fill="white"
                       opacity="0.9"
                     />
                     <rect
-                      x="12"
-                      y="20"
-                      width="70"
+                      x="10"
+                      y="16"
+                      width="40"
                       height="3"
                       rx="1"
                       fill="white"
                       opacity="0.5"
                     />
                     <rect
-                      x="12"
-                      y="45"
-                      width="40"
-                      height="4"
-                      rx="1"
-                      [attr.fill]="template.accentColor"
-                      opacity="0.8"
-                    />
-                    <rect
-                      x="12"
-                      y="54"
-                      width="96"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="12"
-                      y="60"
-                      width="85"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="12"
-                      y="66"
-                      width="90"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="12"
-                      y="80"
-                      width="35"
-                      height="4"
-                      rx="1"
-                      [attr.fill]="template.accentColor"
-                      opacity="0.8"
-                    />
-                    <rect
-                      x="12"
-                      y="89"
-                      width="96"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="12"
-                      y="95"
-                      width="78"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="12"
-                      y="109"
+                      x="10"
+                      y="38"
                       width="30"
-                      height="4"
-                      rx="1"
-                      [attr.fill]="template.accentColor"
-                      opacity="0.8"
-                    />
-                    <rect
-                      x="12"
-                      y="118"
-                      width="28"
-                      height="10"
-                      rx="3"
-                      fill="#e5e5e5"
-                    />
-                    <rect
-                      x="44"
-                      y="118"
-                      width="28"
-                      height="10"
-                      rx="3"
-                      fill="#e5e5e5"
-                    />
-                    <rect
-                      x="76"
-                      y="118"
-                      width="28"
-                      height="10"
-                      rx="3"
-                      fill="#e5e5e5"
-                    />
-                  }
-                  @case ("single-column") {
-                    <rect
-                      x="25"
-                      y="12"
-                      width="70"
-                      height="6"
-                      rx="2"
-                      [attr.fill]="template.accentColor"
-                    />
-                    <rect
-                      x="20"
-                      y="24"
-                      width="80"
                       height="3"
                       rx="1"
-                      fill="#a3a3a3"
-                    />
-                    <line
-                      x1="12"
-                      y1="35"
-                      x2="108"
-                      y2="35"
-                      [attr.stroke]="template.accentColor"
-                      stroke-width="1"
-                      opacity="0.3"
-                    />
-                    <rect
-                      x="12"
-                      y="42"
-                      width="45"
-                      height="4"
-                      rx="1"
-                      fill="#525252"
+                      fill="#3b82f6"
                       opacity="0.6"
                     />
                     <rect
-                      x="12"
-                      y="51"
-                      width="96"
-                      height="3"
+                      x="10"
+                      y="45"
+                      width="100"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="12"
-                      y="57"
-                      width="88"
-                      height="3"
+                      x="10"
+                      y="50"
+                      width="95"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="12"
-                      y="63"
-                      width="92"
-                      height="3"
+                      x="10"
+                      y="55"
+                      width="80"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <line
-                      x1="12"
-                      y1="75"
-                      x2="108"
-                      y2="75"
-                      [attr.stroke]="template.accentColor"
-                      stroke-width="1"
-                      opacity="0.3"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="12"
+                      x="10"
+                      y="65"
+                      width="30"
+                      height="3"
+                      rx="1"
+                      fill="#3b82f6"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="10"
+                      y="72"
+                      width="100"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
+                      y="77"
+                      width="90"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
                       y="82"
-                      width="40"
-                      height="4"
+                      width="95"
+                      height="2"
                       rx="1"
-                      fill="#525252"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
+                      y="92"
+                      width="30"
+                      height="3"
+                      rx="1"
+                      fill="#3b82f6"
                       opacity="0.6"
                     />
                     <rect
-                      x="12"
-                      y="91"
-                      width="96"
-                      height="3"
+                      x="10"
+                      y="99"
+                      width="100"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="12"
-                      y="97"
-                      width="80"
-                      height="3"
+                      x="10"
+                      y="104"
+                      width="85"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <line
-                      x1="12"
-                      y1="109"
-                      x2="108"
-                      y2="109"
-                      [attr.stroke]="template.accentColor"
-                      stroke-width="1"
-                      opacity="0.3"
-                    />
-                    <rect
-                      x="12"
-                      y="116"
-                      width="35"
-                      height="4"
-                      rx="1"
-                      fill="#525252"
-                      opacity="0.6"
-                    />
-                    <rect
-                      x="12"
-                      y="125"
-                      width="96"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                   }
                   @case ("sidebar-left") {
                     <rect width="40" height="160" fill="#1f2937" />
+                    <circle cx="20" cy="20" r="10" fill="#374151" />
                     <rect
                       x="8"
+                      y="35"
+                      width="24"
+                      height="3"
+                      rx="1"
+                      fill="white"
+                      opacity="0.8"
+                    />
+                    <rect
+                      x="8"
+                      y="42"
+                      width="20"
+                      height="2"
+                      rx="1"
+                      fill="white"
+                      opacity="0.4"
+                    />
+                    <rect
+                      x="8"
+                      y="55"
+                      width="15"
+                      height="2"
+                      rx="1"
+                      fill="#f59e0b"
+                      opacity="0.8"
+                    />
+                    <rect
+                      x="8"
+                      y="61"
+                      width="24"
+                      height="2"
+                      rx="1"
+                      fill="white"
+                      opacity="0.3"
+                    />
+                    <rect
+                      x="8"
+                      y="66"
+                      width="20"
+                      height="2"
+                      rx="1"
+                      fill="white"
+                      opacity="0.3"
+                    />
+                    <rect
+                      x="48"
+                      y="12"
+                      width="25"
+                      height="3"
+                      rx="1"
+                      fill="#374151"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="48"
+                      y="19"
+                      width="62"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="48"
+                      y="24"
+                      width="58"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="48"
+                      y="34"
+                      width="25"
+                      height="3"
+                      rx="1"
+                      fill="#374151"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="48"
+                      y="41"
+                      width="62"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="48"
+                      y="46"
+                      width="55"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                  }
+                  @case ("sidebar-right") {
+                    <rect x="80" y="0" width="40" height="160" fill="#f3f4f6" />
+                    <rect
+                      x="10"
+                      y="12"
+                      width="50"
+                      height="5"
+                      rx="2"
+                      fill="#111827"
+                      opacity="0.8"
+                    />
+                    <rect
+                      x="10"
+                      y="22"
+                      width="60"
+                      height="2"
+                      rx="1"
+                      fill="#6b7280"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="10"
+                      y="32"
+                      width="25"
+                      height="3"
+                      rx="1"
+                      fill="#10b981"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="10"
+                      y="39"
+                      width="62"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
+                      y="44"
+                      width="58"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="88"
                       y="12"
                       width="24"
-                      height="5"
+                      height="3"
                       rx="1"
+                      fill="#374151"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="88"
+                      y="19"
+                      width="24"
+                      height="2"
+                      rx="1"
+                      fill="#9ca3af"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="88"
+                      y="24"
+                      width="20"
+                      height="2"
+                      rx="1"
+                      fill="#9ca3af"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="88"
+                      y="34"
+                      width="24"
+                      height="3"
+                      rx="1"
+                      fill="#374151"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="88"
+                      y="41"
+                      width="24"
+                      height="2"
+                      rx="1"
+                      fill="#9ca3af"
+                      opacity="0.5"
+                    />
+                  }
+                  @case ("two-column") {
+                    <rect width="120" height="25" fill="#111827" />
+                    <rect
+                      x="10"
+                      y="8"
+                      width="50"
+                      height="4"
+                      rx="2"
                       fill="white"
                       opacity="0.9"
                     />
                     <rect
-                      x="8"
-                      y="22"
-                      width="28"
-                      height="3"
+                      x="10"
+                      y="15"
+                      width="35"
+                      height="2"
                       rx="1"
                       fill="white"
                       opacity="0.4"
                     />
                     <rect
-                      x="8"
-                      y="28"
+                      x="10"
+                      y="33"
                       width="25"
                       height="3"
                       rx="1"
-                      fill="white"
-                      opacity="0.4"
-                    />
-                    <rect
-                      x="8"
-                      y="42"
-                      width="18"
-                      height="4"
-                      rx="1"
-                      [attr.fill]="template.accentColor"
-                    />
-                    <rect
-                      x="8"
-                      y="51"
-                      width="26"
-                      height="3"
-                      rx="1"
-                      fill="white"
-                      opacity="0.3"
-                    />
-                    <rect
-                      x="8"
-                      y="57"
-                      width="28"
-                      height="4"
-                      rx="2"
-                      [attr.fill]="template.accentColor"
+                      fill="#8b5cf6"
                       opacity="0.6"
                     />
                     <rect
-                      x="8"
-                      y="65"
-                      width="26"
-                      height="3"
+                      x="10"
+                      y="40"
+                      width="48"
+                      height="2"
                       rx="1"
-                      fill="white"
-                      opacity="0.3"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="8"
-                      y="71"
-                      width="22"
-                      height="4"
+                      x="10"
+                      y="45"
+                      width="45"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="66"
+                      y="33"
+                      width="25"
+                      height="3"
+                      rx="1"
+                      fill="#8b5cf6"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="66"
+                      y="40"
+                      width="44"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="66"
+                      y="45"
+                      width="40"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                  }
+                  @case ("header-accent") {
+                    <rect width="120" height="6" fill="#4f46e5" />
+                    <rect
+                      x="10"
+                      y="14"
+                      width="50"
+                      height="5"
                       rx="2"
-                      [attr.fill]="template.accentColor"
+                      fill="#111827"
+                      opacity="0.8"
+                    />
+                    <rect
+                      x="10"
+                      y="24"
+                      width="80"
+                      height="2"
+                      rx="1"
+                      fill="#6b7280"
                       opacity="0.4"
                     />
-                    <rect
-                      x="48"
-                      y="12"
-                      width="30"
-                      height="4"
-                      rx="1"
-                      fill="#525252"
-                      opacity="0.7"
+                    <line
+                      x1="10"
+                      y1="32"
+                      x2="110"
+                      y2="32"
+                      stroke="#e5e7eb"
+                      stroke-width="0.5"
                     />
                     <rect
-                      x="48"
-                      y="21"
-                      width="60"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="48"
-                      y="27"
-                      width="55"
-                      height="3"
-                      rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <rect
-                      x="48"
-                      y="42"
+                      x="10"
+                      y="38"
                       width="25"
-                      height="4"
-                      rx="1"
-                      fill="#525252"
-                      opacity="0.7"
-                    />
-                    <circle
-                      cx="50"
-                      cy="54"
-                      r="2"
-                      [attr.fill]="template.accentColor"
-                    />
-                    <rect
-                      x="56"
-                      y="51"
-                      width="50"
                       height="3"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#4f46e5"
+                      opacity="0.6"
                     />
                     <rect
-                      x="56"
-                      y="57"
-                      width="45"
+                      x="10"
+                      y="45"
+                      width="100"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
+                      y="50"
+                      width="95"
+                      height="2"
+                      rx="1"
+                      fill="#e5e7eb"
+                    />
+                    <rect
+                      x="10"
+                      y="60"
+                      width="25"
                       height="3"
                       rx="1"
-                      fill="#d4d4d4"
-                    />
-                    <circle
-                      cx="50"
-                      cy="70"
-                      r="2"
-                      [attr.fill]="template.accentColor"
+                      fill="#4f46e5"
+                      opacity="0.6"
                     />
                     <rect
-                      x="56"
+                      x="10"
                       y="67"
-                      width="50"
-                      height="3"
+                      width="100"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                     <rect
-                      x="56"
-                      y="73"
-                      width="40"
-                      height="3"
+                      x="10"
+                      y="72"
+                      width="90"
+                      height="2"
                       rx="1"
-                      fill="#d4d4d4"
+                      fill="#e5e7eb"
                     />
                   }
                 }
@@ -470,21 +532,80 @@ import { AccentColorPickerComponent } from "./accent-color-picker.component";
         }
       </div>
 
-      <!-- Accent Color Picker -->
-      <app-accent-color-picker
-        [currentColor]="accentColor()"
-        (colorChanged)="colorChanged.emit($event)"
-      />
+      <!-- Color Pickers -->
+      <div
+        class="mt-6 pt-5 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-6"
+      >
+        <app-color-picker
+          label="Accent Color"
+          description="Highlights, borders, badges"
+          [currentColor]="accentColor()"
+          [presets]="accentPresets"
+          (colorChanged)="colorChanged.emit($event)"
+        />
+        <app-color-picker
+          label="Background"
+          description="Resume background"
+          [currentColor]="backgroundColor()"
+          [presets]="bgPresets"
+          (colorChanged)="backgroundColorChanged.emit($event)"
+        />
+        <app-color-picker
+          label="Text Color"
+          description="Headings and body text"
+          [currentColor]="primaryColor()"
+          [presets]="textPresets"
+          (colorChanged)="primaryColorChanged.emit($event)"
+        />
+      </div>
     </div>
   `,
 })
 export class TemplateSelectorComponent {
   selectedTemplateId = input.required<string>();
   accentColor = input.required<string>();
+  backgroundColor = input("#ffffff");
+  primaryColor = input("#111827");
+
   templateSelected = output<string>();
   colorChanged = output<string>();
+  backgroundColorChanged = output<string>();
+  primaryColorChanged = output<string>();
 
   readonly templates = TEMPLATES;
+
+  readonly accentPresets: ColorPreset[] = [
+    { name: "Indigo", value: "#4f46e5" },
+    { name: "Blue", value: "#3b82f6" },
+    { name: "Cyan", value: "#06b6d4" },
+    { name: "Emerald", value: "#10b981" },
+    { name: "Amber", value: "#f59e0b" },
+    { name: "Rose", value: "#f43f5e" },
+    { name: "Purple", value: "#8b5cf6" },
+    { name: "Slate", value: "#475569" },
+  ];
+
+  readonly bgPresets: ColorPreset[] = [
+    { name: "White", value: "#ffffff" },
+    { name: "Snow", value: "#fafafa" },
+    { name: "Warm", value: "#fffbeb" },
+    { name: "Cool", value: "#f0f9ff" },
+    { name: "Mint", value: "#f0fdf4" },
+    { name: "Lavender", value: "#faf5ff" },
+    { name: "Slate", value: "#f8fafc" },
+    { name: "Dark", value: "#1e293b" },
+  ];
+
+  readonly textPresets: ColorPreset[] = [
+    { name: "Charcoal", value: "#111827" },
+    { name: "Slate", value: "#334155" },
+    { name: "Gray", value: "#4b5563" },
+    { name: "Navy", value: "#1e3a5f" },
+    { name: "Dark Brown", value: "#3c1f0e" },
+    { name: "White", value: "#ffffff" },
+    { name: "Light", value: "#f1f5f9" },
+    { name: "Muted", value: "#94a3b8" },
+  ];
 
   selectTemplate(id: string) {
     this.templateSelected.emit(id);

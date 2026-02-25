@@ -42,7 +42,16 @@ export class CvStore {
     this._loading.set(true);
     try {
       const cvs = await this.repo.getAll();
-      this._cvs.set(cvs);
+      // Backfill settings added after initial schema
+      const migrated = cvs.map((cv) => ({
+        ...cv,
+        settings: {
+          ...cv.settings,
+          backgroundColor: cv.settings.backgroundColor ?? "#ffffff",
+          primaryColor: cv.settings.primaryColor ?? "#111827",
+        },
+      }));
+      this._cvs.set(migrated);
     } finally {
       this._loading.set(false);
     }

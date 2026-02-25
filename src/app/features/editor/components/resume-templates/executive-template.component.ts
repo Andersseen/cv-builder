@@ -6,9 +6,10 @@ import { Cv } from "../../../../domain/models/cv.model";
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="max-w-4xl mx-auto bg-white"
+      class="max-w-4xl mx-auto"
       id="resume-content"
-      style="font-family: 'Inter', system-ui, sans-serif;"
+      [style.background-color]="backgroundColor"
+      [style.font-family]="'Inter, system-ui, sans-serif'"
     >
       <!-- Header — bold dark block -->
       <div class="text-white p-8" [style.background-color]="headerBg">
@@ -164,7 +165,9 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ExecutiveTemplateComponent {
   @Input() cv!: Cv;
-  @Input() accentColor: string = "#111827";
+  @Input() accentColor = "#111827";
+  @Input() backgroundColor = "#ffffff";
+  @Input() primaryColor = "#111827";
 
   get headerBg(): string {
     return this.accentColor;

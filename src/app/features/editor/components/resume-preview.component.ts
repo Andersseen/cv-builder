@@ -34,30 +34,40 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
             <app-modern-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("classic") {
             <app-classic-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("minimal") {
             <app-minimal-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("creative") {
             <app-creative-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("executive") {
             <app-executive-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
         }

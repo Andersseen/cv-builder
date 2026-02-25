@@ -67,6 +67,8 @@ export type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
 export interface CvSettings {
   accentColor: string;
+  backgroundColor: string;
+  primaryColor: string;
   fontFamily: string;
 }
 
