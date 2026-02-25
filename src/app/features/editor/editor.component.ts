@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { CvStore } from "../../application/state/cv.store";
 import { AutosaveService } from "../../application/services/autosave.service";
 import { PdfExportService } from "../../infrastructure/export/pdf-export.service";
+import { PrintExportService } from "../../infrastructure/export/print-export.service";
 import { EditorToolbarComponent } from "./components/editor-toolbar.component";
 import { PersonalInfoFormComponent } from "./components/personal-info-form.component";
 import { ExperienceFormComponent } from "./components/experience-form.component";
@@ -55,6 +56,7 @@ type EditorTab =
         [isExporting]="isExporting()"
         (back)="goBack()"
         (exportPdf)="exportPdf()"
+        (printPdf)="printResume()"
       />
 
       @if (cvStore.loading()) {
@@ -199,6 +201,7 @@ export default class EditorComponent implements OnInit, OnDestroy {
   readonly cvStore = inject(CvStore);
   readonly autosaveService = inject(AutosaveService);
   private readonly pdfExportService = inject(PdfExportService);
+  private readonly printExportService = inject(PrintExportService);
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -289,6 +292,23 @@ export default class EditorComponent implements OnInit, OnDestroy {
       this.toastService.show("Error exporting PDF", "error");
     } finally {
       this.isExporting.set(false);
+    }
+  }
+
+  async printResume() {
+    const el = document.getElementById("resume-content");
+    if (!el) {
+      this.toastService.show(
+        "Preview not ready — show the preview first",
+        "error",
+      );
+      return;
+    }
+    try {
+      await this.printExportService.printResume(el);
+    } catch (err) {
+      console.error("Print error:", err);
+      this.toastService.show("Error opening print dialog", "error");
     }
   }
 }

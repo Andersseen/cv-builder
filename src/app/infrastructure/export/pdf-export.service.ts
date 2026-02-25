@@ -2,81 +2,56 @@ import { Injectable } from "@angular/core";
 import { Cv } from "../../domain/models/cv.model";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
+import { A4 } from "./a4.constants";
 
 /**
- * 100 % client-side PDF export.
- * Strategy: html-to-image (PNG @ 3×) → jsPDF, preserving the
- * natural aspect ratio and splitting across pages when needed.
+ * Image-based PDF export.
+ *
+ * Strategy: capture the resume DOM as a high-DPI PNG via `html-to-image`,
+ * then place it into a `jsPDF` A4 document, slicing across pages if the
+ * rendered height exceeds a single sheet.
+ *
+ * ## Trade-offs vs PrintExportService
+ *
+ * | Aspect          | ImageExport      | PrintExport       |
+ * |-----------------|------------------|-------------------|
+ * | Text selectable | ❌               | ✅                |
+ * | Visual fidelity | Pixel-perfect    | High              |
+ * | File size       | ~2-5 MB          | ~100 KB           |
+ * | ATS friendly    | ❌               | ✅                |
  */
 @Injectable({ providedIn: "root" })
 export class PdfExportService {
-  /** A4 width in px at 96 DPI */
-  private readonly A4_PX_WIDTH = 794;
-
+  /**
+   * Export the resume as a downloadable image-based PDF.
+   *
+   * @param cv   The CV model (used for the filename).
+   * @param element The `#resume-content` DOM node to capture.
+   */
   async exportToPdf(cv: Cv, element: HTMLElement): Promise<void> {
-    // A4 in mm
-    const a4W = 210;
-    const a4H = 297;
-
-    // 1. Lock element to consistent A4 width
-    const origW = element.style.width;
-    const origMaxW = element.style.maxWidth;
-    const origMinH = element.style.minHeight;
-    element.style.width = `${this.A4_PX_WIDTH}px`;
-    element.style.maxWidth = `${this.A4_PX_WIDTH}px`;
-    element.style.minHeight = "auto";
+    const originalStyles = this.lockToA4Width(element);
 
     try {
-      // 2. Capture high-DPI PNG
-      const dataUrl = await toPng(element, {
-        backgroundColor: "#ffffff",
-        pixelRatio: 3,
-      });
+      const dataUrl = await this.captureHighDpiPng(element);
+      const { width: imgW, height: imgH } = await this.loadImage(dataUrl);
+      const renderedHeight = (imgH / imgW) * A4.WIDTH_MM;
 
-      // 3. Decode the image to get its actual pixel size
-      const img = await this.loadImage(dataUrl);
-      const imgW = img.width;
-      const imgH = img.height;
-
-      // 4. The image maps to a4W; compute rendered height in mm
-      const renderedH = (imgH / imgW) * a4W;
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      if (renderedH <= a4H) {
-        // Content fits on a single page
-        pdf.addImage(dataUrl, "PNG", 0, 0, a4W, renderedH);
-      } else {
-        // Content spans multiple pages — slice the image
-        const totalPages = Math.ceil(renderedH / a4H);
-
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) pdf.addPage();
-
-          // We draw the *full* image offset upward so that only
-          // the current page's slice is visible.
-          const yOffset = -(page * a4H);
-          pdf.addImage(dataUrl, "PNG", 0, yOffset, a4W, renderedH);
-        }
-      }
-
-      const filename = cv.name
-        ? `${cv.name.replace(/\s+/g, "_")}_Resume.pdf`
-        : "Resume.pdf";
-
-      pdf.save(filename);
+      const pdf = this.createPdf();
+      this.addImagePages(pdf, dataUrl, renderedHeight);
+      pdf.save(this.buildFilename(cv));
     } finally {
-      element.style.width = origW;
-      element.style.maxWidth = origMaxW;
-      element.style.minHeight = origMinH;
+      this.restoreStyles(element, originalStyles);
     }
   }
 
-  /** Load an image data URL and resolve with the HTMLImageElement once ready. */
+  // ─── Capture ─────────────────────────────────────────────────
+
+  /** Capture the element as a 3× resolution PNG data URL. */
+  private captureHighDpiPng(element: HTMLElement): Promise<string> {
+    return toPng(element, { backgroundColor: "#ffffff", pixelRatio: 3 });
+  }
+
+  /** Load an image data URL and resolve with the HTMLImageElement. */
   private loadImage(dataUrl: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -84,5 +59,71 @@ export class PdfExportService {
       img.onerror = reject;
       img.src = dataUrl;
     });
+  }
+
+  // ─── PDF construction ────────────────────────────────────────
+
+  /** Create a blank A4 portrait jsPDF document. */
+  private createPdf(): jsPDF {
+    return new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  }
+
+  /**
+   * Place the image onto one or more PDF pages.
+   * If `renderedHeight` exceeds A4, slices across pages by
+   * drawing the full image with a negative Y offset.
+   */
+  private addImagePages(
+    pdf: jsPDF,
+    dataUrl: string,
+    renderedHeight: number,
+  ): void {
+    if (renderedHeight <= A4.HEIGHT_MM) {
+      pdf.addImage(dataUrl, "PNG", 0, 0, A4.WIDTH_MM, renderedHeight);
+      return;
+    }
+
+    const totalPages = Math.ceil(renderedHeight / A4.HEIGHT_MM);
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) pdf.addPage();
+      const yOffset = -(page * A4.HEIGHT_MM);
+      pdf.addImage(dataUrl, "PNG", 0, yOffset, A4.WIDTH_MM, renderedHeight);
+    }
+  }
+
+  // ─── DOM helpers ─────────────────────────────────────────────
+
+  /**
+   * Temporarily lock the element to A4 pixel width so the capture
+   * produces a consistent result regardless of the preview panel size.
+   */
+  private lockToA4Width(el: HTMLElement): Map<string, string> {
+    const saved = new Map([
+      ["width", el.style.width],
+      ["maxWidth", el.style.maxWidth],
+      ["minHeight", el.style.minHeight],
+    ]);
+
+    el.style.width = `${A4.WIDTH_PX}px`;
+    el.style.maxWidth = `${A4.WIDTH_PX}px`;
+    el.style.minHeight = "auto";
+
+    return saved;
+  }
+
+  /** Restore the original inline styles after capture. */
+  private restoreStyles(el: HTMLElement, saved: Map<string, string>): void {
+    el.style.width = saved.get("width") ?? "";
+    el.style.maxWidth = saved.get("maxWidth") ?? "";
+    el.style.minHeight = saved.get("minHeight") ?? "";
+  }
+
+  // ─── Filename ────────────────────────────────────────────────
+
+  /** Derive a filesystem-friendly filename from the CV name. */
+  private buildFilename(cv: Cv): string {
+    return cv.name
+      ? `${cv.name.replace(/\s+/g, "_")}_Resume.pdf`
+      : "Resume.pdf";
   }
 }
