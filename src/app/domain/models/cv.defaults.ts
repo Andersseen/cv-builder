@@ -81,6 +81,8 @@ export function createDefaultSkill(): Skill {
 export function createDefaultSettings(): CvSettings {
   return {
     accentColor: "#3B82F6",
+    backgroundColor: "#ffffff",
+    primaryColor: "#111827",
     fontFamily: "Inter",
   };
 }

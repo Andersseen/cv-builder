@@ -1,4 +1,4 @@
-import { Injectable, effect, signal, DestroyRef, inject } from "@angular/core";
+import { Injectable, signal, inject } from "@angular/core";
 import { CvStore } from "../state/cv.store";
 import { Cv } from "../../domain/models/cv.model";
 
@@ -20,35 +20,9 @@ export class AutosaveService {
   private readonly _saving = signal(false);
   readonly saving = this._saving.asReadonly();
 
-  private destroyRef = inject(DestroyRef);
+  private readonly cvStore = inject(CvStore);
 
-  constructor(private cvStore: CvStore) {}
-
-  /**
-   * Start watching the active CV signal.
-   * Call once from the editor component.
-   */
-  startWatching(): void {
-    effect(
-      () => {
-        const cv = this.cvStore.activeCv();
-        if (!cv) return;
-        this.scheduleAutosave(cv);
-      },
-      { injector: undefined as any }, // will run in injection context via constructor
-    );
-  }
-
-  /** Initialize the effect in the Angular injection context. */
-  init(): void {
-    effect(() => {
-      const cv = this.cvStore.activeCv();
-      if (!cv) return;
-      this.scheduleAutosave(cv);
-    });
-  }
-
-  private scheduleAutosave(cv: Cv): void {
+  scheduleAutosave(cv: Cv): void {
     const snapshot = JSON.stringify(cv);
 
     // Skip if nothing changed

@@ -11,14 +11,13 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { Experience } from "../../../domain/models/cv.model";
 import { createDefaultExperience } from "../../../domain/models/cv.defaults";
 
 @Component({
   selector: "app-experience-form",
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">

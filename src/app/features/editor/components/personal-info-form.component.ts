@@ -12,13 +12,12 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { PersonalInfo } from "../../../domain/models/cv.model";
 
 @Component({
   selector: "app-personal-info-form",
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -244,9 +243,9 @@ export class PersonalInfoFormComponent {
 
     this.form.valueChanges.subscribe(() => {
       this.changed.emit({
-        ...(this.form.getRawValue() as any),
+        ...this.form.getRawValue(),
         avatarUrl: this.avatarPreview(),
-      } as PersonalInfo);
+      });
     });
   }
 
@@ -271,8 +270,8 @@ export class PersonalInfoFormComponent {
 
   private emitCurrentState(): void {
     this.changed.emit({
-      ...(this.form.getRawValue() as any),
+      ...this.form.getRawValue(),
       avatarUrl: this.avatarPreview(),
-    } as PersonalInfo);
+    });
   }
 }

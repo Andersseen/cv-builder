@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { Cv } from "../../../domain/models/cv.model";
 import { ModernTemplateComponent } from "./resume-templates/modern-template.component";
 import { ClassicTemplateComponent } from "./resume-templates/classic-template.component";
@@ -9,10 +9,8 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
 
 @Component({
   selector: "app-resume-preview",
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ModernTemplateComponent,
     ClassicTemplateComponent,
     MinimalTemplateComponent,
@@ -36,30 +34,40 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
             <app-modern-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("classic") {
             <app-classic-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("minimal") {
             <app-minimal-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("creative") {
             <app-creative-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
           @case ("executive") {
             <app-executive-template
               [cv]="cv()"
               [accentColor]="cv().settings.accentColor"
+              [backgroundColor]="cv().settings.backgroundColor"
+              [primaryColor]="cv().settings.primaryColor"
             />
           }
         }

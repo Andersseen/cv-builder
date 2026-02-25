@@ -1,17 +1,15 @@
 import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
   selector: "app-creative-template",
-  standalone: true,
-  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="max-w-4xl mx-auto bg-white"
+      class="max-w-4xl mx-auto"
       id="resume-content"
-      style="font-family: 'Inter', system-ui, sans-serif;"
+      [style.background-color]="backgroundColor"
+      [style.font-family]="'Inter, system-ui, sans-serif'"
     >
       <div class="flex min-h-[600px]">
         <!-- Sidebar — dark with accent color accents -->
@@ -225,7 +223,9 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class CreativeTemplateComponent {
   @Input() cv!: Cv;
-  @Input() accentColor: string = "#f59e0b";
+  @Input() accentColor = "#f59e0b";
+  @Input() backgroundColor = "#ffffff";
+  @Input() primaryColor = "#111827";
 
   formatDate(dateString: string): string {
     if (!dateString) return "";

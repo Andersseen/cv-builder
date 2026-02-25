@@ -1,17 +1,15 @@
 import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
   selector: "app-modern-template",
-  standalone: true,
-  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="max-w-4xl mx-auto bg-white"
+      class="max-w-4xl mx-auto"
       id="resume-content"
-      style="font-family: 'Inter', system-ui, sans-serif;"
+      [style.background-color]="backgroundColor"
+      [style.font-family]="'Inter, system-ui, sans-serif'"
     >
       <!-- Header — bold gradient -->
       <div
@@ -212,7 +210,9 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ModernTemplateComponent {
   @Input() cv!: Cv;
-  @Input() accentColor: string = "#4f46e5";
+  @Input() accentColor = "#4f46e5";
+  @Input() backgroundColor = "#ffffff";
+  @Input() primaryColor = "#111827";
 
   get accentColorDark(): string {
     return this.adjustBrightness(this.accentColor, -30);

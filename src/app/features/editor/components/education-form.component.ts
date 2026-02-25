@@ -11,14 +11,13 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { Education } from "../../../domain/models/cv.model";
 import { createDefaultEducation } from "../../../domain/models/cv.defaults";
 
 @Component({
   selector: "app-education-form",
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">

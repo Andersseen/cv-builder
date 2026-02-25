@@ -1,9 +1,15 @@
-import { Component, inject } from "@angular/core";
+import {
+  Component,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { ThemeService } from "../../../core/services/theme.service";
 
 @Component({
   selector: "app-header",
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, RouterLinkActive],
   template: `
     <header
@@ -109,7 +115,7 @@ import { ThemeService } from "../../../core/services/theme.service";
       </div>
 
       <!-- Mobile menu -->
-      @if (mobileMenuOpen) {
+      @if (mobileMenuOpen()) {
         <div
           class="md:hidden border-t border-border bg-surface animate-slide-up"
         >
@@ -119,7 +125,7 @@ import { ThemeService } from "../../../core/services/theme.service";
               routerLinkActive="text-primary bg-primary/5"
               [routerLinkActiveOptions]="{ exact: true }"
               class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
-              (click)="mobileMenuOpen = false"
+              (click)="mobileMenuOpen.set(false)"
             >
               Home
             </a>
@@ -127,7 +133,7 @@ import { ThemeService } from "../../../core/services/theme.service";
               routerLink="/dashboard"
               routerLinkActive="text-primary bg-primary/5"
               class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
-              (click)="mobileMenuOpen = false"
+              (click)="mobileMenuOpen.set(false)"
             >
               My Resumes
             </a>
@@ -138,10 +144,10 @@ import { ThemeService } from "../../../core/services/theme.service";
   `,
 })
 export class HeaderComponent {
-  themeService = inject(ThemeService);
-  mobileMenuOpen = false;
+  readonly themeService = inject(ThemeService);
+  readonly mobileMenuOpen = signal(false);
 
   toggleMobileMenu(): void {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
+    this.mobileMenuOpen.update((open) => !open);
   }
 }
