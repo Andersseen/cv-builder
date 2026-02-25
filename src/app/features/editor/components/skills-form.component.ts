@@ -11,14 +11,13 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { Skill, SkillLevel } from "../../../domain/models/cv.model";
 import { createDefaultSkill } from "../../../domain/models/cv.defaults";
 
 @Component({
   selector: "app-skills-form",
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">

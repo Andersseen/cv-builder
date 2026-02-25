@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from "@angular/core";
+import { Injectable, signal, computed, inject } from "@angular/core";
 import { Cv, DeepPartial } from "../../domain/models/cv.model";
 import { createDefaultCv } from "../../domain/models/cv.defaults";
 import { CvRepository } from "../../infrastructure/persistence/cv.repository";
@@ -16,6 +16,9 @@ import { ToastService } from "../../core/services/toast.service";
  */
 @Injectable({ providedIn: "root" })
 export class CvStore {
+  private readonly repo = inject(CvRepository);
+  private readonly toastService = inject(ToastService);
+
   // ─── Private state ────────────────────────────────────────
   private readonly _cvs = signal<Cv[]>([]);
   private readonly _activeCvId = signal<string | null>(null);
@@ -31,11 +34,6 @@ export class CvStore {
     if (!id) return null;
     return this._cvs().find((cv) => cv.id === id) ?? null;
   });
-
-  constructor(
-    private repo: CvRepository,
-    private toastService: ToastService,
-  ) {}
 
   // ─── Initialization ───────────────────────────────────────
 
@@ -114,7 +112,7 @@ export class CvStore {
         return deepMerge(cv, {
           ...patch,
           updatedAt: new Date().toISOString(),
-        });
+        } as DeepPartial<Cv>);
       }),
     );
   }
@@ -141,15 +139,16 @@ export class CvStore {
 
 // ─── Deep merge utility ──────────────────────────────────────
 
-function deepMerge<T extends Record<string, any>>(
-  target: T,
-  source: Record<string, any>,
-): T {
+type DeepPartialObj<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartialObj<T[P]> : T[P];
+};
+
+function deepMerge<T extends object>(target: T, source: DeepPartialObj<T>): T {
   const result = { ...target };
 
-  for (const key of Object.keys(source)) {
+  for (const key of Object.keys(source) as (keyof T)[]) {
     const sourceVal = source[key];
-    const targetVal = (target as any)[key];
+    const targetVal = target[key];
 
     if (
       sourceVal &&
@@ -159,9 +158,12 @@ function deepMerge<T extends Record<string, any>>(
       typeof targetVal === "object" &&
       !Array.isArray(targetVal)
     ) {
-      (result as any)[key] = deepMerge(targetVal, sourceVal);
+      (result as Record<string, unknown>)[key as string] = deepMerge(
+        targetVal as object,
+        sourceVal as DeepPartialObj<object>,
+      );
     } else {
-      (result as any)[key] = sourceVal;
+      (result as Record<string, unknown>)[key as string] = sourceVal;
     }
   }
 

@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { Cv } from "../../../domain/models/cv.model";
 import { ModernTemplateComponent } from "./resume-templates/modern-template.component";
 import { ClassicTemplateComponent } from "./resume-templates/classic-template.component";
@@ -9,10 +9,8 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
 
 @Component({
   selector: "app-resume-preview",
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ModernTemplateComponent,
     ClassicTemplateComponent,
     MinimalTemplateComponent,

@@ -1,11 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
   selector: "app-modern-template",
-  standalone: true,
-  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -212,7 +209,7 @@ import { Cv } from "../../../../domain/models/cv.model";
 })
 export class ModernTemplateComponent {
   @Input() cv!: Cv;
-  @Input() accentColor: string = "#4f46e5";
+  @Input() accentColor = "#4f46e5";
 
   get accentColorDark(): string {
     return this.adjustBrightness(this.accentColor, -30);

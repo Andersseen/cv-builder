@@ -1,11 +1,8 @@
 import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
   selector: "app-creative-template",
-  standalone: true,
-  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
