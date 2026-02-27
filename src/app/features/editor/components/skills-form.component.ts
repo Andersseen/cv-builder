@@ -133,8 +133,8 @@ import { createDefaultSkill } from "../../../domain/models/cv.defaults";
   `,
 })
 export class SkillsFormComponent {
-  items = input.required<Skill[]>();
-  itemsChange = output<Skill[]>();
+  readonly items = input.required<Skill[]>();
+  readonly itemsChange = output<Skill[]>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
   readonly levels: SkillLevel[] = [

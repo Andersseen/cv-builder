@@ -27,5 +27,5 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
   `,
 })
 export class DashboardHeaderComponent {
-  create = output<void>();
+  readonly create = output<void>();
 }

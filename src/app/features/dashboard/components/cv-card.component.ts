@@ -107,12 +107,12 @@ import { Cv } from "../../../domain/models/cv.model";
   `,
 })
 export class CvCardComponent {
-  cv = input.required<Cv>();
+  readonly cv = input.required<Cv>();
 
-  edit = output<string>();
-  duplicate = output<string>();
-  delete = output<Cv>();
-  renamed = output<{ id: string; name: string }>();
+  readonly edit = output<string>();
+  readonly duplicate = output<string>();
+  readonly delete = output<Cv>();
+  readonly renamed = output<{ id: string; name: string }>();
 
   isEditing = signal(false);
 

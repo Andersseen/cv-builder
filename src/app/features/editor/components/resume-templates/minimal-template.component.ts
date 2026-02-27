@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
@@ -8,51 +8,51 @@ import { Cv } from "../../../../domain/models/cv.model";
     <div
       class="max-w-4xl mx-auto"
       id="resume-content"
-      [style.background-color]="backgroundColor"
+      [style.background-color]="backgroundColor()"
       [style.font-family]="'Inter, system-ui, sans-serif'"
     >
       <div class="p-10">
         <!-- Header — ultra-minimal -->
         <div class="mb-10">
           <h1 class="text-2xl font-light text-gray-900 tracking-tight">
-            {{ cv.sections.personal.fullName || "Your Name" }}
+            {{ cv().sections.personal.fullName || "Your Name" }}
           </h1>
           <div class="flex flex-wrap gap-x-4 mt-2 text-xs text-gray-400">
-            @if (cv.sections.personal.email) {
-              <span>{{ cv.sections.personal.email }}</span>
+            @if (cv().sections.personal.email) {
+              <span>{{ cv().sections.personal.email }}</span>
             }
-            @if (cv.sections.personal.phone) {
-              <span>{{ cv.sections.personal.phone }}</span>
+            @if (cv().sections.personal.phone) {
+              <span>{{ cv().sections.personal.phone }}</span>
             }
-            @if (cv.sections.personal.location) {
-              <span>{{ cv.sections.personal.location }}</span>
+            @if (cv().sections.personal.location) {
+              <span>{{ cv().sections.personal.location }}</span>
             }
-            @if (cv.sections.personal.website) {
-              <span>{{ cv.sections.personal.website }}</span>
+            @if (cv().sections.personal.website) {
+              <span>{{ cv().sections.personal.website }}</span>
             }
-            @if (cv.sections.personal.linkedin) {
-              <span>{{ cv.sections.personal.linkedin }}</span>
+            @if (cv().sections.personal.linkedin) {
+              <span>{{ cv().sections.personal.linkedin }}</span>
             }
           </div>
         </div>
 
-        @if (cv.sections.personal.summary) {
+        @if (cv().sections.personal.summary) {
           <section class="mb-10">
             <p class="text-gray-500 leading-relaxed text-sm max-w-2xl">
-              {{ cv.sections.personal.summary }}
+              {{ cv().sections.personal.summary }}
             </p>
           </section>
         }
 
-        @if (cv.sections.experience.length > 0) {
+        @if (cv().sections.experience.length > 0) {
           <section class="mb-10">
             <h2
               class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
-              [style.color]="accentColor"
+              [style.color]="accentColor()"
             >
               Experience
             </h2>
-            @for (exp of cv.sections.experience; track exp.id) {
+            @for (exp of cv().sections.experience; track exp.id) {
               <div class="mb-6">
                 <div class="flex justify-between items-baseline mb-0.5">
                   <h3 class="text-sm font-medium text-gray-900">
@@ -79,15 +79,15 @@ import { Cv } from "../../../../domain/models/cv.model";
           </section>
         }
 
-        @if (cv.sections.education.length > 0) {
+        @if (cv().sections.education.length > 0) {
           <section class="mb-10">
             <h2
               class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
-              [style.color]="accentColor"
+              [style.color]="accentColor()"
             >
               Education
             </h2>
-            @for (edu of cv.sections.education; track edu.id) {
+            @for (edu of cv().sections.education; track edu.id) {
               <div class="mb-4">
                 <div class="flex justify-between items-baseline mb-0.5">
                   <h3 class="text-sm font-medium text-gray-900">
@@ -111,16 +111,16 @@ import { Cv } from "../../../../domain/models/cv.model";
           </section>
         }
 
-        @if (cv.sections.skills.length > 0) {
+        @if (cv().sections.skills.length > 0) {
           <section>
             <h2
               class="text-xs font-medium uppercase tracking-[0.15em] mb-4"
-              [style.color]="accentColor"
+              [style.color]="accentColor()"
             >
               Skills
             </h2>
             <div class="flex flex-wrap gap-x-6 gap-y-2">
-              @for (skill of cv.sections.skills; track skill.id) {
+              @for (skill of cv().sections.skills; track skill.id) {
                 <div>
                   <span class="text-xs text-gray-700">{{ skill.name }}</span>
                   <span class="text-xs text-gray-300 ml-1">{{
@@ -136,12 +136,12 @@ import { Cv } from "../../../../domain/models/cv.model";
   `,
 })
 export class MinimalTemplateComponent {
-  @Input() cv!: Cv;
-  @Input() accentColor = "#171717";
-  @Input() backgroundColor = "#ffffff";
-  @Input() primaryColor = "#111827";
+  readonly cv = input.required<Cv>();
+  readonly accentColor = input("#171717");
+  readonly backgroundColor = input("#ffffff");
+  readonly primaryColor = input("#111827");
 
-  formatDate(dateString: string): string {
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;

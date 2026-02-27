@@ -211,8 +211,8 @@ import { createDefaultExperience } from "../../../domain/models/cv.defaults";
   `,
 })
 export class ExperienceFormComponent {
-  items = input.required<Experience[]>();
-  itemsChange = output<Experience[]>();
+  readonly items = input.required<Experience[]>();
+  readonly itemsChange = output<Experience[]>();
 
   showForm = signal(false);
   editingId = signal<string | null>(null);

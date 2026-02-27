@@ -121,25 +121,25 @@ type EditorTab =
                   @case ("personal") {
                     <app-personal-info-form
                       [data]="cvStore.activeCv()!.sections.personal"
-                      (changed)="onPersonalInfoChange($event)"
+                      (changed)="updatePersonalInfo($event)"
                     />
                   }
                   @case ("experience") {
                     <app-experience-form
                       [items]="cvStore.activeCv()!.sections.experience"
-                      (itemsChange)="onExperienceChange($event)"
+                      (itemsChange)="updateExperience($event)"
                     />
                   }
                   @case ("education") {
                     <app-education-form
                       [items]="cvStore.activeCv()!.sections.education"
-                      (itemsChange)="onEducationChange($event)"
+                      (itemsChange)="updateEducation($event)"
                     />
                   }
                   @case ("skills") {
                     <app-skills-form
                       [items]="cvStore.activeCv()!.sections.skills"
-                      (itemsChange)="onSkillsChange($event)"
+                      (itemsChange)="updateSkills($event)"
                     />
                   }
                   @case ("template") {
@@ -150,10 +150,10 @@ type EditorTab =
                         cvStore.activeCv()!.settings.backgroundColor
                       "
                       [primaryColor]="cvStore.activeCv()!.settings.primaryColor"
-                      (templateSelected)="onTemplateChange($event)"
-                      (colorChanged)="onAccentColorChange($event)"
-                      (backgroundColorChanged)="onBackgroundColorChange($event)"
-                      (primaryColorChanged)="onPrimaryColorChange($event)"
+                      (templateSelected)="changeTemplate($event)"
+                      (colorChanged)="changeAccentColor($event)"
+                      (backgroundColorChanged)="changeBackgroundColor($event)"
+                      (primaryColorChanged)="changePrimaryColor($event)"
                     />
                   }
                 }
@@ -206,11 +206,11 @@ export default class EditorComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  isExporting = signal(false);
-  activeTab = signal<EditorTab>("personal");
-  previewOpen = signal(true);
+  protected isExporting = signal(false);
+  protected activeTab = signal<EditorTab>("personal");
+  protected previewOpen = signal(true);
 
-  readonly tabs: { id: EditorTab; label: string; icon: string }[] = [
+  protected readonly tabs: { id: EditorTab; label: string; icon: string }[] = [
     { id: "personal", label: "Personal", icon: "👤" },
     { id: "experience", label: "Experience", icon: "💼" },
     { id: "education", label: "Education", icon: "🎓" },
@@ -239,43 +239,43 @@ export default class EditorComponent implements OnInit, OnDestroy {
     this.autosaveService.destroy();
   }
 
-  goBack() {
+  protected goBack() {
     this.router.navigate(["/dashboard"]);
   }
 
-  onPersonalInfoChange(personal: PersonalInfo) {
+  protected updatePersonalInfo(personal: PersonalInfo) {
     this.cvStore.updateActiveCv({ sections: { personal } });
   }
 
-  onExperienceChange(experience: Experience[]) {
+  protected updateExperience(experience: Experience[]) {
     this.cvStore.updateActiveCv({ sections: { experience } });
   }
 
-  onEducationChange(education: Education[]) {
+  protected updateEducation(education: Education[]) {
     this.cvStore.updateActiveCv({ sections: { education } });
   }
 
-  onSkillsChange(skills: Skill[]) {
+  protected updateSkills(skills: Skill[]) {
     this.cvStore.updateActiveCv({ sections: { skills } });
   }
 
-  onTemplateChange(templateId: string) {
+  protected changeTemplate(templateId: string) {
     this.cvStore.updateActiveCv({ templateId });
   }
 
-  onAccentColorChange(accentColor: string) {
+  protected changeAccentColor(accentColor: string) {
     this.cvStore.updateActiveCv({ settings: { accentColor } });
   }
 
-  onBackgroundColorChange(backgroundColor: string) {
+  protected changeBackgroundColor(backgroundColor: string) {
     this.cvStore.updateActiveCv({ settings: { backgroundColor } });
   }
 
-  onPrimaryColorChange(primaryColor: string) {
+  protected changePrimaryColor(primaryColor: string) {
     this.cvStore.updateActiveCv({ settings: { primaryColor } });
   }
 
-  async exportPdf() {
+  protected async exportPdf() {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
     const el = document.getElementById("resume-content");
@@ -295,7 +295,7 @@ export default class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async printResume() {
+  protected async printResume() {
     const el = document.getElementById("resume-content");
     if (!el) {
       this.toastService.show(

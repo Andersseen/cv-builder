@@ -25,5 +25,5 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
   `,
 })
 export class EmptyStateComponent {
-  create = output<void>();
+  readonly create = output<void>();
 }

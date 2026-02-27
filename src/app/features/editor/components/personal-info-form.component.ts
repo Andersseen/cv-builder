@@ -207,8 +207,8 @@ import { PersonalInfo } from "../../../domain/models/cv.model";
   `,
 })
 export class PersonalInfoFormComponent {
-  data = input.required<PersonalInfo>();
-  changed = output<PersonalInfo>();
+  readonly data = input.required<PersonalInfo>();
+  readonly changed = output<PersonalInfo>();
 
   avatarPreview = signal<string>("");
 

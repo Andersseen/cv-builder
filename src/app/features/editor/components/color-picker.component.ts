@@ -64,12 +64,12 @@ export interface ColorPreset {
   `,
 })
 export class ColorPickerComponent {
-  label = input.required<string>();
-  description = input("");
-  currentColor = input.required<string>();
-  presets = input<ColorPreset[]>([]);
+  readonly label = input.required<string>();
+  readonly description = input("");
+  readonly currentColor = input.required<string>();
+  readonly presets = input<ColorPreset[]>([]);
 
-  colorChanged = output<string>();
+  readonly colorChanged = output<string>();
 
   onColorInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;

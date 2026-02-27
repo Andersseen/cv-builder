@@ -76,5 +76,5 @@ import { ExecutiveTemplateComponent } from "./resume-templates/executive-templat
   `,
 })
 export class ResumePreviewComponent {
-  cv = input.required<Cv>();
+  readonly cv = input.required<Cv>();
 }

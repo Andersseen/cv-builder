@@ -43,7 +43,7 @@ import { CvCardComponent } from "./components/cv-card.component";
                 (edit)="openEditor($event)"
                 (duplicate)="duplicateCv($event)"
                 (delete)="deleteCv($event)"
-                (renamed)="onNameChange($event.id, $event.name)"
+                (renamed)="renameCv($event.id, $event.name)"
               />
             }
           </div>
@@ -60,26 +60,26 @@ export default class DashboardComponent implements OnInit {
     await this.cvStore.loadAll();
   }
 
-  async createNew() {
+  protected async createNew() {
     const cv = await this.cvStore.create();
     this.openEditor(cv.id);
   }
 
-  openEditor(id: string) {
+  protected openEditor(id: string) {
     this.router.navigate(["/editor"], { queryParams: { cv: id } });
   }
 
-  async duplicateCv(id: string) {
+  protected async duplicateCv(id: string) {
     await this.cvStore.duplicate(id);
   }
 
-  async deleteCv(cv: Cv) {
+  protected async deleteCv(cv: Cv) {
     if (confirm(`Delete "${cv.name}"? This cannot be undone.`)) {
       await this.cvStore.deleteById(cv.id);
     }
   }
 
-  onNameChange(id: string, name: string) {
+  protected renameCv(id: string, name: string) {
     this.cvStore.rename(id, name);
   }
 }

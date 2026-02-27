@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
@@ -8,7 +8,7 @@ import { Cv } from "../../../../domain/models/cv.model";
     <div
       class="max-w-4xl mx-auto"
       id="resume-content"
-      [style.background-color]="backgroundColor"
+      [style.background-color]="backgroundColor()"
       [style.font-family]="'Georgia, Times New Roman, serif'"
     >
       <div class="p-8">
@@ -17,64 +17,64 @@ import { Cv } from "../../../../domain/models/cv.model";
           <h1
             class="text-3xl font-bold text-gray-800 mb-2 tracking-wide uppercase"
           >
-            {{ cv.sections.personal.fullName || "Your Name" }}
+            {{ cv().sections.personal.fullName || "Your Name" }}
           </h1>
           <div
             class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-600"
           >
-            @if (cv.sections.personal.email) {
-              <span>{{ cv.sections.personal.email }}</span>
+            @if (cv().sections.personal.email) {
+              <span>{{ cv().sections.personal.email }}</span>
             }
-            @if (cv.sections.personal.phone) {
+            @if (cv().sections.personal.phone) {
               <span
                 class="before:content-['|'] before:mr-4 before:text-gray-300"
-                >{{ cv.sections.personal.phone }}</span
+                >{{ cv().sections.personal.phone }}</span
               >
             }
-            @if (cv.sections.personal.location) {
+            @if (cv().sections.personal.location) {
               <span
                 class="before:content-['|'] before:mr-4 before:text-gray-300"
-                >{{ cv.sections.personal.location }}</span
+                >{{ cv().sections.personal.location }}</span
               >
             }
           </div>
           <div
             class="flex flex-wrap justify-center gap-x-4 text-sm text-gray-500 mt-1"
           >
-            @if (cv.sections.personal.website) {
-              <span>{{ cv.sections.personal.website }}</span>
+            @if (cv().sections.personal.website) {
+              <span>{{ cv().sections.personal.website }}</span>
             }
-            @if (cv.sections.personal.linkedin) {
-              <span>{{ cv.sections.personal.linkedin }}</span>
+            @if (cv().sections.personal.linkedin) {
+              <span>{{ cv().sections.personal.linkedin }}</span>
             }
           </div>
         </div>
 
         <!-- Summary -->
-        @if (cv.sections.personal.summary) {
+        @if (cv().sections.personal.summary) {
           <section class="mb-6">
             <h2
               class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
-              [style.border-bottom]="'1px solid ' + accentColor + '40'"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Summary
             </h2>
             <p class="text-gray-600 leading-relaxed text-sm italic">
-              {{ cv.sections.personal.summary }}
+              {{ cv().sections.personal.summary }}
             </p>
           </section>
         }
 
         <!-- Experience -->
-        @if (cv.sections.experience.length > 0) {
+        @if (cv().sections.experience.length > 0) {
           <section class="mb-6">
             <h2
               class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
-              [style.border-bottom]="'1px solid ' + accentColor + '40'"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Professional Experience
             </h2>
-            @for (exp of cv.sections.experience; track exp.id) {
+            @for (exp of cv().sections.experience; track exp.id) {
               <div class="mb-5">
                 <div class="flex justify-between items-baseline mb-0.5">
                   <h3 class="text-base font-bold text-gray-800">
@@ -102,15 +102,15 @@ import { Cv } from "../../../../domain/models/cv.model";
         }
 
         <!-- Education -->
-        @if (cv.sections.education.length > 0) {
+        @if (cv().sections.education.length > 0) {
           <section class="mb-6">
             <h2
               class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
-              [style.border-bottom]="'1px solid ' + accentColor + '40'"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Education
             </h2>
-            @for (edu of cv.sections.education; track edu.id) {
+            @for (edu of cv().sections.education; track edu.id) {
               <div class="mb-3">
                 <div class="flex justify-between items-baseline mb-0.5">
                   <h3 class="text-sm font-bold text-gray-800">
@@ -135,17 +135,17 @@ import { Cv } from "../../../../domain/models/cv.model";
         }
 
         <!-- Skills -->
-        @if (cv.sections.skills.length > 0) {
+        @if (cv().sections.skills.length > 0) {
           <section>
             <h2
               class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
-              [style.border-bottom]="'1px solid ' + accentColor + '40'"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Skills
             </h2>
             <div class="flex flex-wrap gap-x-1 text-sm text-gray-600">
               @for (
-                skill of cv.sections.skills;
+                skill of cv().sections.skills;
                 track skill.id;
                 let last = $last
               ) {
@@ -163,12 +163,12 @@ import { Cv } from "../../../../domain/models/cv.model";
   `,
 })
 export class ClassicTemplateComponent {
-  @Input() cv!: Cv;
-  @Input() accentColor = "#475569";
-  @Input() backgroundColor = "#ffffff";
-  @Input() primaryColor = "#111827";
+  readonly cv = input.required<Cv>();
+  readonly accentColor = input("#475569");
+  readonly backgroundColor = input("#ffffff");
+  readonly primaryColor = input("#111827");
 
-  formatDate(dateString: string): string {
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;

@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv.model";
 
 @Component({
@@ -8,7 +8,7 @@ import { Cv } from "../../../../domain/models/cv.model";
     <div
       class="max-w-4xl mx-auto"
       id="resume-content"
-      [style.background-color]="backgroundColor"
+      [style.background-color]="backgroundColor()"
       [style.font-family]="'Inter, system-ui, sans-serif'"
     >
       <!-- Header — bold gradient -->
@@ -16,55 +16,55 @@ import { Cv } from "../../../../domain/models/cv.model";
         class="p-8"
         [style.background]="
           'linear-gradient(135deg, ' +
-          accentColor +
+          accentColor() +
           ' 0%, ' +
           accentColorDark +
           ' 100%)'
         "
       >
         <div class="flex items-center gap-5">
-          @if (cv.sections.personal.avatarUrl) {
+          @if (cv().sections.personal.avatarUrl) {
             <img
-              [src]="cv.sections.personal.avatarUrl"
+              [src]="cv().sections.personal.avatarUrl"
               alt="Profile photo"
               class="w-20 h-20 rounded-full object-cover border-3 border-white/30 shadow-lg shrink-0"
             />
           }
           <div>
             <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">
-              {{ cv.sections.personal.fullName || "Your Name" }}
+              {{ cv().sections.personal.fullName || "Your Name" }}
             </h1>
           </div>
         </div>
         <div class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/70 mt-3">
-          @if (cv.sections.personal.email) {
+          @if (cv().sections.personal.email) {
             <span class="flex items-center gap-1.5">
               <span class="w-1 h-1 rounded-full bg-white/40"></span>
-              {{ cv.sections.personal.email }}
+              {{ cv().sections.personal.email }}
             </span>
           }
-          @if (cv.sections.personal.phone) {
+          @if (cv().sections.personal.phone) {
             <span class="flex items-center gap-1.5">
               <span class="w-1 h-1 rounded-full bg-white/40"></span>
-              {{ cv.sections.personal.phone }}
+              {{ cv().sections.personal.phone }}
             </span>
           }
-          @if (cv.sections.personal.location) {
+          @if (cv().sections.personal.location) {
             <span class="flex items-center gap-1.5">
               <span class="w-1 h-1 rounded-full bg-white/40"></span>
-              {{ cv.sections.personal.location }}
+              {{ cv().sections.personal.location }}
             </span>
           }
-          @if (cv.sections.personal.website) {
+          @if (cv().sections.personal.website) {
             <span class="flex items-center gap-1.5">
               <span class="w-1 h-1 rounded-full bg-white/40"></span>
-              {{ cv.sections.personal.website }}
+              {{ cv().sections.personal.website }}
             </span>
           }
-          @if (cv.sections.personal.linkedin) {
+          @if (cv().sections.personal.linkedin) {
             <span class="flex items-center gap-1.5">
               <span class="w-1 h-1 rounded-full bg-white/40"></span>
-              {{ cv.sections.personal.linkedin }}
+              {{ cv().sections.personal.linkedin }}
             </span>
           }
         </div>
@@ -72,46 +72,46 @@ import { Cv } from "../../../../domain/models/cv.model";
 
       <div class="p-8 space-y-8">
         <!-- Summary -->
-        @if (cv.sections.personal.summary) {
+        @if (cv().sections.personal.summary) {
           <section>
             <h2
               class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
             >
               <span
                 class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor"
+                [style.background-color]="accentColor()"
               ></span>
               Professional Summary
             </h2>
             <p class="text-gray-600 leading-relaxed text-sm">
-              {{ cv.sections.personal.summary }}
+              {{ cv().sections.personal.summary }}
             </p>
           </section>
         }
 
         <!-- Experience -->
-        @if (cv.sections.experience.length > 0) {
+        @if (cv().sections.experience.length > 0) {
           <section>
             <h2
               class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
             >
               <span
                 class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor"
+                [style.background-color]="accentColor()"
               ></span>
               Experience
             </h2>
-            @for (exp of cv.sections.experience; track exp.id) {
+            @for (exp of cv().sections.experience; track exp.id) {
               <div
                 class="mb-5 pl-4 border-l-2"
-                [style.border-left-color]="accentColor + '33'"
+                [style.border-left-color]="accentColor() + '33'"
               >
                 <div class="flex justify-between items-start mb-1">
                   <div>
                     <h3 class="text-base font-semibold text-gray-900">
                       {{ exp.jobTitle }}
                     </h3>
-                    <p class="font-medium text-sm" [style.color]="accentColor">
+                    <p class="font-medium text-sm" [style.color]="accentColor()">
                       {{ exp.company }}
                     </p>
                   </div>
@@ -136,25 +136,25 @@ import { Cv } from "../../../../domain/models/cv.model";
         }
 
         <!-- Education -->
-        @if (cv.sections.education.length > 0) {
+        @if (cv().sections.education.length > 0) {
           <section>
             <h2
               class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
             >
               <span
                 class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor"
+                [style.background-color]="accentColor()"
               ></span>
               Education
             </h2>
-            @for (edu of cv.sections.education; track edu.id) {
+            @for (edu of cv().sections.education; track edu.id) {
               <div class="mb-3 p-3 bg-gray-50 rounded-lg">
                 <div class="flex justify-between items-start">
                   <div>
                     <h3 class="font-semibold text-gray-900 text-sm">
                       {{ edu.degree }}
                     </h3>
-                    <p class="text-sm" [style.color]="accentColor">
+                    <p class="text-sm" [style.color]="accentColor()">
                       {{ edu.institution }}
                     </p>
                     @if (edu.gpa) {
@@ -176,27 +176,27 @@ import { Cv } from "../../../../domain/models/cv.model";
         }
 
         <!-- Skills -->
-        @if (cv.sections.skills.length > 0) {
+        @if (cv().sections.skills.length > 0) {
           <section>
             <h2
               class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
             >
               <span
                 class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor"
+                [style.background-color]="accentColor()"
               ></span>
               Skills
             </h2>
             <div class="flex flex-wrap gap-2">
-              @for (skill of cv.sections.skills; track skill.id) {
+              @for (skill of cv().sections.skills; track skill.id) {
                 <span
                   class="px-3 py-1.5 rounded-full text-xs font-medium border"
-                  [style.background-color]="accentColor + '10'"
-                  [style.color]="accentColor"
-                  [style.border-color]="accentColor + '25'"
+                  [style.background-color]="accentColor() + '10'"
+                  [style.color]="accentColor()"
+                  [style.border-color]="accentColor() + '25'"
                 >
                   {{ skill.name }}
-                  <span [style.color]="accentColor + '80'" class="ml-1"
+                  <span [style.color]="accentColor() + '80'" class="ml-1"
                     >· {{ skill.level }}</span
                   >
                 </span>
@@ -209,16 +209,16 @@ import { Cv } from "../../../../domain/models/cv.model";
   `,
 })
 export class ModernTemplateComponent {
-  @Input() cv!: Cv;
-  @Input() accentColor = "#4f46e5";
-  @Input() backgroundColor = "#ffffff";
-  @Input() primaryColor = "#111827";
+  readonly cv = input.required<Cv>();
+  readonly accentColor = input("#4f46e5");
+  readonly backgroundColor = input("#ffffff");
+  readonly primaryColor = input("#111827");
 
-  get accentColorDark(): string {
-    return this.adjustBrightness(this.accentColor, -30);
+  protected get accentColorDark(): string {
+    return this.adjustBrightness(this.accentColor(), -30);
   }
 
-  formatDate(dateString: string): string {
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;

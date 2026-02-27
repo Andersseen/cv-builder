@@ -177,8 +177,8 @@ import { createDefaultEducation } from "../../../domain/models/cv.defaults";
   `,
 })
 export class EducationFormComponent {
-  items = input.required<Education[]>();
-  itemsChange = output<Education[]>();
+  readonly items = input.required<Education[]>();
+  readonly itemsChange = output<Education[]>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
 

@@ -562,15 +562,15 @@ import { ColorPickerComponent, ColorPreset } from "./color-picker.component";
   `,
 })
 export class TemplateSelectorComponent {
-  selectedTemplateId = input.required<string>();
-  accentColor = input.required<string>();
-  backgroundColor = input("#ffffff");
-  primaryColor = input("#111827");
+  readonly selectedTemplateId = input.required<string>();
+  readonly accentColor = input.required<string>();
+  readonly backgroundColor = input("#ffffff");
+  readonly primaryColor = input("#111827");
 
-  templateSelected = output<string>();
-  colorChanged = output<string>();
-  backgroundColorChanged = output<string>();
-  primaryColorChanged = output<string>();
+  readonly templateSelected = output<string>();
+  readonly colorChanged = output<string>();
+  readonly backgroundColorChanged = output<string>();
+  readonly primaryColorChanged = output<string>();
 
   readonly templates = TEMPLATES;
 

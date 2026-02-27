@@ -144,14 +144,14 @@ import {
   `,
 })
 export class EditorToolbarComponent {
-  cvName = input<string>();
-  saving = input(false);
-  lastSavedAt = input<Date | null>(null);
-  isExporting = input(false);
+  readonly cvName = input<string>();
+  readonly saving = input(false);
+  readonly lastSavedAt = input<Date | null>(null);
+  readonly isExporting = input(false);
 
-  back = output<void>();
-  exportPdf = output<void>();
-  printPdf = output<void>();
+  readonly back = output<void>();
+  readonly exportPdf = output<void>();
+  readonly printPdf = output<void>();
 
   dropdownOpen = signal(false);
 
