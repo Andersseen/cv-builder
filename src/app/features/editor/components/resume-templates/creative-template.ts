@@ -13,7 +13,7 @@ import { Cv } from "../../../../domain/models/cv-model";
     >
       <div class="flex min-h-[600px]">
         <!-- Sidebar — dark with accent color accents -->
-        <div class="w-[38%] bg-background text-primary-foreground p-6 space-y-6">
+        <div class="w-[38%] bg-gray-900 text-white p-6 space-y-6">
           @if (cv().sections.personal.avatarUrl) {
             <div class="flex justify-center mb-2">
               <img
@@ -99,7 +99,7 @@ import { Cv } from "../../../../domain/models/cv-model";
                 <div class="mb-2.5">
                   <div class="flex justify-between mb-1">
                     <span class="text-xs text-gray-200">{{ skill.name }}</span>
-                    <span class="text-[10px] text-muted-foreground-foreground">{{
+                    <span class="text-[10px] text-gray-500">{{
                       skill.level
                     }}</span>
                   </div>
@@ -125,11 +125,11 @@ import { Cv } from "../../../../domain/models/cv-model";
               </h2>
               @for (edu of cv().sections.education; track edu.id) {
                 <div class="mb-3">
-                  <h3 class="font-semibold text-xs text-primary-foreground">
+                  <h3 class="font-semibold text-xs text-white">
                     {{ edu.degree }}
                   </h3>
-                  <p class="text-muted-foreground-foreground text-[11px]">{{ edu.institution }}</p>
-                  <p class="text-muted-foreground-foreground text-[10px]">
+                  <p class="text-gray-500 text-[11px]">{{ edu.institution }}</p>
+                  <p class="text-gray-500 text-[10px]">
                     {{ formatDate(edu.graduationDate) }}
                   </p>
                   @if (edu.gpa) {
@@ -147,14 +147,14 @@ import { Cv } from "../../../../domain/models/cv-model";
         <div class="w-[62%] p-6 space-y-6">
           @if (cv().sections.personal.summary) {
             <section>
-              <h2 class="text-sm font-bold text-card-foreground mb-2 relative pl-4">
+              <h2 class="text-sm font-bold text-gray-900 mb-2 relative pl-4">
                 <span
                   class="absolute left-0 top-0 bottom-0 w-1 rounded-full"
                   [style.background-color]="accentColor()"
                 ></span>
                 About Me
               </h2>
-              <p class="text-muted-foreground-foreground leading-relaxed text-xs">
+              <p class="text-gray-500 leading-relaxed text-xs">
                 {{ cv().sections.personal.summary }}
               </p>
             </section>
@@ -162,7 +162,7 @@ import { Cv } from "../../../../domain/models/cv-model";
 
           @if (cv().sections.experience.length > 0) {
             <section>
-              <h2 class="text-sm font-bold text-card-foreground mb-4 relative pl-4">
+              <h2 class="text-sm font-bold text-gray-900 mb-4 relative pl-4">
                 <span
                   class="absolute left-0 top-0 bottom-0 w-1 rounded-full"
                   [style.background-color]="accentColor()"
@@ -188,15 +188,15 @@ import { Cv } from "../../../../domain/models/cv-model";
 
                   <div class="flex justify-between items-start mb-1">
                     <div>
-                      <h3 class="text-sm font-semibold text-card-foreground">
+                      <h3 class="text-sm font-semibold text-gray-900">
                         {{ exp.jobTitle }}
                       </h3>
-                      <p class="text-xs text-muted-foreground-foreground font-medium">
+                      <p class="text-xs text-gray-500 font-medium">
                         {{ exp.company }}
                       </p>
                     </div>
                     <div
-                      class="text-right text-[10px] text-muted-foreground-foreground shrink-0 ml-3"
+                      class="text-right text-[10px] text-gray-500 shrink-0 ml-3"
                     >
                       <p>
                         {{ formatDate(exp.startDate) }} –
@@ -208,7 +208,7 @@ import { Cv } from "../../../../domain/models/cv-model";
                     </div>
                   </div>
                   @if (exp.description) {
-                    <p class="text-muted-foreground-foreground text-xs leading-relaxed mt-1">
+                    <p class="text-gray-500 text-xs leading-relaxed mt-1">
                       {{ exp.description }}
                     </p>
                   }
