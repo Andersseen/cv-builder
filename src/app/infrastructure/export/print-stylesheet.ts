@@ -1,7 +1,7 @@
-import { A4 } from "./a4.constants";
+import { A4 } from "./a4";
 
 /**
- * Generates the `@media print` stylesheet injected by PrintExportService.
+ * Generates the `@media print` stylesheet injected by PrintExport.
  *
  * Kept as a pure function (no side-effects) so it can be
  * unit-tested independently of the DOM.
