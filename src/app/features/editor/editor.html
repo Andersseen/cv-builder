@@ -1,0 +1,105 @@
+<div class="min-h-screen bg-background">
+  <!-- Top Bar -->
+  <app-editor-toolbar
+    [cvName]="cvStore.activeCv()?.name"
+    [saving]="autosave.saving()"
+    [lastSavedAt]="autosave.lastSavedAt()"
+    [isExporting]="isExporting()"
+    (back)="goBack()"
+    (exportPdf)="exportPdf()"
+    (printPdf)="printResume()"
+  />
+
+  @if (cvStore.loading()) {
+  <div class="flex items-center justify-center py-24">
+    <div
+      class="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent"
+    ></div>
+  </div>
+  } @else if (cvStore.activeCv()) {
+  <!-- Main layout -->
+  <div class="max-w-[1600px] mx-auto px-4 py-6">
+    <div class="flex gap-6">
+      <!-- LEFT: Sidebar Tabs + Form Content -->
+      <div class="flex-1 min-w-0 flex gap-0">
+        <!-- Editor Tabs Component -->
+        <app-editor-tabs
+          [activeTab]="activeTab()"
+          [tabs]="tabs"
+          (tabSelected)="activeTab.set($event)"
+        />
+
+        <!-- Form content -->
+        <div
+          class="flex-1 min-w-0 bg-card backdrop-blur-sm border border-border p-6 md:rounded-r-xl md:rounded-l-none rounded-b-xl md:rounded-b-xl"
+        >
+          @switch (activeTab()) { @case ("personal") {
+          <app-personal-info-form
+            [data]="cvStore.activeCv()!.sections.personal"
+            (changed)="updatePersonalInfo($event)"
+          />
+          } @case ("experience") {
+          <app-experience-form
+            [items]="cvStore.activeCv()!.sections.experience"
+            (itemsChange)="updateExperience($event)"
+          />
+          } @case ("education") {
+          <app-education-form
+            [items]="cvStore.activeCv()!.sections.education"
+            (itemsChange)="updateEducation($event)"
+          />
+          } @case ("skills") {
+          <app-skills-form
+            [items]="cvStore.activeCv()!.sections.skills"
+            (itemsChange)="updateSkills($event)"
+          />
+          } @case ("template") {
+          <app-template-selector
+            [selectedTemplateId]="cvStore.activeCv()!.templateId"
+            [accentColor]="cvStore.activeCv()!.settings.accentColor"
+            [backgroundColor]="
+                        cvStore.activeCv()!.settings.backgroundColor
+                      "
+            [primaryColor]="cvStore.activeCv()!.settings.primaryColor"
+            (templateSelected)="changeTemplate($event)"
+            (colorChanged)="changeAccentColor($event)"
+            (backgroundColorChanged)="changeBackgroundColor($event)"
+            (primaryColorChanged)="changePrimaryColor($event)"
+          />
+          } }
+        </div>
+      </div>
+
+      <!-- RIGHT: Preview (collapsible) -->
+      @if (previewOpen()) {
+      <div
+        class="hidden lg:block w-[45%] shrink-0 lg:sticky lg:top-20 lg:self-start"
+      >
+        <app-resume-preview [cv]="cvStore.activeCv()!" />
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Preview toggle button -->
+  <button
+    (click)="previewOpen.set(!previewOpen())"
+    class="hidden lg:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-xl shadow-foreground/10 hover:bg-card-hover transition-all duration-200 text-sm font-medium text-foreground"
+    [title]="previewOpen() ? 'Hide preview' : 'Show preview'"
+  >
+    <span class="text-base">{{ previewOpen() ? "👁️" : "👁️‍🗨️" }}</span>
+    {{ previewOpen() ? "Hide Preview" : "Show Preview" }}
+  </button>
+  } @else {
+  <!-- No CV found -->
+  <div class="text-center py-24">
+    <p class="text-muted-foreground-foreground mb-4">Resume not found</p>
+    <button
+      (click)="goBack()"
+      class="text-primary hover:text-primary-700 transition-colors"
+    >
+      &larr; Back to dashboard
+    </button>
+  </div>
+  }
+</div>
