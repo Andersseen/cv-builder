@@ -58,8 +58,8 @@ import { Cv } from "../../../domain/models/cv-model";
             (blur)="isEditing.set(false)"
             (keydown.enter)="isEditing.set(false)"
             (keydown.escape)="isEditing.set(false)"
-            class="w-full bg-card-hover text-foreground px-3 py-1.5 rounded-lg text-base font-semibold
-                   outline-none ring-2 ring-primary mb-2"
+            class="w-full bg-background/50 backdrop-blur-sm text-foreground px-3.5 py-2 rounded-xl text-base font-semibold
+                   outline-none ring-2 ring-primary shadow-inner mb-2 transition-all duration-300"
           />
         } @else {
           <h3
@@ -80,15 +80,15 @@ import { Cv } from "../../../domain/models/cv-model";
         <div class="flex gap-2">
           <button
             (click)="edit.emit(cv().id)"
-            class="flex-1 px-3 py-2 bg-primary/15 text-primary text-sm font-medium
-                   rounded-lg hover:bg-primary/25 transition-colors"
+            class="flex-1 px-3 py-2 bg-primary/10 text-primary text-sm font-medium
+                   rounded-lg hover:bg-primary/20 transition-all duration-300 active:scale-95"
           >
             Edit
           </button>
           <button
             (click)="duplicate.emit(cv().id)"
             class="px-3 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg
-                   hover:bg-card-hover transition-colors"
+                   hover:bg-muted/80 transition-all duration-300 active:scale-95"
             title="Duplicate"
           >
             ⧉
@@ -96,7 +96,7 @@ import { Cv } from "../../../domain/models/cv-model";
           <button
             (click)="delete.emit(cv())"
             class="px-3 py-2 bg-danger/10 text-danger text-sm rounded-lg
-                   hover:bg-danger/20 transition-colors"
+                   hover:bg-danger/20 transition-all duration-300 active:scale-95"
             title="Delete"
           >
             ✕

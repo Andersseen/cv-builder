@@ -94,9 +94,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="text"
               formControlName="fullName"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="John Doe"
             />
             @if (
@@ -113,9 +111,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="email"
               formControlName="email"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="john&#64;example.com"
             />
             @if (form.controls.email.touched && form.controls.email.invalid) {
@@ -130,9 +126,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="tel"
               formControlName="phone"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="+1 (555) 123-4567"
             />
             @if (form.controls.phone.touched && form.controls.phone.invalid) {
@@ -147,9 +141,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="text"
               formControlName="location"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="New York, NY"
             />
             @if (
@@ -166,9 +158,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="url"
               formControlName="website"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="https://johndoe.com"
             />
           </div>
@@ -180,9 +170,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="url"
               formControlName="linkedin"
-              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                     transition-all duration-200"
+              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="https://linkedin.com/in/johndoe"
             />
           </div>
@@ -195,9 +183,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           <textarea
             formControlName="summary"
             rows="4"
-            class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
-                   placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-                   transition-all duration-200 resize-none"
+            class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50 resize-none"
             placeholder="Brief overview of your professional background and key achievements..."
           ></textarea>
         </div>

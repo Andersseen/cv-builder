@@ -16,8 +16,8 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
       </p>
       <button
         (click)="create.emit()"
-        class="px-8 py-3 bg-primary hover:bg-primary-700 text-primary-foreground rounded-xl font-semibold
-               transition-all duration-200 shadow-lg shadow-primary/25"
+        class="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold
+               transition-all duration-300 shadow-md hover:shadow-glass hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
       >
         Create Your First Resume
       </button>

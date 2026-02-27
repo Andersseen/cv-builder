@@ -24,16 +24,16 @@ export interface TabConfig {
   template: `
     <!-- Mobile Tabs -->
     <div
-      class="md:hidden flex overflow-x-auto bg-card border-b border-neutral-200 hide-scrollbar"
+      class="md:hidden flex overflow-x-auto bg-card border-b border-border hide-scrollbar"
     >
       @for (tab of tabs(); track tab.id) {
         <button
-          class="flex-none px-4 py-3 text-sm font-medium transition-colors border-b-2"
-          [class.text-primary-600]="activeTab() === tab.id"
-          [class.border-primary-600]="activeTab() === tab.id"
-          [class.text-neutral-500]="activeTab() !== tab.id"
-          [class.border-transparent]="activeTab() !== tab.id"
-          [class.hover:text-neutral-700]="activeTab() !== tab.id"
+          class="flex-none px-4 py-3 text-sm font-medium transition-all duration-300 border-b-2 active:bg-muted/50"
+          [class]="
+            activeTab() === tab.id
+              ? 'text-primary border-primary'
+              : 'text-muted-foreground border-transparent hover:text-foreground'
+          "
           (click)="tabSelected.emit(tab.id)"
         >
           <span class="mr-2">{{ tab.icon }}</span>
@@ -43,21 +43,24 @@ export interface TabConfig {
     </div>
 
     <!-- Desktop Sidebar -->
-    <div
-      class="hidden md:flex flex-col w-64 bg-card border-r border-neutral-200"
-    >
+    <div class="hidden md:flex flex-col w-64 bg-card border-r border-border">
       <div class="flex-1 overflow-y-auto pt-4">
-        <nav class="space-y-1 px-3">
+        <nav class="space-y-2 px-4">
           @for (tab of tabs(); track tab.id) {
             <button
-              class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-md transition-colors"
-              [class.bg-primary-50]="activeTab() === tab.id"
-              [class.text-primary-700]="activeTab() === tab.id"
-              [class.text-neutral-700]="activeTab() !== tab.id"
-              [class.hover:bg-neutral-50]="activeTab() !== tab.id"
+              class="w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 active:scale-95"
+              [class]="
+                activeTab() === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              "
               (click)="tabSelected.emit(tab.id)"
             >
-              <span class="mr-3 text-lg">{{ tab.icon }}</span>
+              <span
+                class="mr-3 text-lg"
+                [class.opacity-80]="activeTab() !== tab.id"
+                >{{ tab.icon }}</span
+              >
               {{ tab.label }}
             </button>
           }

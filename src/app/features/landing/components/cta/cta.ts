@@ -1,22 +1,24 @@
-import { Component, ChangeDetectionStrategy,   } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-cta",
   imports: [RouterLink],
   template: `
-    <section class="relative isolate overflow-hidden bg-foreground">
+    <section
+      class="relative isolate overflow-hidden bg-card border-t border-border mt-12"
+    >
       <div class="px-6 py-24 sm:py-32 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
           <h2
-            class="text-3xl font-bold tracking-tight text-background sm:text-4xl text-balance font-display leading-tight"
+            class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance font-display leading-tight"
           >
             Ready to land your dream job?
             <br />
             <span class="text-primary">Start building for free today.</span>
           </h2>
           <p
-            class="mx-auto mt-6 max-w-xl text-base leading-7 text-background/60"
+            class="mx-auto mt-6 max-w-xl text-base leading-7 text-muted-foreground-foreground"
           >
             Join thousands of professionals who have advanced their careers with
             our resume builder. No credit card required.
@@ -25,14 +27,14 @@ import { RouterLink } from "@angular/router";
             <a
               routerLink="/dashboard"
               class="rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground
-                     shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:brightness-110
-                     transition-all duration-300 hover:scale-[1.02]"
+                     shadow-lg shadow-primary/30 hover:shadow-glass hover:-translate-y-0.5
+                     transition-all duration-300 active:scale-95 active:translate-y-0"
             >
               Get started
             </a>
             <a
               routerLink="/dashboard"
-              class="text-sm font-semibold leading-6 text-background/80 hover:text-primary transition-colors duration-200"
+              class="text-sm font-semibold leading-6 text-foreground hover:text-primary transition-colors duration-200"
             >
               Browse templates <span aria-hidden="true">→</span>
             </a>

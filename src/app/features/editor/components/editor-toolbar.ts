@@ -57,8 +57,8 @@ import {
                 (click)="printPdf.emit()"
                 [disabled]="isExporting()"
                 class="px-4 py-2 bg-accent hover:bg-accent/90 disabled:opacity-50
-                       text-accent-foreground text-sm font-medium rounded-l-lg transition-all duration-200
-                       shadow-lg shadow-accent/20 flex items-center gap-2"
+                       text-accent-foreground text-sm font-medium rounded-l-lg transition-all duration-300
+                       shadow-md hover:shadow-glass hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center gap-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

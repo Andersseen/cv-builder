@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy,   } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
   selector: "app-features",
@@ -57,7 +57,9 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 Distraction-Free Editor
               </h3>
-              <p class="max-w-xl text-sm leading-7 text-muted-foreground-foreground">
+              <p
+                class="max-w-xl text-sm leading-7 text-muted-foreground-foreground"
+              >
                 Our minimalist editor keeps you focused on your content.
                 Real-time preview updates instantly as you type, so you always
                 know exactly how your resume looks.
@@ -70,7 +72,7 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
 
           <!-- Feature 2: PDF Export -->
           <div
-            class="relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
+            class="col-span-1 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
                    hover:ring-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
           >
             <div class="relative z-10">
@@ -104,7 +106,7 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
 
           <!-- Feature 3: Templates (tall) -->
           <div
-            class="row-span-2 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
+            class="col-span-1 sm:col-span-2 lg:col-span-1 lg:row-span-2 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
                    hover:ring-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
           >
             <div class="relative z-10 h-full flex flex-col">
@@ -129,7 +131,9 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 5 Professional Templates
               </h3>
-              <p class="text-sm leading-7 text-muted-foreground-foreground mb-6">
+              <p
+                class="text-sm leading-7 text-muted-foreground-foreground mb-6"
+              >
                 Choose from curated layouts designed by HR experts. Modern,
                 Classic, Minimal, Creative and Executive — each ATS-optimized.
               </p>
@@ -187,7 +191,7 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
 
           <!-- Feature 4: Privacy -->
           <div
-            class="relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
+            class="col-span-1 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
                    hover:ring-accent/30 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 group"
           >
             <div class="relative z-10">
@@ -219,43 +223,9 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
             </div>
           </div>
 
-          <!-- Feature 5: Fast -->
+          <!-- Feature 5: Color Customization (NEW) -->
           <div
-            class="relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
-                   hover:ring-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
-          >
-            <div class="relative z-10">
-              <div
-                class="flex h-11 w-11 items-center justify-center rounded-xl bg-warning/10 text-warning mb-5 group-hover:scale-110 transition-transform duration-300"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 class="text-xl font-bold text-foreground mb-2">
-                Lightning Fast
-              </h3>
-              <p class="text-sm leading-7 text-muted-foreground-foreground">
-                No sign-ups, no loading spinners. Start building instantly and
-                see your resume come alive in real time.
-              </p>
-            </div>
-          </div>
-
-          <!-- Feature 6: Color Customization (NEW) -->
-          <div
-            class="relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
+            class="col-span-1 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
                    hover:ring-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
           >
             <div class="relative z-10">
@@ -283,6 +253,43 @@ import { Component, ChangeDetectionStrategy,   } from "@angular/core";
               <p class="text-sm leading-7 text-muted-foreground-foreground">
                 Personalize your resume with 10 preset accent colors or pick any
                 custom color with real-time preview.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature 6: Fast -->
+          <div
+            class="col-span-1 sm:col-span-2 lg:col-span-2 relative overflow-hidden rounded-2xl bg-card p-8 ring-1 ring-border
+                   hover:ring-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
+          >
+            <div class="relative z-10">
+              <div
+                class="flex h-11 w-11 items-center justify-center rounded-xl bg-warning/10 text-warning mb-5 group-hover:scale-110 transition-transform duration-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-foreground mb-2">
+                Lightning Fast
+              </h3>
+              <p
+                class="max-w-xl text-sm leading-7 text-muted-foreground-foreground"
+              >
+                No sign-ups, no loading spinners. Start building instantly and
+                see your resume come alive in real time as you rapidly make
+                edits.
               </p>
             </div>
           </div>

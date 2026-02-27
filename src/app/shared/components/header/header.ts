@@ -1,8 +1,9 @@
-import { Component,
+import {
+  Component,
   inject,
   signal,
   ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { Theme } from "../../../core/services/theme";
 
@@ -29,16 +30,16 @@ import { Theme } from "../../../core/services/theme";
         <nav class="hidden md:flex items-center gap-1">
           <a
             routerLink="/"
-            routerLinkActive="text-foreground bg-card-alt"
+            routerLinkActive="text-primary bg-primary/10 font-semibold"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
           >
             Home
           </a>
           <a
             routerLink="/dashboard"
-            routerLinkActive="text-foreground bg-card-alt"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
+            routerLinkActive="text-primary bg-primary/10 font-semibold"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
           >
             My Resumes
           </a>
@@ -49,7 +50,7 @@ import { Theme } from "../../../core/services/theme";
           <!-- Theme toggle -->
           <button
             (click)="theme.toggleDarkMode()"
-            class="relative p-2.5 rounded-xl text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
+            class="relative p-2.5 rounded-xl text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label="Toggle dark mode"
           >
             @if (theme.darkMode()) {
@@ -83,8 +84,8 @@ import { Theme } from "../../../core/services/theme";
           <a
             routerLink="/dashboard"
             class="hidden sm:inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold
-                   shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/25 hover:brightness-110
-                   transition-all duration-200"
+                   shadow-sm hover:shadow-glass hover:-translate-y-0.5 active:translate-y-0 active:scale-95
+                   transition-all duration-300"
           >
             Create Resume
           </a>
@@ -115,23 +116,21 @@ import { Theme } from "../../../core/services/theme";
 
       <!-- Mobile menu -->
       @if (mobileMenuOpen()) {
-        <div
-          class="md:hidden border-t border-border bg-card animate-slide-up"
-        >
+        <div class="md:hidden border-t border-border bg-card animate-slide-up">
           <nav class="px-6 py-3 space-y-1">
             <a
               routerLink="/"
-              routerLinkActive="text-primary bg-primary/5"
+              routerLinkActive="text-primary bg-primary/10 font-semibold"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-card-alt transition-all"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-muted/50 transition-all duration-300"
               (click)="mobileMenuOpen.set(false)"
             >
               Home
             </a>
             <a
               routerLink="/dashboard"
-              routerLinkActive="text-primary bg-primary/5"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-card-alt transition-all"
+              routerLinkActive="text-primary bg-primary/10 font-semibold"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-muted/50 transition-all duration-300"
               (click)="mobileMenuOpen.set(false)"
             >
               My Resumes
