@@ -27,7 +27,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
             showForm()
-              ? 'bg-secondary text-secondary-foreground hover:bg-surface-hover'
+              ? 'bg-secondary text-secondary-foreground hover:bg-card-hover'
               : 'bg-primary text-primary-foreground hover:bg-primary-700'
           "
         >
@@ -39,9 +39,9 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="space-y-4 bg-surface-alt rounded-xl p-5 border border-border"
+          class="space-y-4 bg-card-alt rounded-xl p-5 border border-border"
         >
-          <h3 class="text-sm font-medium text-muted-foreground">
+          <h3 class="text-sm font-medium text-muted-foreground-foreground">
             {{ editingId() ? "Edit Education" : "New Education" }}
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -52,7 +52,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="degree"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Bachelor of Science"
               />
@@ -64,7 +64,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="institution"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="MIT"
               />
@@ -76,7 +76,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="location"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Cambridge, MA"
               />
@@ -88,7 +88,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
               <input
                 type="month"
                 formControlName="graduationDate"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
@@ -99,7 +99,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="gpa"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="3.8 / 4.0"
               />
@@ -109,7 +109,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
             <button
               type="button"
               (click)="cancelEdit()"
-              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-surface-hover transition-colors"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-card-hover transition-colors"
             >
               Cancel
             </button>
@@ -128,7 +128,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
       <div class="space-y-3">
         @for (edu of items(); track edu.id) {
           <div
-            class="p-4 bg-surface-alt border border-border rounded-xl group
+            class="p-4 bg-card-alt border border-border rounded-xl group
                       hover:border-primary/30 transition-all duration-200"
           >
             <div class="flex justify-between items-start">
@@ -138,11 +138,11 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
                 >
                   {{ edu.degree }}
                 </h3>
-                <p class="text-muted-foreground text-sm">
+                <p class="text-muted-foreground-foreground text-sm">
                   {{ edu.institution
                   }}{{ edu.location ? " — " + edu.location : "" }}
                 </p>
-                <p class="text-xs text-muted-foreground/70 mt-1">
+                <p class="text-xs text-muted-foreground-foreground/70 mt-1">
                   {{ formatDate(edu.graduationDate) }}
                   {{ edu.gpa ? " · GPA: " + edu.gpa : "" }}
                 </p>
@@ -167,7 +167,7 @@ import { createDefaultEducation  } from "../../../domain/models/cv-defaults";
           </div>
         }
         @if (items().length === 0) {
-          <p class="text-muted-foreground text-sm text-center py-6">
+          <p class="text-muted-foreground-foreground text-sm text-center py-6">
             No education added yet.
           </p>
         }

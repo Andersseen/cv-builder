@@ -24,7 +24,7 @@ export interface TabConfig {
   template: `
     <!-- Mobile Tabs -->
     <div
-      class="md:hidden flex overflow-x-auto bg-white border-b border-neutral-200 hide-scrollbar"
+      class="md:hidden flex overflow-x-auto bg-card border-b border-neutral-200 hide-scrollbar"
     >
       @for (tab of tabs(); track tab.id) {
         <button
@@ -44,7 +44,7 @@ export interface TabConfig {
 
     <!-- Desktop Sidebar -->
     <div
-      class="hidden md:flex flex-col w-64 bg-white border-r border-neutral-200"
+      class="hidden md:flex flex-col w-64 bg-card border-r border-neutral-200"
     >
       <div class="flex-1 overflow-y-auto pt-4">
         <nav class="space-y-1 px-3">

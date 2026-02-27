@@ -1,8 +1,9 @@
-import { Component,
+import {
+  Component,
   input,
   output,
   ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 
 import { TEMPLATES } from "../../../domain/models/template-registry";
 import { ColorPicker, ColorPreset } from "./color-picker";
@@ -14,7 +15,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
   template: `
     <div class="space-y-5">
       <h2 class="text-lg font-semibold text-foreground">Choose Template</h2>
-      <p class="text-sm text-muted-foreground -mt-3">
+      <p class="text-sm text-muted-foreground-foreground -mt-3">
         Select a layout that best represents your style
       </p>
 
@@ -25,7 +26,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
             [class]="
               selectedTemplateId() === template.id
                 ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 ring-1 ring-primary/30'
-                : 'border-border bg-surface hover:border-primary/40 hover:bg-surface-alt'
+                : 'border-border bg-card hover:border-primary/40 hover:bg-card-alt'
             "
             (click)="selectTemplate(template.id)"
           >
@@ -50,7 +51,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
 
             <!-- Template preview SVG -->
             <div
-              class="bg-white border border-border/50 rounded-lg overflow-hidden mb-3 aspect-[3/4] flex items-stretch"
+              class="bg-card border border-border/50 rounded-lg overflow-hidden mb-3 aspect-[3/4] flex items-stretch"
             >
               <svg
                 viewBox="0 0 120 160"
@@ -59,14 +60,14 @@ import { ColorPicker, ColorPreset } from "./color-picker";
               >
                 @switch (template.previewLayout) {
                   @case ("single-column") {
-                    <rect width="120" height="30" fill="#3b82f6" />
+                    <rect width="120" height="30" class="fill-primary" />
                     <rect
                       x="10"
                       y="8"
                       width="60"
                       height="5"
                       rx="2"
-                      fill="white"
+                      class="fill-card"
                       opacity="0.9"
                     />
                     <rect
@@ -75,7 +76,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="40"
                       height="3"
                       rx="1"
-                      fill="white"
+                      class="fill-card"
                       opacity="0.5"
                     />
                     <rect
@@ -84,7 +85,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="30"
                       height="3"
                       rx="1"
-                      fill="#3b82f6"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -93,7 +94,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="100"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -101,7 +102,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="95"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -109,7 +110,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="80"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -117,7 +118,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="30"
                       height="3"
                       rx="1"
-                      fill="#3b82f6"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -126,7 +127,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="100"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -134,7 +135,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="90"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -142,7 +143,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="95"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -150,7 +151,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="30"
                       height="3"
                       rx="1"
-                      fill="#3b82f6"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -159,7 +160,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="100"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -167,19 +168,24 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="85"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                   }
                   @case ("sidebar-left") {
-                    <rect width="40" height="160" fill="#1f2937" />
-                    <circle cx="20" cy="20" r="10" fill="#374151" />
+                    <rect width="40" height="160" class="fill-secondary" />
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="10"
+                      class="fill-muted-foreground"
+                    />
                     <rect
                       x="8"
                       y="35"
                       width="24"
                       height="3"
                       rx="1"
-                      fill="white"
+                      class="fill-foreground"
                       opacity="0.8"
                     />
                     <rect
@@ -188,7 +194,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="20"
                       height="2"
                       rx="1"
-                      fill="white"
+                      class="fill-foreground"
                       opacity="0.4"
                     />
                     <rect
@@ -197,7 +203,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="15"
                       height="2"
                       rx="1"
-                      fill="#f59e0b"
+                      class="fill-warning"
                       opacity="0.8"
                     />
                     <rect
@@ -206,7 +212,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="24"
                       height="2"
                       rx="1"
-                      fill="white"
+                      class="fill-foreground"
                       opacity="0.3"
                     />
                     <rect
@@ -215,7 +221,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="20"
                       height="2"
                       rx="1"
-                      fill="white"
+                      class="fill-foreground"
                       opacity="0.3"
                     />
                     <rect
@@ -224,7 +230,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#374151"
+                      class="fill-muted-foreground"
                       opacity="0.6"
                     />
                     <rect
@@ -233,7 +239,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="62"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="48"
@@ -241,7 +247,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="58"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="48"
@@ -249,7 +255,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#374151"
+                      class="fill-muted-foreground"
                       opacity="0.6"
                     />
                     <rect
@@ -258,7 +264,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="62"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="48"
@@ -266,18 +272,18 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="55"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                   }
                   @case ("sidebar-right") {
-                    <rect x="80" y="0" width="40" height="160" fill="#f3f4f6" />
+                    <rect x="80" y="0" width="40" height="160" class="fill-secondary" />
                     <rect
                       x="10"
                       y="12"
                       width="50"
                       height="5"
                       rx="2"
-                      fill="#111827"
+                      class="fill-foreground"
                       opacity="0.8"
                     />
                     <rect
@@ -286,7 +292,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="60"
                       height="2"
                       rx="1"
-                      fill="#6b7280"
+                      class="fill-muted-foreground"
                       opacity="0.5"
                     />
                     <rect
@@ -295,7 +301,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#10b981"
+                      class="fill-accent"
                       opacity="0.6"
                     />
                     <rect
@@ -304,7 +310,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="62"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -312,7 +318,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="58"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="88"
@@ -320,7 +326,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="24"
                       height="3"
                       rx="1"
-                      fill="#374151"
+                      class="fill-muted-foreground"
                       opacity="0.6"
                     />
                     <rect
@@ -329,7 +335,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="24"
                       height="2"
                       rx="1"
-                      fill="#9ca3af"
+                      class="fill-muted-foreground"
                       opacity="0.5"
                     />
                     <rect
@@ -338,7 +344,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="20"
                       height="2"
                       rx="1"
-                      fill="#9ca3af"
+                      class="fill-muted-foreground"
                       opacity="0.5"
                     />
                     <rect
@@ -347,7 +353,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="24"
                       height="3"
                       rx="1"
-                      fill="#374151"
+                      class="fill-muted-foreground"
                       opacity="0.6"
                     />
                     <rect
@@ -356,19 +362,19 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="24"
                       height="2"
                       rx="1"
-                      fill="#9ca3af"
+                      class="fill-muted-foreground"
                       opacity="0.5"
                     />
                   }
                   @case ("two-column") {
-                    <rect width="120" height="25" fill="#111827" />
+                    <rect width="120" height="25" class="fill-foreground" />
                     <rect
                       x="10"
                       y="8"
                       width="50"
                       height="4"
                       rx="2"
-                      fill="white"
+                      class="fill-card"
                       opacity="0.9"
                     />
                     <rect
@@ -377,7 +383,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="35"
                       height="2"
                       rx="1"
-                      fill="white"
+                      class="fill-card"
                       opacity="0.4"
                     />
                     <rect
@@ -386,7 +392,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#8b5cf6"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -395,7 +401,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="48"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -403,7 +409,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="45"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="66"
@@ -411,7 +417,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#8b5cf6"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -420,7 +426,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="44"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="66"
@@ -428,18 +434,18 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="40"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                   }
                   @case ("header-accent") {
-                    <rect width="120" height="6" fill="#4f46e5" />
+                    <rect width="120" height="6" class="fill-primary" />
                     <rect
                       x="10"
                       y="14"
                       width="50"
                       height="5"
                       rx="2"
-                      fill="#111827"
+                      class="fill-foreground"
                       opacity="0.8"
                     />
                     <rect
@@ -448,7 +454,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="80"
                       height="2"
                       rx="1"
-                      fill="#6b7280"
+                      class="fill-muted-foreground"
                       opacity="0.4"
                     />
                     <line
@@ -465,7 +471,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#4f46e5"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -474,7 +480,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="100"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -482,7 +488,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="95"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -490,7 +496,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="25"
                       height="3"
                       rx="1"
-                      fill="#4f46e5"
+                      class="fill-primary"
                       opacity="0.6"
                     />
                     <rect
@@ -499,7 +505,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="100"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                     <rect
                       x="10"
@@ -507,7 +513,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                       width="90"
                       height="2"
                       rx="1"
-                      fill="#e5e7eb"
+                      class="fill-border"
                     />
                   }
                 }
@@ -524,7 +530,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
             >
               {{ template.name }}
             </h3>
-            <p class="text-xs text-muted-foreground leading-tight">
+            <p class="text-xs text-muted-foreground-foreground leading-tight">
               {{ template.description }}
             </p>
           </button>

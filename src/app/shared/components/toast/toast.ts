@@ -72,7 +72,7 @@ import { ToastService } from "../../../core/services/toast";
           </div>
           <p class="text-sm font-medium">{{ toast.message }}</p>
           <button
-            class="ml-auto text-white opacity-70 hover:opacity-100"
+            class="ml-auto text-primary-foreground opacity-70 hover:opacity-100"
             (click)="toastService.remove(toast.id)"
             aria-label="Dismiss notification"
           >
@@ -100,15 +100,15 @@ export class Toast {
   toastClasses(type: string): string {
     switch (type) {
       case "success":
-        return "bg-success-500 text-white";
+        return "bg-success-500 text-primary-foreground";
       case "error":
-        return "bg-error-500 text-white";
+        return "bg-error-500 text-primary-foreground";
       case "info":
-        return "bg-primary-500 text-white";
+        return "bg-primary-500 text-primary-foreground";
       case "warning":
-        return "bg-warning-500 text-white";
+        return "bg-warning-500 text-primary-foreground";
       default:
-        return "bg-primary-500 text-white";
+        return "bg-primary-500 text-primary-foreground";
     }
   }
 }

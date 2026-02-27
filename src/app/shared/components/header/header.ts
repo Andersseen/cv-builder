@@ -12,7 +12,7 @@ import { Theme } from "../../../core/services/theme";
   imports: [RouterLink, RouterLinkActive],
   template: `
     <header
-      class="bg-surface/80 backdrop-blur-lg border-b border-border sticky top-0 z-50 transition-colors duration-300"
+      class="bg-card/80 backdrop-blur-lg border-b border-border sticky top-0 z-50 transition-colors duration-300"
     >
       <div
         class="container mx-auto max-w-7xl px-6 lg:px-8 h-16 flex items-center justify-between"
@@ -29,16 +29,16 @@ import { Theme } from "../../../core/services/theme";
         <nav class="hidden md:flex items-center gap-1">
           <a
             routerLink="/"
-            routerLinkActive="text-foreground bg-surface-alt"
+            routerLinkActive="text-foreground bg-card-alt"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
           >
             Home
           </a>
           <a
             routerLink="/dashboard"
-            routerLinkActive="text-foreground bg-surface-alt"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            routerLinkActive="text-foreground bg-card-alt"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
           >
             My Resumes
           </a>
@@ -49,7 +49,7 @@ import { Theme } from "../../../core/services/theme";
           <!-- Theme toggle -->
           <button
             (click)="theme.toggleDarkMode()"
-            class="relative p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            class="relative p-2.5 rounded-xl text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
             aria-label="Toggle dark mode"
           >
             @if (theme.darkMode()) {
@@ -91,7 +91,7 @@ import { Theme } from "../../../core/services/theme";
 
           <!-- Mobile hamburger -->
           <button
-            class="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-alt transition-all duration-200"
+            class="md:hidden p-2 rounded-lg text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
             (click)="toggleMobileMenu()"
             aria-label="Open menu"
           >
@@ -116,14 +116,14 @@ import { Theme } from "../../../core/services/theme";
       <!-- Mobile menu -->
       @if (mobileMenuOpen()) {
         <div
-          class="md:hidden border-t border-border bg-surface animate-slide-up"
+          class="md:hidden border-t border-border bg-card animate-slide-up"
         >
           <nav class="px-6 py-3 space-y-1">
             <a
               routerLink="/"
               routerLinkActive="text-primary bg-primary/5"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-card-alt transition-all"
               (click)="mobileMenuOpen.set(false)"
             >
               Home
@@ -131,7 +131,7 @@ import { Theme } from "../../../core/services/theme";
             <a
               routerLink="/dashboard"
               routerLinkActive="text-primary bg-primary/5"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-surface-alt transition-all"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-card-alt transition-all"
               (click)="mobileMenuOpen.set(false)"
             >
               My Resumes

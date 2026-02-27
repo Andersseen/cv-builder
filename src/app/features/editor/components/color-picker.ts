@@ -16,7 +16,7 @@ export interface ColorPreset {
     <div>
       <h3 class="text-sm font-semibold text-foreground mb-1">{{ label() }}</h3>
       @if (description()) {
-        <p class="text-xs text-muted-foreground mb-3">{{ description() }}</p>
+        <p class="text-xs text-muted-foreground-foreground mb-3">{{ description() }}</p>
       }
 
       <!-- Preset swatches -->
@@ -52,7 +52,7 @@ export interface ColorPreset {
           type="text"
           [value]="currentColor()"
           (change)="onHexInput($event)"
-          class="w-24 px-2.5 py-1.5 bg-surface-alt border border-border rounded-lg text-foreground text-xs
+          class="w-24 px-2.5 py-1.5 bg-card-alt border border-border rounded-lg text-foreground text-xs
                  font-mono placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                  transition-all duration-200"
           placeholder="#4f46e5"

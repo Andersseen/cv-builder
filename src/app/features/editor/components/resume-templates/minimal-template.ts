@@ -14,10 +14,10 @@ import { Cv } from "../../../../domain/models/cv-model";
       <div class="p-10">
         <!-- Header — ultra-minimal -->
         <div class="mb-10">
-          <h1 class="text-2xl font-light text-gray-900 tracking-tight">
+          <h1 class="text-2xl font-light text-card-foreground tracking-tight">
             {{ cv().sections.personal.fullName || "Your Name" }}
           </h1>
-          <div class="flex flex-wrap gap-x-4 mt-2 text-xs text-gray-400">
+          <div class="flex flex-wrap gap-x-4 mt-2 text-xs text-muted-foreground-foreground">
             @if (cv().sections.personal.email) {
               <span>{{ cv().sections.personal.email }}</span>
             }
@@ -38,7 +38,7 @@ import { Cv } from "../../../../domain/models/cv-model";
 
         @if (cv().sections.personal.summary) {
           <section class="mb-10">
-            <p class="text-gray-500 leading-relaxed text-sm max-w-2xl">
+            <p class="text-muted-foreground-foreground leading-relaxed text-sm max-w-2xl">
               {{ cv().sections.personal.summary }}
             </p>
           </section>
@@ -55,22 +55,22 @@ import { Cv } from "../../../../domain/models/cv-model";
             @for (exp of cv().sections.experience; track exp.id) {
               <div class="mb-6">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h3 class="text-sm font-medium text-gray-900">
+                  <h3 class="text-sm font-medium text-card-foreground">
                     {{ exp.jobTitle }}
                   </h3>
-                  <span class="text-xs text-gray-400 shrink-0 ml-4">
+                  <span class="text-xs text-muted-foreground-foreground shrink-0 ml-4">
                     {{ formatDate(exp.startDate) }} –
                     {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                   </span>
                 </div>
-                <p class="text-xs text-gray-500 mb-1.5">
+                <p class="text-xs text-muted-foreground-foreground mb-1.5">
                   {{ exp.company }}
                   @if (exp.location) {
                     · {{ exp.location }}
                   }
                 </p>
                 @if (exp.description) {
-                  <p class="text-gray-500 text-xs leading-relaxed">
+                  <p class="text-muted-foreground-foreground text-xs leading-relaxed">
                     {{ exp.description }}
                   </p>
                 }
@@ -90,21 +90,21 @@ import { Cv } from "../../../../domain/models/cv-model";
             @for (edu of cv().sections.education; track edu.id) {
               <div class="mb-4">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h3 class="text-sm font-medium text-gray-900">
+                  <h3 class="text-sm font-medium text-card-foreground">
                     {{ edu.degree }}
                   </h3>
-                  <span class="text-xs text-gray-400 shrink-0 ml-4">{{
+                  <span class="text-xs text-muted-foreground-foreground shrink-0 ml-4">{{
                     formatDate(edu.graduationDate)
                   }}</span>
                 </div>
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-muted-foreground-foreground">
                   {{ edu.institution }}
                   @if (edu.location) {
                     · {{ edu.location }}
                   }
                 </p>
                 @if (edu.gpa) {
-                  <p class="text-xs text-gray-400 mt-0.5">{{ edu.gpa }}</p>
+                  <p class="text-xs text-muted-foreground-foreground mt-0.5">{{ edu.gpa }}</p>
                 }
               </div>
             }
@@ -122,7 +122,7 @@ import { Cv } from "../../../../domain/models/cv-model";
             <div class="flex flex-wrap gap-x-6 gap-y-2">
               @for (skill of cv().sections.skills; track skill.id) {
                 <div>
-                  <span class="text-xs text-gray-700">{{ skill.name }}</span>
+                  <span class="text-xs text-card-foreground">{{ skill.name }}</span>
                   <span class="text-xs text-gray-300 ml-1">{{
                     skill.level
                   }}</span>

@@ -53,7 +53,7 @@ import { RouterLink } from "@angular/router";
 
           <!-- Subtitle -->
           <p
-            class="max-w-2xl text-lg leading-8 text-muted-foreground mb-12 animate-slide-up"
+            class="max-w-2xl text-lg leading-8 text-muted-foreground-foreground mb-12 animate-slide-up"
             style="animation-delay: 200ms;"
           >
             Join thousands of professionals who have secured their dream jobs
@@ -91,7 +91,7 @@ import { RouterLink } from "@angular/router";
             <a
               routerLink="/dashboard"
               class="inline-flex items-center justify-center rounded-xl px-8 py-4 text-base font-semibold text-foreground
-                     ring-1 ring-border hover:bg-surface transition-all duration-300"
+                     ring-1 ring-border hover:bg-card transition-all duration-300"
             >
               View Examples
             </a>
@@ -138,7 +138,7 @@ import { RouterLink } from "@angular/router";
                   </svg>
                 }
               </div>
-              <p class="text-xs text-muted-foreground mt-0.5">
+              <p class="text-xs text-muted-foreground-foreground mt-0.5">
                 Trusted by
                 <span class="font-semibold text-foreground">2,000+</span>
                 professionals
@@ -157,11 +157,11 @@ import { RouterLink } from "@angular/router";
             class="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 rounded-3xl blur-2xl opacity-40"
           ></div>
           <div
-            class="relative rounded-2xl bg-surface border border-border shadow-2xl shadow-primary/5 overflow-hidden"
+            class="relative rounded-2xl bg-card border border-border shadow-2xl shadow-primary/5 overflow-hidden"
           >
             <!-- Window chrome -->
             <div
-              class="h-11 bg-surface-alt border-b border-border flex items-center px-4 gap-2"
+              class="h-11 bg-card-alt border-b border-border flex items-center px-4 gap-2"
             >
               <div class="w-3 h-3 rounded-full bg-danger/60"></div>
               <div class="w-3 h-3 rounded-full bg-warning/60"></div>
@@ -170,7 +170,7 @@ import { RouterLink } from "@angular/router";
                 <div
                   class="h-5 bg-background rounded-md flex items-center justify-center"
                 >
-                  <span class="text-[10px] text-muted-foreground font-mono"
+                  <span class="text-[10px] text-muted-foreground-foreground font-mono"
                     >cvbuilder.app/editor</span
                   >
                 </div>
@@ -183,19 +183,19 @@ import { RouterLink } from "@angular/router";
                 <div class="space-y-2">
                   <div class="h-3 w-20 bg-muted rounded"></div>
                   <div
-                    class="h-8 w-full bg-surface rounded-lg border border-border"
+                    class="h-8 w-full bg-card rounded-lg border border-border"
                   ></div>
                 </div>
                 <div class="space-y-2">
                   <div class="h-3 w-16 bg-muted rounded"></div>
                   <div
-                    class="h-8 w-full bg-surface rounded-lg border border-border"
+                    class="h-8 w-full bg-card rounded-lg border border-border"
                   ></div>
                 </div>
                 <div class="space-y-2">
                   <div class="h-3 w-24 bg-muted rounded"></div>
                   <div
-                    class="h-20 w-full bg-surface rounded-lg border border-border"
+                    class="h-20 w-full bg-card rounded-lg border border-border"
                   ></div>
                 </div>
                 <div class="flex gap-3 mt-4">
@@ -205,7 +205,7 @@ import { RouterLink } from "@angular/router";
               </div>
               <!-- Right panel (resume preview) -->
               <div
-                class="w-1/2 bg-white rounded-lg shadow-sm border border-border p-5 space-y-3"
+                class="w-1/2 bg-card rounded-lg shadow-sm border border-border p-5 space-y-3"
               >
                 <div class="h-8 w-full bg-primary rounded"></div>
                 <div class="space-y-1.5">

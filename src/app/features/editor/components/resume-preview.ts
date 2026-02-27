@@ -18,15 +18,15 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
     ExecutiveTemplate,
   ],
   template: `
-    <div class="bg-surface rounded-xl border border-border p-4">
+    <div class="bg-card rounded-xl border border-border p-4">
       <h2
-        class="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider"
+        class="text-sm font-medium text-muted-foreground-foreground mb-3 uppercase tracking-wider"
       >
         Preview
       </h2>
 
       <div
-        class="bg-white rounded-lg overflow-hidden shadow-2xl shadow-foreground/10"
+        class="bg-card rounded-lg overflow-hidden shadow-2xl shadow-foreground/10"
         style="transform-origin: top center;"
       >
         @switch (cv().templateId) {

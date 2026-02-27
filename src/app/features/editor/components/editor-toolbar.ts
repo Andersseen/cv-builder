@@ -1,16 +1,17 @@
-import { Component,
+import {
+  Component,
   input,
   output,
   signal,
   ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 
 @Component({
   selector: "app-editor-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="bg-surface/80 backdrop-blur-md border-b border-border sticky top-0 z-30"
+      class="bg-card/75 backdrop-blur-xl border-b border-border sticky top-0 z-30 shadow-glass transition-colors duration-300"
     >
       <div
         class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between gap-4"
@@ -19,7 +20,7 @@ import { Component,
         <div class="flex items-center gap-3 min-w-0">
           <button
             (click)="back.emit()"
-            class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            class="text-muted-foreground-foreground hover:text-foreground transition-colors shrink-0"
             title="Back to dashboard"
           >
             &larr; Back
@@ -35,7 +36,7 @@ import { Component,
         <div class="flex items-center gap-3 shrink-0">
           @if (saving()) {
             <span
-              class="text-xs text-muted-foreground flex items-center gap-1.5"
+              class="text-xs text-muted-foreground-foreground flex items-center gap-1.5"
             >
               <span
                 class="w-2 h-2 rounded-full bg-warning animate-pulse"
@@ -43,7 +44,9 @@ import { Component,
               Saving...
             </span>
           } @else if (lastSavedAt()) {
-            <span class="text-xs text-muted-foreground"> Saved &check; </span>
+            <span class="text-xs text-muted-foreground-foreground">
+              Saved &check;
+            </span>
           }
 
           <!-- Export dropdown -->
@@ -102,16 +105,18 @@ import { Component,
             <!-- Dropdown menu -->
             @if (dropdownOpen()) {
               <div
-                class="absolute right-0 top-full mt-1.5 w-56 bg-surface border border-border rounded-xl shadow-xl shadow-foreground/10 overflow-hidden z-50"
+                class="absolute right-0 top-full mt-1.5 w-56 bg-card border border-border rounded-xl shadow-xl shadow-foreground/10 overflow-hidden z-50"
               >
                 <button
                   (click)="onPrintPdf()"
-                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-surface-hover transition-colors flex items-start gap-3"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-card-hover transition-colors flex items-start gap-3"
                 >
                   <span class="text-lg leading-none mt-0.5">🖨️</span>
                   <div>
                     <div class="font-medium">Print PDF</div>
-                    <div class="text-xs text-muted-foreground mt-0.5">
+                    <div
+                      class="text-xs text-muted-foreground-foreground mt-0.5"
+                    >
                       Selectable text · ATS-friendly · Small file
                     </div>
                   </div>
@@ -119,12 +124,14 @@ import { Component,
                 <div class="border-t border-border"></div>
                 <button
                   (click)="onExportImage()"
-                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-surface-hover transition-colors flex items-start gap-3"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-card-hover transition-colors flex items-start gap-3"
                 >
                   <span class="text-lg leading-none mt-0.5">📸</span>
                   <div>
                     <div class="font-medium">Image PDF</div>
-                    <div class="text-xs text-muted-foreground mt-0.5">
+                    <div
+                      class="text-xs text-muted-foreground-foreground mt-0.5"
+                    >
                       Pixel-perfect snapshot · Larger file
                     </div>
                   </div>

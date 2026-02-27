@@ -13,14 +13,14 @@ import { Cv } from "../../../../domain/models/cv-model";
     >
       <div class="p-8">
         <!-- Header — centered, traditional -->
-        <div class="text-center mb-6 pb-5 border-b border-gray-300">
+        <div class="text-center mb-6 pb-5 border-b border-border">
           <h1
-            class="text-3xl font-bold text-gray-800 mb-2 tracking-wide uppercase"
+            class="text-3xl font-bold text-card-foreground mb-2 tracking-wide uppercase"
           >
             {{ cv().sections.personal.fullName || "Your Name" }}
           </h1>
           <div
-            class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-600"
+            class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground-foreground"
           >
             @if (cv().sections.personal.email) {
               <span>{{ cv().sections.personal.email }}</span>
@@ -39,7 +39,7 @@ import { Cv } from "../../../../domain/models/cv-model";
             }
           </div>
           <div
-            class="flex flex-wrap justify-center gap-x-4 text-sm text-gray-500 mt-1"
+            class="flex flex-wrap justify-center gap-x-4 text-sm text-muted-foreground-foreground mt-1"
           >
             @if (cv().sections.personal.website) {
               <span>{{ cv().sections.personal.website }}</span>
@@ -54,12 +54,12 @@ import { Cv } from "../../../../domain/models/cv-model";
         @if (cv().sections.personal.summary) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
+              class="text-sm font-bold text-card-foreground mb-2 uppercase tracking-[0.2em] pb-1"
               [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Summary
             </h2>
-            <p class="text-gray-600 leading-relaxed text-sm italic">
+            <p class="text-muted-foreground-foreground leading-relaxed text-sm italic">
               {{ cv().sections.personal.summary }}
             </p>
           </section>
@@ -69,7 +69,7 @@ import { Cv } from "../../../../domain/models/cv-model";
         @if (cv().sections.experience.length > 0) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
+              class="text-sm font-bold text-card-foreground mb-3 uppercase tracking-[0.2em] pb-1"
               [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Professional Experience
@@ -77,22 +77,22 @@ import { Cv } from "../../../../domain/models/cv-model";
             @for (exp of cv().sections.experience; track exp.id) {
               <div class="mb-5">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h3 class="text-base font-bold text-gray-800">
+                  <h3 class="text-base font-bold text-card-foreground">
                     {{ exp.jobTitle }}
                   </h3>
-                  <span class="text-xs text-gray-500 italic shrink-0 ml-4">
+                  <span class="text-xs text-muted-foreground-foreground italic shrink-0 ml-4">
                     {{ formatDate(exp.startDate) }} –
                     {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                   </span>
                 </div>
-                <p class="text-gray-600 text-sm font-semibold mb-1">
+                <p class="text-muted-foreground-foreground text-sm font-semibold mb-1">
                   {{ exp.company }}
                   @if (exp.location) {
                     , {{ exp.location }}
                   }
                 </p>
                 @if (exp.description) {
-                  <p class="text-gray-600 text-sm leading-relaxed">
+                  <p class="text-muted-foreground-foreground text-sm leading-relaxed">
                     {{ exp.description }}
                   </p>
                 }
@@ -105,7 +105,7 @@ import { Cv } from "../../../../domain/models/cv-model";
         @if (cv().sections.education.length > 0) {
           <section class="mb-6">
             <h2
-              class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-[0.2em] pb-1"
+              class="text-sm font-bold text-card-foreground mb-3 uppercase tracking-[0.2em] pb-1"
               [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Education
@@ -113,21 +113,21 @@ import { Cv } from "../../../../domain/models/cv-model";
             @for (edu of cv().sections.education; track edu.id) {
               <div class="mb-3">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h3 class="text-sm font-bold text-gray-800">
+                  <h3 class="text-sm font-bold text-card-foreground">
                     {{ edu.degree }}
                   </h3>
-                  <span class="text-xs text-gray-500 italic shrink-0 ml-4">{{
+                  <span class="text-xs text-muted-foreground-foreground italic shrink-0 ml-4">{{
                     formatDate(edu.graduationDate)
                   }}</span>
                 </div>
-                <p class="text-gray-600 text-sm">
+                <p class="text-muted-foreground-foreground text-sm">
                   {{ edu.institution }}
                   @if (edu.location) {
                     , {{ edu.location }}
                   }
                 </p>
                 @if (edu.gpa) {
-                  <p class="text-xs text-gray-500">GPA: {{ edu.gpa }}</p>
+                  <p class="text-xs text-muted-foreground-foreground">GPA: {{ edu.gpa }}</p>
                 }
               </div>
             }
@@ -138,12 +138,12 @@ import { Cv } from "../../../../domain/models/cv-model";
         @if (cv().sections.skills.length > 0) {
           <section>
             <h2
-              class="text-sm font-bold text-gray-700 mb-2 uppercase tracking-[0.2em] pb-1"
+              class="text-sm font-bold text-card-foreground mb-2 uppercase tracking-[0.2em] pb-1"
               [style.border-bottom]="'1px solid ' + accentColor() + '40'"
             >
               Skills
             </h2>
-            <div class="flex flex-wrap gap-x-1 text-sm text-gray-600">
+            <div class="flex flex-wrap gap-x-1 text-sm text-muted-foreground-foreground">
               @for (
                 skill of cv().sections.skills;
                 track skill.id;

@@ -27,7 +27,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
             showForm()
-              ? 'bg-secondary text-secondary-foreground hover:bg-surface-hover'
+              ? 'bg-secondary text-secondary-foreground hover:bg-card-hover'
               : 'bg-primary text-primary-foreground hover:bg-primary-700'
           "
         >
@@ -40,9 +40,9 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="space-y-4 bg-surface-alt rounded-xl p-5 border border-border"
+          class="space-y-4 bg-card-alt rounded-xl p-5 border border-border"
         >
-          <h3 class="text-sm font-medium text-muted-foreground">
+          <h3 class="text-sm font-medium text-muted-foreground-foreground">
             {{ editingId() ? "Edit Experience" : "New Experience" }}
           </h3>
 
@@ -54,7 +54,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="jobTitle"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Software Engineer"
               />
@@ -66,7 +66,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="company"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Tech Corp"
               />
@@ -78,7 +78,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="location"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="San Francisco, CA"
               />
@@ -90,7 +90,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
               <input
                 type="month"
                 formControlName="startDate"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
@@ -103,7 +103,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 <input
                   type="month"
                   formControlName="endDate"
-                  class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                  class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                          focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 />
               }
@@ -111,7 +111,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 <input
                   type="checkbox"
                   formControlName="current"
-                  class="w-4 h-4 rounded border-border text-primary focus:ring-ring bg-surface"
+                  class="w-4 h-4 rounded border-border text-primary focus:ring-ring bg-card"
                 />
                 <span class="text-sm text-foreground/80"
                   >Currently working here</span
@@ -127,7 +127,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
             <textarea
               formControlName="description"
               rows="3"
-              class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
               placeholder="Key responsibilities and achievements..."
             ></textarea>
@@ -137,7 +137,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
             <button
               type="button"
               (click)="cancelEdit()"
-              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-surface-hover transition-colors"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-card-hover transition-colors"
             >
               Cancel
             </button>
@@ -157,7 +157,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
       <div class="space-y-3">
         @for (exp of items(); track exp.id) {
           <div
-            class="p-4 bg-surface-alt border border-border rounded-xl group
+            class="p-4 bg-card-alt border border-border rounded-xl group
                       hover:border-primary/30 transition-all duration-200"
           >
             <div class="flex justify-between items-start">
@@ -167,11 +167,11 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 >
                   {{ exp.jobTitle }}
                 </h3>
-                <p class="text-muted-foreground text-sm">
+                <p class="text-muted-foreground-foreground text-sm">
                   {{ exp.company
                   }}{{ exp.location ? " — " + exp.location : "" }}
                 </p>
-                <p class="text-xs text-muted-foreground/70 mt-1">
+                <p class="text-xs text-muted-foreground-foreground/70 mt-1">
                   {{ formatDate(exp.startDate) }} –
                   {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                 </p>
@@ -194,14 +194,14 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
               </div>
             </div>
             @if (exp.description) {
-              <p class="text-muted-foreground text-sm mt-2 whitespace-pre-wrap">
+              <p class="text-muted-foreground-foreground text-sm mt-2 whitespace-pre-wrap">
                 {{ exp.description }}
               </p>
             }
           </div>
         }
         @if (items().length === 0) {
-          <p class="text-muted-foreground text-sm text-center py-6">
+          <p class="text-muted-foreground-foreground text-sm text-center py-6">
             No work experience added yet.
           </p>
         }

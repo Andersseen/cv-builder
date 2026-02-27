@@ -1,9 +1,10 @@
-import { Component,
+import {
+  Component,
   input,
   output,
   signal,
   ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 import { Cv } from "../../../domain/models/cv-model";
 
 @Component({
@@ -11,20 +12,20 @@ import { Cv } from "../../../domain/models/cv-model";
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="group relative bg-surface border border-border
+      class="group relative bg-card border border-border
              rounded-2xl overflow-hidden transition-all duration-300
-             hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1"
+             hover:border-primary/40 shadow-sm hover:shadow-glass hover:-translate-y-1"
     >
       <!-- Card preview area -->
       <div
-        class="h-40 bg-surface-alt flex items-center
+        class="h-40 bg-muted/50 flex items-center
                justify-center cursor-pointer relative"
         (click)="edit.emit(cv().id)"
       >
         <div class="text-center">
           <div class="text-4xl mb-2 opacity-40">📝</div>
           <span
-            class="text-xs text-muted-foreground uppercase tracking-wider font-medium"
+            class="text-xs text-muted-foreground-foreground uppercase tracking-wider font-medium"
           >
             {{ cv().templateId }} template
           </span>
@@ -57,7 +58,7 @@ import { Cv } from "../../../domain/models/cv-model";
             (blur)="isEditing.set(false)"
             (keydown.enter)="isEditing.set(false)"
             (keydown.escape)="isEditing.set(false)"
-            class="w-full bg-surface-hover text-foreground px-3 py-1.5 rounded-lg text-base font-semibold
+            class="w-full bg-card-hover text-foreground px-3 py-1.5 rounded-lg text-base font-semibold
                    outline-none ring-2 ring-primary mb-2"
           />
         } @else {
@@ -71,7 +72,7 @@ import { Cv } from "../../../domain/models/cv-model";
           </h3>
         }
 
-        <p class="text-xs text-muted-foreground mb-4">
+        <p class="text-xs text-muted-foreground-foreground mb-4">
           Updated {{ formatDate(cv().updatedAt) }}
         </p>
 
@@ -87,7 +88,7 @@ import { Cv } from "../../../domain/models/cv-model";
           <button
             (click)="duplicate.emit(cv().id)"
             class="px-3 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg
-                   hover:bg-surface-hover transition-colors"
+                   hover:bg-card-hover transition-colors"
             title="Duplicate"
           >
             ⧉

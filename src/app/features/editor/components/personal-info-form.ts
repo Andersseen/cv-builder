@@ -27,7 +27,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
       <!-- Avatar upload -->
       <div class="flex items-center gap-4">
         <div
-          class="relative w-20 h-20 rounded-full overflow-hidden bg-surface-alt border-2 border-border flex items-center justify-center shrink-0"
+          class="relative w-20 h-20 rounded-full overflow-hidden bg-card-alt border-2 border-border flex items-center justify-center shrink-0"
         >
           @if (avatarPreview()) {
             <img
@@ -38,7 +38,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           } @else {
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8 text-muted-foreground"
+              class="w-8 h-8 text-muted-foreground-foreground"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -58,8 +58,8 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           >
           <div class="flex items-center gap-2">
             <label
-              class="px-3 py-1.5 bg-surface-alt border border-border rounded-lg text-foreground text-sm
-                     hover:bg-surface-hover cursor-pointer transition-all duration-200"
+              class="px-3 py-1.5 bg-card-alt border border-border rounded-lg text-foreground text-sm
+                     hover:bg-card-hover cursor-pointer transition-all duration-200"
             >
               Upload
               <input
@@ -79,7 +79,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
               </button>
             }
           </div>
-          <p class="text-xs text-muted-foreground">
+          <p class="text-xs text-muted-foreground-foreground">
             Only shown in Creative, Modern & Executive templates
           </p>
         </div>
@@ -94,7 +94,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="text"
               formControlName="fullName"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="John Doe"
@@ -113,7 +113,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="email"
               formControlName="email"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="john&#64;example.com"
@@ -130,7 +130,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="tel"
               formControlName="phone"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="+1 (555) 123-4567"
@@ -147,7 +147,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="text"
               formControlName="location"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="New York, NY"
@@ -166,7 +166,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="url"
               formControlName="website"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="https://johndoe.com"
@@ -180,7 +180,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <input
               type="url"
               formControlName="linkedin"
-              class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+              class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                      transition-all duration-200"
               placeholder="https://linkedin.com/in/johndoe"
@@ -195,7 +195,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           <textarea
             formControlName="summary"
             rows="4"
-            class="w-full px-3 py-2.5 bg-surface-alt border border-border rounded-lg text-foreground
+            class="w-full px-3 py-2.5 bg-card-alt border border-border rounded-lg text-foreground
                    placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
                    transition-all duration-200 resize-none"
             placeholder="Brief overview of your professional background and key achievements..."

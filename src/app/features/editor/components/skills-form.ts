@@ -27,7 +27,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
             showForm()
-              ? 'bg-secondary text-secondary-foreground hover:bg-surface-hover'
+              ? 'bg-secondary text-secondary-foreground hover:bg-card-hover'
               : 'bg-primary text-primary-foreground hover:bg-primary-700'
           "
         >
@@ -39,7 +39,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="space-y-4 bg-surface-alt rounded-xl p-5 border border-border"
+          class="space-y-4 bg-card-alt rounded-xl p-5 border border-border"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -49,7 +49,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
               <input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="TypeScript, React, Docker..."
               />
@@ -60,7 +60,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
               >
               <select
                 formControlName="level"
-                class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-foreground
+                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 @for (level of levels; track level) {
@@ -73,7 +73,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
             <button
               type="button"
               (click)="cancelEdit()"
-              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-surface-hover transition-colors"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-card-hover transition-colors"
             >
               Cancel
             </button>
@@ -93,7 +93,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         @for (skill of items(); track skill.id) {
           <div
-            class="p-3 bg-surface-alt border border-border rounded-xl group
+            class="p-3 bg-card-alt border border-border rounded-xl group
                       hover:border-primary/30 transition-all duration-200 flex justify-between items-center"
           >
             <div class="cursor-pointer flex-grow" (click)="edit(skill)">
@@ -102,7 +102,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
               >
                 {{ skill.name }}
               </p>
-              <p class="text-xs text-muted-foreground">{{ skill.level }}</p>
+              <p class="text-xs text-muted-foreground-foreground">{{ skill.level }}</p>
             </div>
             <div
               class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -124,7 +124,7 @@ import { createDefaultSkill  } from "../../../domain/models/cv-defaults";
         }
       </div>
       @if (items().length === 0) {
-        <p class="text-muted-foreground text-sm text-center py-6">
+        <p class="text-muted-foreground-foreground text-sm text-center py-6">
           No skills added yet.
         </p>
       }

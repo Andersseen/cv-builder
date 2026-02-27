@@ -11,15 +11,15 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
         <h1 class="text-3xl font-display font-bold text-foreground mb-1">
           My Resumes
         </h1>
-        <p class="text-muted-foreground text-sm">
+        <p class="text-muted-foreground-foreground text-sm">
           Create, manage, and export your resumes
         </p>
       </div>
       <button
         (click)="create.emit()"
-        class="px-6 py-3 bg-primary hover:bg-primary-700 text-primary-foreground rounded-xl font-semibold
-               transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40
-               flex items-center gap-2"
+        class="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold
+               transition-all duration-300 shadow-md hover:shadow-glass
+               flex items-center gap-2 transform hover:-translate-y-0.5"
       >
         <span class="text-lg">+</span> New Resume
       </button>
