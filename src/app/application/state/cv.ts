@@ -1,4 +1,4 @@
-import { Component, Injectable, signal, computed, inject  } from "@angular/core";
+import { Injectable, signal, computed, inject } from "@angular/core";
 import { Cv, DeepPartial } from "../../domain/models/cv-model";
 import { createDefaultCv  } from "../../domain/models/cv-defaults";
 import { LocalCvRepository } from "../../infrastructure/persistence/cv-repository";

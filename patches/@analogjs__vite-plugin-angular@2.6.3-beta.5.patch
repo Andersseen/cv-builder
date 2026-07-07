@@ -1,5 +1,5 @@
 diff --git a/src/lib/angular-vite-plugin.js b/src/lib/angular-vite-plugin.js
-index 3a61301..4494854 100644
+index 3a613018bac167eb5d9a52c3d2b8a233c2366329..c2b1340efe387c8dd93198a25151a8502ed79b43 100644
 --- a/src/lib/angular-vite-plugin.js
 +++ b/src/lib/angular-vite-plugin.js
 @@ -134,6 +134,7 @@ export function angular(options) {
@@ -10,7 +10,7 @@ index 3a61301..4494854 100644
              async config(config, { command }) {
                  watchMode = command === 'serve';
                  isProd =
-@@ -497,7 +498,11 @@ export function angular(options) {
+@@ -497,12 +498,16 @@ export function angular(options) {
                          await pendingCompilation;
                          pendingCompilation = null;
                      }
@@ -18,12 +18,17 @@ index 3a61301..4494854 100644
 +                    const lookupId = id.startsWith('/') && !id.startsWith('//')
 +                        ? normalizePath(resolve(resolvedConfig.root, id.slice(1)))
 +                        : normalizePath(id);
-+                    console.log('[ANALOG DEBUG] Transform called for:', id, 'lookupId:', lookupId, 'found:', !!outputFiles.get(lookupId), 'also:', !!outputFiles.get(normalizePath(id)));
 +                    const typescriptResult = fileEmitter(lookupId) ?? fileEmitter(id);
                      // File not in the Angular program — skip and let other plugins
                      // or Vite's built-in transform handle it. Warn if it looks like
                      // an Angular file that should have been compiled.
-@@ -1069,15 +1074,22 @@ export function angular(options) {
+                     if (!typescriptResult) {
+                         const isAngular = !id.includes('@ng/component') &&
++                            !id.includes('node_modules') &&
+                             ANGULAR_DECORATOR_CALL_RE.test(code);
+                         if (isAngular) {
+                             this.warn(`[@analogjs/vite-plugin-angular]: "${id}" contains Angular decorators but is not in the TypeScript program. ` +
+@@ -1069,15 +1074,20 @@ export function angular(options) {
              if (ids && ids.length > 0) {
                  ids.forEach((id) => writeOutputFile(id));
              }
@@ -46,16 +51,14 @@ index 3a61301..4494854 100644
 +                // serve them on demand. The on-demand outputFile callback is
 +                // assigned but never invoked by the plugin, so without this
 +                // eager emit only the entry points are available.
-+                console.log('[ANALOG DEBUG] Emitting all source files upfront. Count:', typeScriptProgram.getSourceFiles().length);
 +                for (const sourceFile of typeScriptProgram.getSourceFiles()) {
 +                    if (!sourceFile.isDeclarationFile) {
-+                        console.log('[ANALOG DEBUG] Emitting:', sourceFile.fileName);
 +                        writeOutputFile(sourceFile.fileName);
                      }
                  }
              }
 diff --git a/src/lib/router-plugin.js b/src/lib/router-plugin.js
-index 3a7ca9e..34a048f 100644
+index 3a7ca9e6549ff56ab9371ae6f3469fdb882277c3..34a048f7681b2620afae5f107887ca8f6d33669e 100644
 --- a/src/lib/router-plugin.js
 +++ b/src/lib/router-plugin.js
 @@ -24,10 +24,15 @@ export function routerPlugin() {

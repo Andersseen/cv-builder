@@ -1,4 +1,4 @@
-import { Component, Injectable, signal, effect  } from "@angular/core";
+import { Injectable, signal, effect } from "@angular/core";
 
 const THEME_KEY = "cv-builder-theme";
 

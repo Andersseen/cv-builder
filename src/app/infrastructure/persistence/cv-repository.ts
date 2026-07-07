@@ -1,4 +1,4 @@
-import { Component, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Cv } from "../../domain/models/cv-model";
 import { LocalCvDatabase } from "./cv-database";
 
