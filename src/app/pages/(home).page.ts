@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy,   } from "@angular/core";
-import { Hero } from "./components/hero/hero";
-import { Features } from "./components/features/features";
-import { Cta } from "./components/cta/cta";
+import { Hero } from "../features/landing/components/hero/hero";
+import { Features } from "../features/landing/components/features/features";
+import { Cta } from "../features/landing/components/cta/cta";
 
 @Component({
   selector: "app-landing",

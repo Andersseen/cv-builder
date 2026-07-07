@@ -10,7 +10,7 @@ Follow existing code style exactly. When in doubt, open a similar existing file 
 - `changeDetection: ChangeDetectionStrategy.OnPush` on **every** component.
 - Small components use inline `template:`; only large pages use `templateUrl` (currently only `editor.html`).
 - Selectors: `app-` prefix, kebab-case (`app-resume-preview`).
-- Routed page components: `export default class Landing …` so routes can do `loadComponent: () => import("./features/landing/landing")` without `.then()`.
+- Routed page components: `export default class Landing …` placed under `src/app/pages/<route>.page.ts` for AnalogJS file-based routing.
 - Non-routed components: named exports.
 
 **File & class naming (important — non-standard):**
@@ -88,6 +88,6 @@ Usage: `bg-background`, `text-foreground`, `bg-card border border-border`, `text
 
 **Add a resume template** — 3 steps, documented in `docs/ARCHITECTURE.md` § Template system.
 
-**Add a page/route** — create `features/<name>/<name>.ts` with `export default`, add a `loadComponent` entry to `app.routes.ts`.
+**Add a page/route** — create `src/app/pages/<route>.page.ts` with `export default`. AnalogJS file-based routing discovers the page automatically; no `app.routes.ts` entry needed.
 
 **Verify your work** — `pnpm build` must pass. Then `pnpm start` and manually check: editor updates preview live, autosave indicator fires, both PDF export and Print work, dark and light themes both look right.

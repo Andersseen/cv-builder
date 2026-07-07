@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { Header } from "./shared/components/header/header";
 import { Footer } from "./shared/components/footer/footer";
@@ -8,6 +8,7 @@ import { Toast } from "./shared/components/toast/toast";
 @Component({
   selector: "app-root",
   imports: [RouterOutlet, Header, Footer, Toast],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen flex flex-col">
       <app-header />

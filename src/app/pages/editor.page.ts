@@ -8,25 +8,25 @@ import {
   effect,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { CvStore } from "../../application/state/cv";
-import { Autosave } from "../../application/services/autosave";
-import { PdfExport } from "../../infrastructure/export/pdf-export";
-import { PrintExport } from "../../infrastructure/export/print-export";
-import { EditorToolbar } from "./components/editor-toolbar";
-import { PersonalInfoForm } from "./components/personal-info-form";
-import { ExperienceForm } from "./components/experience-form";
-import { EducationForm } from "./components/education-form";
-import { SkillsForm } from "./components/skills-form";
-import { TemplateSelector } from "./components/template-selector";
-import { ResumePreview } from "./components/resume-preview";
-import { EditorTabs, EditorTab, TabConfig } from "./components/editor-tabs";
+import { CvStore } from "../application/state/cv";
+import { Autosave } from "../application/services/autosave";
+import { PdfExport } from "../infrastructure/export/pdf-export";
+import { PrintExport } from "../infrastructure/export/print-export";
+import { EditorToolbar } from "../features/editor/components/editor-toolbar";
+import { PersonalInfoForm } from "../features/editor/components/personal-info-form";
+import { ExperienceForm } from "../features/editor/components/experience-form";
+import { EducationForm } from "../features/editor/components/education-form";
+import { SkillsForm } from "../features/editor/components/skills-form";
+import { TemplateSelector } from "../features/editor/components/template-selector";
+import { ResumePreview } from "../features/editor/components/resume-preview";
+import { EditorTabs, EditorTab, TabConfig } from "../features/editor/components/editor-tabs";
 import {
   PersonalInfo,
   Experience,
   Education,
   Skill,
-} from "../../domain/models/cv-model";
-import { ToastService } from "../../core/services/toast";
+} from "../domain/models/cv-model";
+import { ToastService } from "../core/services/toast";
 
 @Component({
   selector: "app-editor",

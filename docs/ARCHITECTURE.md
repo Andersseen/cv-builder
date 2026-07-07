@@ -92,4 +92,10 @@ Both capture the DOM node `#resume-content` (rendered by `ResumePreview`). `a4.t
 
 ## Routing
 
-Three lazy routes in `src/app/app.routes.ts`, all via `loadComponent` + **default exports**: `""` → landing, `dashboard`, `editor`, wildcard redirects to `""`.
+AnalogJS **file-based routing** under `src/app/pages/`. Page components are default exports and lazy-loaded by the AnalogJS router:
+
+- `src/app/pages/(home).page.ts` → `/`
+- `src/app/pages/dashboard.page.ts` → `/dashboard`
+- `src/app/pages/editor.page.ts` → `/editor`
+
+A wildcard/catch-all route is not needed because the app is a single-page application and unmatched paths are handled by the static file server.

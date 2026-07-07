@@ -4,6 +4,7 @@ import { Component,
   signal,
   ChangeDetectionStrategy,
  } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -237,7 +238,7 @@ export class ExperienceForm {
   });
 
   constructor() {
-    this.form.controls.current.valueChanges.subscribe((isCurrent) => {
+    this.form.controls.current.valueChanges.pipe(takeUntilDestroyed()).subscribe((isCurrent) => {
       if (isCurrent) {
         this.form.controls.endDate.setValue("");
         this.form.controls.endDate.disable();

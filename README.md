@@ -7,7 +7,7 @@ Modern CV Builder is an Angular application that helps users create professional
 - Forms for personal information, work experience, education, and skills
 - Template selection and live resume preview
 - Responsive layout with optional mobile preview
-- One-click PDF export using `html-to-image`, `jspdf`, and `pdf-lib`
+- One-click PDF export using `html-to-image` and `jspdf`
 
 ## Prerequisites
 
@@ -36,8 +36,9 @@ pnpm build
 
 ## Project Structure
 
+- `src/app/pages` – file-based routed pages (landing, dashboard, editor)
 - `src/app/features/editor` – resume editor with form components and preview
-- `src/app/features/landing` – landing page shown on first load
+- `src/app/features/landing` – landing page components
 - `src/app/shared` and `src/app/core` – reusable utilities and services
 
 ## License

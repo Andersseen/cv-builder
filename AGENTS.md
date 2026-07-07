@@ -12,7 +12,7 @@ You are working on **Modern CV Builder**: a 100% client-side Angular 19 app for 
 
 ```bash
 pnpm install     # install deps (pnpm is the package manager, not npm)
-pnpm start       # dev server at http://localhost:4200
+pnpm start       # dev server at http://localhost:5173 (Vite default)
 pnpm build       # production build
 ```
 
@@ -20,7 +20,9 @@ There are **no tests and no linter configured yet**. Verify changes by building 
 
 ## Stack
 
-- **Angular 19** — standalone components only, signals everywhere, zone.js still present
+- **Angular 19** — standalone components only, signals everywhere, zoneless change detection
+- **AnalogJS 2.x + Vite 6** — meta-framework with file-based routing and Vite-based dev/build
+- **Zone.js removed** — `provideExperimentalZonelessChangeDetection()` is used at bootstrap
 - **Tailwind CSS v4** — CSS-first config in `src/styles.css` (`@theme` block), semantic HSL tokens, dark mode via `.dark` class on `<html>`
 - **Dexie 4** — IndexedDB wrapper (the only persistence)
 - **html-to-image + jspdf** — image-based PDF export; native print dialog for text-based export
@@ -32,7 +34,7 @@ There are **no tests and no linter configured yet**. Verify changes by building 
 2. **`ChangeDetectionStrategy.OnPush` on every component.** No exceptions.
 3. **Signals-first**: `signal()` / `computed()` / `effect()` for state, `input()` / `output()` for component I/O (never `@Input()` / `@Output()` decorators). Mark inputs/outputs `readonly`.
 4. **`inject()` function, not constructor injection.**
-5. **Routed page components use `export default`** (see `src/app/app.routes.ts` — routes use `loadComponent: () => import(...)` with no `.then()`).
+5. **Routed page components use `export default`** — routing is file-based (AnalogJS): each file in `src/app/pages/` named `*.page.ts` becomes a route, and its default export is the page component. There is no route config file.
 6. **New template control flow only**: `@if`, `@for`, `@switch`. Never `*ngIf` / `*ngFor`.
 7. **File naming**: plain names without suffixes — `editor.ts`, `cv-card.ts`, `theme.ts`. NOT `editor.component.ts` or `theme.service.ts`. Class names also without suffixes: `Editor`, `Autosave`, `Theme`.
 8. **Respect the layer boundaries** (dependencies point downward only):
@@ -51,7 +53,7 @@ There are **no tests and no linter configured yet**. Verify changes by building 
 
 | Concern | File |
 |---|---|
-| Routes (3 lazy pages: landing `/`, `/dashboard`, `/editor`) | `src/app/app.routes.ts` |
+| Routes (3 lazy pages: landing `/`, `/dashboard`, `/editor`) | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` |
 | Domain models (`Cv`, sections, settings, `TemplateInfo`) | `src/app/domain/models/cv-model.ts` |
 | Default/factory CV | `src/app/domain/models/cv-defaults.ts` |
 | Template catalog (add new templates here) | `src/app/domain/models/template-registry.ts` |

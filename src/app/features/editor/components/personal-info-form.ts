@@ -5,6 +5,7 @@ import { Component,
   signal,
   ChangeDetectionStrategy,
  } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -226,7 +227,7 @@ export class PersonalInfoForm {
       this.avatarPreview.set(d.avatarUrl || "");
     });
 
-    this.form.valueChanges.subscribe(() => {
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       this.changed.emit({
         ...this.form.getRawValue(),
         avatarUrl: this.avatarPreview(),

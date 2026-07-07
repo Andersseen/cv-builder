@@ -4,11 +4,11 @@ import { Component,
   ChangeDetectionStrategy,
  } from "@angular/core";
 import { Router } from "@angular/router";
-import { CvStore } from "../../application/state/cv";
-import { Cv } from "../../domain/models/cv-model";
-import { DashboardHeader } from "./components/dashboard-header";
-import { EmptyState } from "./components/empty-state";
-import { CvCard } from "./components/cv-card";
+import { CvStore } from "../application/state/cv";
+import { Cv } from "../domain/models/cv-model";
+import { DashboardHeader } from "../features/dashboard/components/dashboard-header";
+import { EmptyState } from "../features/dashboard/components/empty-state";
+import { CvCard } from "../features/dashboard/components/cv-card";
 
 @Component({
   selector: "app-dashboard",
