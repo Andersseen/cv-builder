@@ -5,16 +5,22 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from "@angular/core";
+import { VoltButton } from "@voltui/components";
+import { LmnDocumentDuplicateIcon } from "lumen-icons/document-duplicate";
+import { LmnTrashIcon } from "lumen-icons/trash";
+import { MoveHoverDirective } from "angular-movement";
 import { Cv } from "../../../domain/models/cv-model";
 
 @Component({
   selector: "app-cv-card",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [VoltButton, LmnDocumentDuplicateIcon, LmnTrashIcon, MoveHoverDirective],
   template: `
     <div
+      moveWhileHover="pulse"
       class="group relative bg-card border border-border
-             rounded-2xl overflow-hidden transition-all duration-300
-             hover:border-primary/40 shadow-sm hover:shadow-glass hover:-translate-y-1"
+             rounded-xl overflow-hidden transition-all duration-300
+             hover:border-primary/40 shadow-sm hover:shadow-glass"
     >
       <!-- Card preview area -->
       <div
@@ -77,30 +83,25 @@ import { Cv } from "../../../domain/models/cv-model";
         </p>
 
         <!-- Actions -->
-        <div class="flex gap-2">
-          <button
-            (click)="edit.emit(cv().id)"
-            class="flex-1 px-3 py-2 bg-primary/10 text-primary text-sm font-medium
-                   rounded-lg hover:bg-primary/20 transition-all duration-300 active:scale-95"
-          >
+        <div class="grid grid-cols-[1fr_auto_auto] gap-2">
+          <volt-button size="sm" class="w-full" (click)="edit.emit(cv().id)">
             Edit
-          </button>
-          <button
+          </volt-button>
+          <volt-button
+            variant="outline"
+            size="icon"
             (click)="duplicate.emit(cv().id)"
-            class="px-3 py-2 bg-secondary text-secondary-foreground text-sm rounded-lg
-                   hover:bg-muted/80 transition-all duration-300 active:scale-95"
-            title="Duplicate"
           >
-            ⧉
-          </button>
-          <button
+            <lmn-document-duplicate [size]="16" ariaLabel="Duplicate" />
+          </volt-button>
+          <volt-button
+            variant="ghost"
+            size="icon"
+            class="text-destructive hover:bg-destructive/10"
             (click)="delete.emit(cv())"
-            class="px-3 py-2 bg-destructive/10 text-destructive text-sm rounded-lg
-                   hover:bg-destructive/20 transition-all duration-300 active:scale-95"
-            title="Delete"
           >
-            ✕
-          </button>
+            <lmn-trash [size]="16" ariaLabel="Delete" />
+          </volt-button>
         </div>
       </div>
     </div>

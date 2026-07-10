@@ -5,10 +5,22 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from "@angular/core";
+import { VoltButton } from "@voltui/components";
+import { LmnArrowLeftIcon } from "lumen-icons/arrow-left";
+import { LmnPrinterIcon } from "lumen-icons/printer";
+import { LmnPhotoIcon } from "lumen-icons/photo";
+import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
 
 @Component({
   selector: "app-editor-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    VoltButton,
+    LmnArrowLeftIcon,
+    LmnPrinterIcon,
+    LmnPhotoIcon,
+    LmnChevronDownIcon,
+  ],
   template: `
     <div
       class="bg-card/75 backdrop-blur-xl border-b border-border sticky top-0 z-30 shadow-glass transition-colors duration-300"

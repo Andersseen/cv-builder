@@ -1,10 +1,15 @@
 import { Component, output, ChangeDetectionStrategy } from "@angular/core";
+import { VoltButton } from "@voltui/components";
+import { LmnPlusIcon } from "lumen-icons/plus";
+import { MoveEnterDirective } from "angular-movement";
 
 @Component({
   selector: "app-dashboard-header",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [VoltButton, LmnPlusIcon, MoveEnterDirective],
   template: `
     <div
+      moveEnter="fade-down"
       class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10"
     >
       <div>
@@ -15,14 +20,10 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
           Create, manage, and export your resumes
         </p>
       </div>
-      <button
-        (click)="create.emit()"
-        class="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold
-               transition-all duration-300 shadow-md hover:shadow-glass
-               flex items-center gap-2 transform hover:-translate-y-0.5"
-      >
-        <span class="text-lg">+</span> New Resume
-      </button>
+      <volt-button size="lg" (click)="create.emit()">
+        <lmn-plus slot="leading" [size]="20" />
+        New Resume
+      </volt-button>
     </div>
   `,
 })

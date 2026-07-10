@@ -29,7 +29,7 @@ import { moveItem } from "../../../core/utils/array";
           [class]="
             showForm()
               ? 'bg-secondary text-secondary-foreground hover:bg-accent'
-              : 'bg-primary text-primary-foreground hover:bg-primary-700'
+              : 'bg-primary text-primary-foreground hover:bg-primary/90'
           "
         >
           {{ showForm() ? "Cancel" : "+ Add Education" }}
