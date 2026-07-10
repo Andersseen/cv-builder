@@ -1,9 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import { VoltButton } from "@voltui/components";
 import { LmnDocumentDuplicateIcon } from "lumen-icons/document-duplicate";
@@ -14,7 +14,12 @@ import { Cv } from "../../../domain/models/cv-model";
 @Component({
   selector: "app-cv-card",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [VoltButton, LmnDocumentDuplicateIcon, LmnTrashIcon, MoveHoverDirective],
+  imports: [
+    VoltButton,
+    LmnDocumentDuplicateIcon,
+    LmnTrashIcon,
+    MoveHoverDirective,
+  ],
   template: `
     <div
       moveWhileHover="pulse"

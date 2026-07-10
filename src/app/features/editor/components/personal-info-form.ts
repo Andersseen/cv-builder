@@ -1,10 +1,11 @@
-import { Component,
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
   input,
   output,
-  effect,
   signal,
-  ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   ReactiveFormsModule,
@@ -12,12 +13,13 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
+import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { PersonalInfo } from "../../../domain/models/cv-model";
 
 @Component({
   selector: "app-personal-info-form",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -71,13 +73,13 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
               />
             </label>
             @if (avatarPreview()) {
-              <button
+              <volt-button
                 type="button"
                 (click)="removeAvatar()"
                 class="px-3 py-1.5 text-sm text-destructive hover:text-destructive/80 transition-colors"
               >
                 Remove
-              </button>
+              </volt-button>
             }
           </div>
           <p class="text-xs text-muted-foreground">
@@ -92,7 +94,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Full Name *</label
             >
-            <input
+            <volt-input
               type="text"
               formControlName="fullName"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
@@ -109,14 +111,16 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Email *</label
             >
-            <input
+            <volt-input
               type="email"
               formControlName="email"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
               placeholder="john&#64;example.com"
             />
             @if (form.controls.email.touched && form.controls.email.invalid) {
-              <p class="text-destructive text-xs mt-1">Valid email is required</p>
+              <p class="text-destructive text-xs mt-1">
+                Valid email is required
+              </p>
             }
           </div>
 
@@ -124,7 +128,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Phone *</label
             >
-            <input
+            <volt-input
               type="tel"
               formControlName="phone"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
@@ -139,7 +143,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Location *</label
             >
-            <input
+            <volt-input
               type="text"
               formControlName="location"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
@@ -156,7 +160,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Website</label
             >
-            <input
+            <volt-input
               type="url"
               formControlName="website"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
@@ -168,7 +172,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >LinkedIn</label
             >
-            <input
+            <volt-input
               type="url"
               formControlName="linkedin"
               class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
@@ -181,12 +185,12 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           <label class="block text-sm font-medium text-foreground/80 mb-1.5"
             >Professional Summary</label
           >
-          <textarea
+          <volt-textarea
             formControlName="summary"
-            rows="4"
+            [rows]="4"
             class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50 resize-none"
             placeholder="Brief overview of your professional background and key achievements..."
-          ></textarea>
+          ></volt-textarea>
         </div>
       </form>
     </div>

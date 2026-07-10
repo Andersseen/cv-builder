@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv-model";
 import { renderRichText } from "../../../../shared/utils/markdown";
 
@@ -112,7 +112,10 @@ import { renderRichText } from "../../../../shared/utils/markdown";
                     <h3 class="text-base font-semibold text-gray-900">
                       {{ exp.jobTitle }}
                     </h3>
-                    <p class="font-medium text-sm" [style.color]="accentColor()">
+                    <p
+                      class="font-medium text-sm"
+                      [style.color]="accentColor()"
+                    >
                       {{ exp.company }}
                     </p>
                   </div>
@@ -229,13 +232,18 @@ import { renderRichText } from "../../../../shared/utils/markdown";
                     {{ proj.name }}
                   </h3>
                   @if (proj.url) {
-                    <span class="text-xs shrink-0 ml-4" [style.color]="accentColor()">
+                    <span
+                      class="text-xs shrink-0 ml-4"
+                      [style.color]="accentColor()"
+                    >
                       {{ proj.url }}
                     </span>
                   }
                 </div>
                 @if (proj.technologies) {
-                  <p class="text-xs text-gray-500 mt-0.5">{{ proj.technologies }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5">
+                    {{ proj.technologies }}
+                  </p>
                 }
                 @if (proj.description) {
                   <div

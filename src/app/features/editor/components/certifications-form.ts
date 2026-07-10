@@ -1,9 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   ReactiveFormsModule,
@@ -11,6 +11,7 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
+import { VoltButton, VoltInput } from "@voltui/components";
 
 import { Certification } from "../../../domain/models/cv-model";
 import { createDefaultCertification } from "../../../domain/models/cv-defaults";
@@ -18,13 +19,13 @@ import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-certifications-form",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, VoltButton, VoltInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold text-foreground">Certifications</h2>
-        <button
+        <volt-button
           (click)="toggleForm()"
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
@@ -34,7 +35,7 @@ import { moveItem } from "../../../core/utils/array";
           "
         >
           {{ showForm() ? "Cancel" : "+ Add Certification" }}
-        </button>
+        </volt-button>
       </div>
 
       @if (showForm()) {
@@ -48,7 +49,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Certification *</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="name"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -60,7 +61,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Issuer</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="issuer"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -72,7 +73,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Date</label
               >
-              <input
+              <volt-input
                 type="month"
                 formControlName="date"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -83,7 +84,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Credential URL</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="url"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -94,21 +95,21 @@ import { moveItem } from "../../../core/utils/array";
           </div>
 
           <div class="flex justify-end gap-2">
-            <button
+            <volt-button
               type="button"
               (click)="cancelEdit()"
               class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-accent transition-colors"
             >
               Cancel
-            </button>
-            <button
+            </volt-button>
+            <volt-button
               type="submit"
               [disabled]="form.invalid"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ editingId() ? "Update" : "Add" }}
-            </button>
+            </volt-button>
           </div>
         </form>
       }
@@ -135,7 +136,7 @@ import { moveItem } from "../../../core/utils/array";
               <div
                 class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <button
+                <volt-button
                   type="button"
                   (click)="move(i, 'up')"
                   [disabled]="i === 0"
@@ -143,8 +144,8 @@ import { moveItem } from "../../../core/utils/array";
                   class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↑
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   type="button"
                   (click)="move(i, 'down')"
                   [disabled]="i === items().length - 1"
@@ -152,19 +153,19 @@ import { moveItem } from "../../../core/utils/array";
                   class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↓
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   (click)="edit(cert)"
                   class="px-2.5 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
                 >
                   Edit
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   (click)="remove(cert.id)"
                   class="px-2.5 py-1 text-xs text-destructive hover:bg-destructive/15 rounded-md transition-colors"
                 >
                   Remove
-                </button>
+                </volt-button>
               </div>
             </div>
           </div>
@@ -241,6 +242,9 @@ export class CertificationsForm {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
   }
 }

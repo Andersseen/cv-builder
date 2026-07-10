@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { LmnCheckCircleIcon } from "lumen-icons/check-circle";
 import { LmnXCircleIcon } from "lumen-icons/x-circle";
 import { LmnInformationCircleIcon } from "lumen-icons/information-circle";

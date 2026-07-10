@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy,   } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { Hero } from "../features/landing/components/hero/hero";
 import { Features } from "../features/landing/components/features/features";
 import { Cta } from "../features/landing/components/cta/cta";

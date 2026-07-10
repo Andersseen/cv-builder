@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 @Component({
   selector: "app-features",
@@ -57,9 +57,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 Distraction-Free Editor
               </h3>
-              <p
-                class="max-w-xl text-sm leading-7 text-muted-foreground"
-              >
+              <p class="max-w-xl text-sm leading-7 text-muted-foreground">
                 Our minimalist editor keeps you focused on your content.
                 Real-time preview updates instantly as you type, so you always
                 know exactly how your resume looks.
@@ -131,9 +129,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 5 Professional Templates
               </h3>
-              <p
-                class="text-sm leading-7 text-muted-foreground mb-6"
-              >
+              <p class="text-sm leading-7 text-muted-foreground mb-6">
                 Choose from curated layouts designed by HR experts. Modern,
                 Classic, Minimal, Creative and Executive — each ATS-optimized.
               </p>
@@ -284,9 +280,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 Lightning Fast
               </h3>
-              <p
-                class="max-w-xl text-sm leading-7 text-muted-foreground"
-              >
+              <p class="max-w-xl text-sm leading-7 text-muted-foreground">
                 No sign-ups, no loading spinners. Start building instantly and
                 see your resume come alive in real time as you rapidly make
                 edits.

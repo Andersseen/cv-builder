@@ -1,10 +1,10 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   inject,
   OnInit,
   OnDestroy,
   signal,
-  ChangeDetectionStrategy,
   effect,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -22,7 +22,11 @@ import { CertificationsForm } from "../features/editor/components/certifications
 import { LanguagesForm } from "../features/editor/components/languages-form";
 import { TemplateSelector } from "../features/editor/components/template-selector";
 import { ResumePreview } from "../features/editor/components/resume-preview";
-import { EditorTabs, EditorTab, TabConfig } from "../features/editor/components/editor-tabs";
+import {
+  EditorTabs,
+  EditorTab,
+  TabConfig,
+} from "../features/editor/components/editor-tabs";
 import {
   PersonalInfo,
   Experience,

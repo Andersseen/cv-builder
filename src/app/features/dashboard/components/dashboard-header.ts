@@ -1,4 +1,4 @@
-import { Component, output, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, output } from "@angular/core";
 import { VoltButton } from "@voltui/components";
 import { LmnPlusIcon } from "lumen-icons/plus";
 import { MoveEnterDirective } from "angular-movement";

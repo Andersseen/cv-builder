@@ -1,8 +1,10 @@
-import { Component,
+import {
+  ChangeDetectionStrategy,
+  Component,
   input,
   output,
-  ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
+import { VoltInput } from "@voltui/components";
 
 export interface ColorPreset {
   name: string;
@@ -11,6 +13,7 @@ export interface ColorPreset {
 
 @Component({
   selector: "app-color-picker",
+  imports: [VoltInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div>
@@ -48,7 +51,7 @@ export interface ColorPreset {
           class="w-9 h-9 rounded-lg border border-border cursor-pointer"
           title="Pick custom color"
         />
-        <input
+        <volt-input
           type="text"
           [value]="currentColor()"
           (change)="onHexInput($event)"

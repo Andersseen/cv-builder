@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -118,8 +118,7 @@ import { RouterLink } from "@angular/router";
                 <div
                   class="h-5 bg-background rounded-md flex items-center justify-center"
                 >
-                  <span
-                    class="text-[10px] text-muted-foreground font-mono"
+                  <span class="text-[10px] text-muted-foreground font-mono"
                     >cvbuilder.app/editor</span
                   >
                 </div>

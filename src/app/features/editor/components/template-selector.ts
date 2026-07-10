@@ -1,8 +1,8 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 
 import { TEMPLATES } from "../../../domain/models/template-registry";
@@ -276,7 +276,13 @@ import { ColorPicker, ColorPreset } from "./color-picker";
                     />
                   }
                   @case ("sidebar-right") {
-                    <rect x="80" y="0" width="40" height="160" class="fill-secondary" />
+                    <rect
+                      x="80"
+                      y="0"
+                      width="40"
+                      height="160"
+                      class="fill-secondary"
+                    />
                     <rect
                       x="10"
                       y="12"

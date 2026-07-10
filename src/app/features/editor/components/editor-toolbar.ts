@@ -1,9 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import { VoltButton } from "@voltui/components";
 import { LmnArrowLeftIcon } from "lumen-icons/arrow-left";
@@ -56,9 +56,7 @@ import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
               Saving...
             </span>
           } @else if (lastSavedAt()) {
-            <span class="text-xs text-muted-foreground">
-              Saved &check;
-            </span>
+            <span class="text-xs text-muted-foreground"> Saved &check; </span>
           }
 
           <!-- Export dropdown -->
@@ -126,9 +124,7 @@ import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
                   <span class="text-lg leading-none mt-0.5">🖨️</span>
                   <div>
                     <div class="font-medium">Print PDF</div>
-                    <div
-                      class="text-xs text-muted-foreground mt-0.5"
-                    >
+                    <div class="text-xs text-muted-foreground mt-0.5">
                       Selectable text · ATS-friendly · Small file
                     </div>
                   </div>
@@ -141,9 +137,7 @@ import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
                   <span class="text-lg leading-none mt-0.5">📸</span>
                   <div>
                     <div class="font-medium">Image PDF</div>
-                    <div
-                      class="text-xs text-muted-foreground mt-0.5"
-                    >
+                    <div class="text-xs text-muted-foreground mt-0.5">
                       Pixel-perfect snapshot · Larger file
                     </div>
                   </div>

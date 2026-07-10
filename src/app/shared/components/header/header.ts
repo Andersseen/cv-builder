@@ -1,8 +1,8 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   inject,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { VoltButton, buttonVariants } from "@voltui/components";
@@ -72,9 +72,7 @@ import { Theme } from "../../../core/services/theme";
           </volt-button>
 
           <!-- CTA -->
-          <a routerLink="/dashboard" [class]="ctaClasses">
-            Create Resume
-          </a>
+          <a routerLink="/dashboard" [class]="ctaClasses"> Create Resume </a>
 
           <!-- Mobile hamburger -->
           <div class="md:hidden">

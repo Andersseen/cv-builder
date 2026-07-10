@@ -1,9 +1,10 @@
-import { Component,
+import {
+  ChangeDetectionStrategy,
+  Component,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   ReactiveFormsModule,
@@ -11,6 +12,7 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
+import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { Experience } from "../../../domain/models/cv-model";
 import { createDefaultExperience } from "../../../domain/models/cv-defaults";
@@ -18,13 +20,13 @@ import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-experience-form",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold text-foreground">Work Experience</h2>
-        <button
+        <volt-button
           (click)="toggleForm()"
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
@@ -34,7 +36,7 @@ import { moveItem } from "../../../core/utils/array";
           "
         >
           {{ showForm() ? "Cancel" : "+ Add Experience" }}
-        </button>
+        </volt-button>
       </div>
 
       <!-- Form -->
@@ -53,7 +55,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Job Title *</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="jobTitle"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -65,7 +67,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Company *</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="company"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -77,7 +79,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Location</label
               >
-              <input
+              <volt-input
                 type="text"
                 formControlName="location"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -89,7 +91,7 @@ import { moveItem } from "../../../core/utils/array";
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Start Date *</label
               >
-              <input
+              <volt-input
                 type="month"
                 formControlName="startDate"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -102,7 +104,7 @@ import { moveItem } from "../../../core/utils/array";
                   class="block text-sm font-medium text-foreground/80 mb-1.5"
                   >End Date</label
                 >
-                <input
+                <volt-input
                   type="month"
                   formControlName="endDate"
                   class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
@@ -126,31 +128,31 @@ import { moveItem } from "../../../core/utils/array";
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
               >Description</label
             >
-            <textarea
+            <volt-textarea
               formControlName="description"
-              rows="3"
+              [rows]="3"
               class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                      placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
               placeholder="Key responsibilities and achievements..."
-            ></textarea>
+            ></volt-textarea>
           </div>
 
           <div class="flex justify-end gap-2">
-            <button
+            <volt-button
               type="button"
               (click)="cancelEdit()"
               class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-accent transition-colors"
             >
               Cancel
-            </button>
-            <button
+            </volt-button>
+            <volt-button
               type="submit"
               [disabled]="form.invalid"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ editingId() ? "Update" : "Add" }}
-            </button>
+            </volt-button>
           </div>
         </form>
       }
@@ -181,7 +183,7 @@ import { moveItem } from "../../../core/utils/array";
               <div
                 class="flex gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <button
+                <volt-button
                   type="button"
                   (click)="move(i, 'up')"
                   [disabled]="i === 0"
@@ -189,8 +191,8 @@ import { moveItem } from "../../../core/utils/array";
                   class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↑
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   type="button"
                   (click)="move(i, 'down')"
                   [disabled]="i === items().length - 1"
@@ -198,19 +200,19 @@ import { moveItem } from "../../../core/utils/array";
                   class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   ↓
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   (click)="edit(exp)"
                   class="px-2.5 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
                 >
                   Edit
-                </button>
-                <button
+                </volt-button>
+                <volt-button
                   (click)="remove(exp.id)"
                   class="px-2.5 py-1 text-xs text-destructive hover:bg-destructive/15 rounded-md transition-colors"
                 >
                   Remove
-                </button>
+                </volt-button>
               </div>
             </div>
             @if (exp.description) {
@@ -257,14 +259,16 @@ export class ExperienceForm {
   });
 
   constructor() {
-    this.form.controls.current.valueChanges.pipe(takeUntilDestroyed()).subscribe((isCurrent) => {
-      if (isCurrent) {
-        this.form.controls.endDate.setValue("");
-        this.form.controls.endDate.disable();
-      } else {
-        this.form.controls.endDate.enable();
-      }
-    });
+    this.form.controls.current.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((isCurrent) => {
+        if (isCurrent) {
+          this.form.controls.endDate.setValue("");
+          this.form.controls.endDate.disable();
+        } else {
+          this.form.controls.endDate.enable();
+        }
+      });
   }
 
   toggleForm() {

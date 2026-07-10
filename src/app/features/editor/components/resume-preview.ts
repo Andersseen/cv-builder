@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 
 import { Cv } from "../../../domain/models/cv-model";
 import { ModernTemplate } from "./resume-templates/modern-template";
