@@ -28,7 +28,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
       <!-- Avatar upload -->
       <div class="flex items-center gap-4">
         <div
-          class="relative w-20 h-20 rounded-full overflow-hidden bg-card-alt border-2 border-border flex items-center justify-center shrink-0"
+          class="relative w-20 h-20 rounded-full overflow-hidden bg-muted border-2 border-border flex items-center justify-center shrink-0"
         >
           @if (avatarPreview()) {
             <img
@@ -39,7 +39,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           } @else {
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8 text-muted-foreground-foreground"
+              class="w-8 h-8 text-muted-foreground"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -59,8 +59,8 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           >
           <div class="flex items-center gap-2">
             <label
-              class="px-3 py-1.5 bg-card-alt border border-border rounded-lg text-foreground text-sm
-                     hover:bg-card-hover cursor-pointer transition-all duration-200"
+              class="px-3 py-1.5 bg-muted border border-border rounded-lg text-foreground text-sm
+                     hover:bg-accent cursor-pointer transition-all duration-200"
             >
               Upload
               <input
@@ -74,13 +74,13 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
               <button
                 type="button"
                 (click)="removeAvatar()"
-                class="px-3 py-1.5 text-sm text-danger hover:text-danger/80 transition-colors"
+                class="px-3 py-1.5 text-sm text-destructive hover:text-destructive/80 transition-colors"
               >
                 Remove
               </button>
             }
           </div>
-          <p class="text-xs text-muted-foreground-foreground">
+          <p class="text-xs text-muted-foreground">
             Only shown in Creative, Modern & Executive templates
           </p>
         </div>
@@ -101,7 +101,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             @if (
               form.controls.fullName.touched && form.controls.fullName.invalid
             ) {
-              <p class="text-danger text-xs mt-1">Full Name is required</p>
+              <p class="text-destructive text-xs mt-1">Full Name is required</p>
             }
           </div>
 
@@ -116,7 +116,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
               placeholder="john&#64;example.com"
             />
             @if (form.controls.email.touched && form.controls.email.invalid) {
-              <p class="text-danger text-xs mt-1">Valid email is required</p>
+              <p class="text-destructive text-xs mt-1">Valid email is required</p>
             }
           </div>
 
@@ -131,7 +131,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
               placeholder="+1 (555) 123-4567"
             />
             @if (form.controls.phone.touched && form.controls.phone.invalid) {
-              <p class="text-danger text-xs mt-1">Phone is required</p>
+              <p class="text-destructive text-xs mt-1">Phone is required</p>
             }
           </div>
 
@@ -148,7 +148,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             @if (
               form.controls.location.touched && form.controls.location.invalid
             ) {
-              <p class="text-danger text-xs mt-1">Location is required</p>
+              <p class="text-destructive text-xs mt-1">Location is required</p>
             }
           </div>
 

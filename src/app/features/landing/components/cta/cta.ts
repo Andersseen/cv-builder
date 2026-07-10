@@ -18,7 +18,7 @@ import { RouterLink } from "@angular/router";
             <span class="text-primary">Start building for free today.</span>
           </h2>
           <p
-            class="mx-auto mt-6 max-w-xl text-base leading-7 text-muted-foreground-foreground"
+            class="mx-auto mt-6 max-w-xl text-base leading-7 text-muted-foreground"
           >
             Join thousands of professionals who have advanced their careers with
             our resume builder. No credit card required.

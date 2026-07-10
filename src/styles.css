@@ -43,14 +43,7 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
-  /* Surface Aliases (Maintaining compatibility with old classes for now) */
-  --color-surface: hsl(var(--card));
-  --color-surface-foreground: hsl(var(--card-foreground));
-  --color-surface-alt: hsl(var(--muted));
-  --color-surface-hover: hsl(var(--accent));
-
-  /* Radii */
-  --radius: var(--radius);
+  /* Radii (base value --radius is defined in @layer base :root) */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -167,16 +160,25 @@
   }
 }
 
-/* Utilities */
-@utilities {
-  .animate-fade-in {
-    animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-  .animate-slide-up {
-    animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+/* Utilities — Tailwind v4 requires one @utility rule per class.
+   The previous `@utilities { … }` block was an unknown at-rule that browsers
+   dropped entirely, so these animations silently did nothing in prod. */
+@utility animate-fade-in {
+  animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@utility animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@utility animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Hide scrollbar while keeping scroll (used by the editor mobile tab bar). */
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

@@ -11,7 +11,7 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
         <span class="text-3xl">📄</span>
       </div>
       <h2 class="text-xl font-semibold text-foreground mb-2">No resumes yet</h2>
-      <p class="text-muted-foreground-foreground mb-8 max-w-md mx-auto">
+      <p class="text-muted-foreground mb-8 max-w-md mx-auto">
         Create your first resume and start building your professional profile.
       </p>
       <button

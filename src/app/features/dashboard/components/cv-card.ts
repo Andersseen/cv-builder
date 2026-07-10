@@ -25,7 +25,7 @@ import { Cv } from "../../../domain/models/cv-model";
         <div class="text-center">
           <div class="text-4xl mb-2 opacity-40">📝</div>
           <span
-            class="text-xs text-muted-foreground-foreground uppercase tracking-wider font-medium"
+            class="text-xs text-muted-foreground uppercase tracking-wider font-medium"
           >
             {{ cv().templateId }} template
           </span>
@@ -72,7 +72,7 @@ import { Cv } from "../../../domain/models/cv-model";
           </h3>
         }
 
-        <p class="text-xs text-muted-foreground-foreground mb-4">
+        <p class="text-xs text-muted-foreground mb-4">
           Updated {{ formatDate(cv().updatedAt) }}
         </p>
 
@@ -95,8 +95,8 @@ import { Cv } from "../../../domain/models/cv-model";
           </button>
           <button
             (click)="delete.emit(cv())"
-            class="px-3 py-2 bg-danger/10 text-danger text-sm rounded-lg
-                   hover:bg-danger/20 transition-all duration-300 active:scale-95"
+            class="px-3 py-2 bg-destructive/10 text-destructive text-sm rounded-lg
+                   hover:bg-destructive/20 transition-all duration-300 active:scale-95"
             title="Delete"
           >
             ✕

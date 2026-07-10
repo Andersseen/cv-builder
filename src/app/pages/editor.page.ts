@@ -17,6 +17,9 @@ import { PersonalInfoForm } from "../features/editor/components/personal-info-fo
 import { ExperienceForm } from "../features/editor/components/experience-form";
 import { EducationForm } from "../features/editor/components/education-form";
 import { SkillsForm } from "../features/editor/components/skills-form";
+import { ProjectsForm } from "../features/editor/components/projects-form";
+import { CertificationsForm } from "../features/editor/components/certifications-form";
+import { LanguagesForm } from "../features/editor/components/languages-form";
 import { TemplateSelector } from "../features/editor/components/template-selector";
 import { ResumePreview } from "../features/editor/components/resume-preview";
 import { EditorTabs, EditorTab, TabConfig } from "../features/editor/components/editor-tabs";
@@ -25,6 +28,9 @@ import {
   Experience,
   Education,
   Skill,
+  Project,
+  Certification,
+  Language,
 } from "../domain/models/cv-model";
 import { ToastService } from "../core/services/toast";
 
@@ -37,6 +43,9 @@ import { ToastService } from "../core/services/toast";
     ExperienceForm,
     EducationForm,
     SkillsForm,
+    ProjectsForm,
+    CertificationsForm,
+    LanguagesForm,
     TemplateSelector,
     ResumePreview,
     EditorTabs,
@@ -61,6 +70,9 @@ export default class Editor implements OnInit, OnDestroy {
     { id: "experience", label: "Experience", icon: "💼" },
     { id: "education", label: "Education", icon: "🎓" },
     { id: "skills", label: "Skills", icon: "⚡" },
+    { id: "projects", label: "Projects", icon: "🛠️" },
+    { id: "certifications", label: "Certifications", icon: "📜" },
+    { id: "languages", label: "Languages", icon: "🌐" },
     { id: "template", label: "Template", icon: "🎨" },
   ];
 
@@ -77,6 +89,13 @@ export default class Editor implements OnInit, OnDestroy {
       this.cvStore.setActive(cvId);
     }
     if (!this.cvStore.activeCv()) {
+      // No valid ?cv= id — don't leave the user on a blank editor.
+      this.toast.show(
+        cvId
+          ? "That resume no longer exists — pick one from your dashboard."
+          : "Open a resume from your dashboard to start editing.",
+        "error",
+      );
       this.router.navigate(["/dashboard"]);
     }
   }
@@ -103,6 +122,18 @@ export default class Editor implements OnInit, OnDestroy {
 
   protected updateSkills(skills: Skill[]) {
     this.cvStore.updateActiveCv({ sections: { skills } });
+  }
+
+  protected updateProjects(projects: Project[]) {
+    this.cvStore.updateActiveCv({ sections: { projects } });
+  }
+
+  protected updateCertifications(certifications: Certification[]) {
+    this.cvStore.updateActiveCv({ sections: { certifications } });
+  }
+
+  protected updateLanguages(languages: Language[]) {
+    this.cvStore.updateActiveCv({ sections: { languages } });
   }
 
   protected changeTemplate(templateId: string) {

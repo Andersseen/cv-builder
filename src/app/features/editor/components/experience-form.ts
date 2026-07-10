@@ -13,7 +13,8 @@ import {
 } from "@angular/forms";
 
 import { Experience } from "../../../domain/models/cv-model";
-import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
+import { createDefaultExperience } from "../../../domain/models/cv-defaults";
+import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-experience-form",
@@ -28,7 +29,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
           [class]="
             showForm()
-              ? 'bg-secondary text-secondary-foreground hover:bg-card-hover'
+              ? 'bg-secondary text-secondary-foreground hover:bg-accent'
               : 'bg-primary text-primary-foreground hover:bg-primary-700'
           "
         >
@@ -41,9 +42,9 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
         <form
           [formGroup]="form"
           (ngSubmit)="onSubmit()"
-          class="space-y-4 bg-card-alt rounded-xl p-5 border border-border"
+          class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
-          <h3 class="text-sm font-medium text-muted-foreground-foreground">
+          <h3 class="text-sm font-medium text-muted-foreground">
             {{ editingId() ? "Edit Experience" : "New Experience" }}
           </h3>
 
@@ -138,7 +139,7 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
             <button
               type="button"
               (click)="cancelEdit()"
-              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-card-hover transition-colors"
+              class="px-4 py-2 text-sm text-secondary-foreground bg-secondary rounded-lg hover:bg-accent transition-colors"
             >
               Cancel
             </button>
@@ -156,9 +157,9 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
 
       <!-- List -->
       <div class="space-y-3">
-        @for (exp of items(); track exp.id) {
+        @for (exp of items(); track exp.id; let i = $index) {
           <div
-            class="p-4 bg-card-alt border border-border rounded-xl group
+            class="p-4 bg-muted border border-border rounded-xl group
                       hover:border-primary/30 transition-all duration-200"
           >
             <div class="flex justify-between items-start">
@@ -168,11 +169,11 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 >
                   {{ exp.jobTitle }}
                 </h3>
-                <p class="text-muted-foreground-foreground text-sm">
+                <p class="text-muted-foreground text-sm">
                   {{ exp.company
                   }}{{ exp.location ? " — " + exp.location : "" }}
                 </p>
-                <p class="text-xs text-muted-foreground-foreground/70 mt-1">
+                <p class="text-xs text-muted-foreground/70 mt-1">
                   {{ formatDate(exp.startDate) }} –
                   {{ exp.current ? "Present" : formatDate(exp.endDate) }}
                 </p>
@@ -181,6 +182,24 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 class="flex gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <button
+                  type="button"
+                  (click)="move(i, 'up')"
+                  [disabled]="i === 0"
+                  title="Move up"
+                  class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  (click)="move(i, 'down')"
+                  [disabled]="i === items().length - 1"
+                  title="Move down"
+                  class="px-2 py-1 text-xs text-muted-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ↓
+                </button>
+                <button
                   (click)="edit(exp)"
                   class="px-2.5 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
                 >
@@ -188,21 +207,21 @@ import { createDefaultExperience  } from "../../../domain/models/cv-defaults";
                 </button>
                 <button
                   (click)="remove(exp.id)"
-                  class="px-2.5 py-1 text-xs text-danger hover:bg-danger/15 rounded-md transition-colors"
+                  class="px-2.5 py-1 text-xs text-destructive hover:bg-destructive/15 rounded-md transition-colors"
                 >
                   Remove
                 </button>
               </div>
             </div>
             @if (exp.description) {
-              <p class="text-muted-foreground-foreground text-sm mt-2 whitespace-pre-wrap">
+              <p class="text-muted-foreground text-sm mt-2 whitespace-pre-wrap">
                 {{ exp.description }}
               </p>
             }
           </div>
         }
         @if (items().length === 0) {
-          <p class="text-muted-foreground-foreground text-sm text-center py-6">
+          <p class="text-muted-foreground text-sm text-center py-6">
             No work experience added yet.
           </p>
         }
@@ -249,7 +268,8 @@ export class ExperienceForm {
   }
 
   toggleForm() {
-    this.showForm() ? this.cancelEdit() : this.startNew();
+    if (this.showForm()) this.cancelEdit();
+    else this.startNew();
   }
   startNew() {
     this.editingId.set(null);
@@ -286,6 +306,9 @@ export class ExperienceForm {
       this.itemsChange.emit(this.items().filter((e) => e.id !== id));
       if (this.editingId() === id) this.cancelEdit();
     }
+  }
+  move(index: number, direction: "up" | "down") {
+    this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
   formatDate(dateString: string): string {
     if (!dateString) return "";

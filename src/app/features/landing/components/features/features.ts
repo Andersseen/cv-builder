@@ -3,7 +3,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
 @Component({
   selector: "app-features",
   template: `
-    <section class="py-28 bg-card-alt/50">
+    <section class="py-28 bg-muted/50">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <!-- Section header -->
         <div class="mx-auto max-w-2xl lg:text-center mb-16">
@@ -19,7 +19,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
             <br class="hidden sm:block" />
             build the perfect resume
           </h2>
-          <p class="mt-6 text-lg leading-8 text-muted-foreground-foreground">
+          <p class="mt-6 text-lg leading-8 text-muted-foreground">
             We stripped away the clutter to focus on what matters: your content.
             Our tools help you articulate your value without fighting with
             formatting.
@@ -58,7 +58,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
                 Distraction-Free Editor
               </h3>
               <p
-                class="max-w-xl text-sm leading-7 text-muted-foreground-foreground"
+                class="max-w-xl text-sm leading-7 text-muted-foreground"
               >
                 Our minimalist editor keeps you focused on your content.
                 Real-time preview updates instantly as you type, so you always
@@ -97,7 +97,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 Instant PDF Export
               </h3>
-              <p class="text-sm leading-7 text-muted-foreground-foreground">
+              <p class="text-sm leading-7 text-muted-foreground">
                 One click to download a perfectly formatted, ATS-compliant PDF.
                 Crisp text at 3× resolution.
               </p>
@@ -132,7 +132,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
                 5 Professional Templates
               </h3>
               <p
-                class="text-sm leading-7 text-muted-foreground-foreground mb-6"
+                class="text-sm leading-7 text-muted-foreground mb-6"
               >
                 Choose from curated layouts designed by HR experts. Modern,
                 Classic, Minimal, Creative and Executive — each ATS-optimized.
@@ -216,7 +216,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 100% Private
               </h3>
-              <p class="text-sm leading-7 text-muted-foreground-foreground">
+              <p class="text-sm leading-7 text-muted-foreground">
                 Your data never leaves your browser. We use local storage to
                 keep your resume safe and private.
               </p>
@@ -250,7 +250,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
               <h3 class="text-xl font-bold text-foreground mb-2">
                 Color Customization
               </h3>
-              <p class="text-sm leading-7 text-muted-foreground-foreground">
+              <p class="text-sm leading-7 text-muted-foreground">
                 Personalize your resume with 10 preset accent colors or pick any
                 custom color with real-time preview.
               </p>
@@ -285,7 +285,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
                 Lightning Fast
               </h3>
               <p
-                class="max-w-xl text-sm leading-7 text-muted-foreground-foreground"
+                class="max-w-xl text-sm leading-7 text-muted-foreground"
               >
                 No sign-ups, no loading spinners. Start building instantly and
                 see your resume come alive in real time as you rapidly make

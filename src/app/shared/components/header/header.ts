@@ -32,14 +32,14 @@ import { Theme } from "../../../core/services/theme";
             routerLink="/"
             routerLinkActive="text-primary bg-primary/10 font-semibold"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
           >
             Home
           </a>
           <a
             routerLink="/dashboard"
             routerLinkActive="text-primary bg-primary/10 font-semibold"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
           >
             My Resumes
           </a>
@@ -50,7 +50,7 @@ import { Theme } from "../../../core/services/theme";
           <!-- Theme toggle -->
           <button
             (click)="theme.toggleDarkMode()"
-            class="relative p-2.5 rounded-xl text-muted-foreground-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 hover:scale-105 active:scale-95"
+            class="relative p-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label="Toggle dark mode"
           >
             @if (theme.darkMode()) {
@@ -92,7 +92,7 @@ import { Theme } from "../../../core/services/theme";
 
           <!-- Mobile hamburger -->
           <button
-            class="md:hidden p-2 rounded-lg text-muted-foreground-foreground hover:text-foreground hover:bg-card-alt transition-all duration-200"
+            class="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
             (click)="toggleMobileMenu()"
             aria-label="Open menu"
           >
@@ -122,7 +122,7 @@ import { Theme } from "../../../core/services/theme";
               routerLink="/"
               routerLinkActive="text-primary bg-primary/10 font-semibold"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-muted/50 transition-all duration-300"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-all duration-300"
               (click)="mobileMenuOpen.set(false)"
             >
               Home
@@ -130,7 +130,7 @@ import { Theme } from "../../../core/services/theme";
             <a
               routerLink="/dashboard"
               routerLinkActive="text-primary bg-primary/10 font-semibold"
-              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground-foreground hover:bg-muted/50 transition-all duration-300"
+              class="block px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-all duration-300"
               (click)="mobileMenuOpen.set(false)"
             >
               My Resumes

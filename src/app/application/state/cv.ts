@@ -1,8 +1,9 @@
 import { Injectable, signal, computed, inject } from "@angular/core";
 import { Cv, DeepPartial } from "../../domain/models/cv-model";
-import { createDefaultCv  } from "../../domain/models/cv-defaults";
+import { createDefaultCv } from "../../domain/models/cv-defaults";
 import { LocalCvRepository } from "../../infrastructure/persistence/cv-repository";
 import { ToastService } from "../../core/services/toast";
+import { deepMerge } from "./deep-merge";
 
 /**
  * Central application state for CVs.
@@ -42,13 +43,20 @@ export class CvStore {
     this._loading.set(true);
     try {
       const cvs = await this.repo.getAll();
-      // Backfill settings added after initial schema
+      // Backfill fields added after the initial schema so CVs stored before
+      // the change still load with a complete shape.
       const migrated = cvs.map((cv) => ({
         ...cv,
         settings: {
           ...cv.settings,
           backgroundColor: cv.settings.backgroundColor ?? "#ffffff",
           primaryColor: cv.settings.primaryColor ?? "#111827",
+        },
+        sections: {
+          ...cv.sections,
+          projects: cv.sections.projects ?? [],
+          certifications: cv.sections.certifications ?? [],
+          languages: cv.sections.languages ?? [],
         },
       }));
       this._cvs.set(migrated);
@@ -144,37 +152,4 @@ export class CvStore {
 
     this.toast.show("Resume deleted", "success");
   }
-}
-
-// ─── Deep merge utility ──────────────────────────────────────
-
-type DeepPartialObj<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartialObj<T[P]> : T[P];
-};
-
-function deepMerge<T extends object>(target: T, source: DeepPartialObj<T>): T {
-  const result = { ...target };
-
-  for (const key of Object.keys(source) as (keyof T)[]) {
-    const sourceVal = source[key];
-    const targetVal = target[key];
-
-    if (
-      sourceVal &&
-      typeof sourceVal === "object" &&
-      !Array.isArray(sourceVal) &&
-      targetVal &&
-      typeof targetVal === "object" &&
-      !Array.isArray(targetVal)
-    ) {
-      (result as Record<string, unknown>)[key as string] = deepMerge(
-        targetVal as object,
-        sourceVal as DeepPartialObj<object>,
-      );
-    } else {
-      (result as Record<string, unknown>)[key as string] = sourceVal;
-    }
-  }
-
-  return result;
 }

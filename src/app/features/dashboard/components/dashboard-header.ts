@@ -11,7 +11,7 @@ import { Component, output, ChangeDetectionStrategy } from "@angular/core";
         <h1 class="text-3xl font-display font-bold text-foreground mb-1">
           My Resumes
         </h1>
-        <p class="text-muted-foreground-foreground text-sm">
+        <p class="text-muted-foreground text-sm">
           Create, manage, and export your resumes
         </p>
       </div>

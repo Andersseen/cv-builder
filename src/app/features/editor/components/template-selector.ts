@@ -15,7 +15,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
   template: `
     <div class="space-y-5">
       <h2 class="text-lg font-semibold text-foreground">Choose Template</h2>
-      <p class="text-sm text-muted-foreground-foreground -mt-3">
+      <p class="text-sm text-muted-foreground -mt-3">
         Select a layout that best represents your style
       </p>
 
@@ -26,7 +26,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
             [class]="
               selectedTemplateId() === template.id
                 ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 ring-1 ring-primary/30'
-                : 'border-border bg-card hover:border-primary/40 hover:bg-card-alt'
+                : 'border-border bg-card hover:border-primary/40 hover:bg-muted'
             "
             (click)="selectTemplate(template.id)"
           >
@@ -530,7 +530,7 @@ import { ColorPicker, ColorPreset } from "./color-picker";
             >
               {{ template.name }}
             </h3>
-            <p class="text-xs text-muted-foreground-foreground leading-tight">
+            <p class="text-xs text-muted-foreground leading-tight">
               {{ template.description }}
             </p>
           </button>
