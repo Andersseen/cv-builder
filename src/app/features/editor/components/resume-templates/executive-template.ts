@@ -1,5 +1,6 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv-model";
+import { renderRichText } from "../../../../shared/utils/markdown";
 
 @Component({
   selector: "app-executive-template",
@@ -89,9 +90,10 @@ import { Cv } from "../../../../domain/models/cv-model";
                   </div>
                 </div>
                 @if (exp.description) {
-                  <p class="text-gray-500 text-sm leading-relaxed pl-4">
-                    {{ exp.description }}
-                  </p>
+                  <div
+                    class="text-gray-500 text-sm leading-relaxed pl-4"
+                    [innerHTML]="renderRichText(exp.description)"
+                  ></div>
                 }
               </div>
             }
@@ -159,6 +161,103 @@ import { Cv } from "../../../../domain/models/cv-model";
             </section>
           }
         </div>
+
+        <!-- Projects -->
+        @if (cv().sections.projects.length > 0) {
+          <section>
+            <h2
+              class="text-base font-extrabold text-gray-900 mb-5 pb-2 uppercase tracking-wide"
+              [style.border-bottom]="'3px solid ' + accentColor()"
+            >
+              Key Projects
+            </h2>
+            @for (proj of cv().sections.projects; track proj.id) {
+              <div class="mb-4">
+                <div class="bg-white p-4 rounded-md">
+                  <div class="flex justify-between items-start">
+                    <h3 class="text-sm font-bold text-gray-900 uppercase">
+                      {{ proj.name }}
+                    </h3>
+                    @if (proj.url) {
+                      <span class="text-xs text-gray-500 shrink-0 ml-4">{{
+                        proj.url
+                      }}</span>
+                    }
+                  </div>
+                  @if (proj.technologies) {
+                    <p class="text-xs text-gray-500 font-semibold mt-0.5">
+                      {{ proj.technologies }}
+                    </p>
+                  }
+                  @if (proj.description) {
+                    <div
+                      class="text-gray-500 text-sm leading-relaxed mt-1"
+                      [innerHTML]="renderRichText(proj.description)"
+                    ></div>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Certifications -->
+          @if (cv().sections.certifications.length > 0) {
+            <section>
+              <h2
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor()"
+              >
+                Certifications
+              </h2>
+              @for (cert of cv().sections.certifications; track cert.id) {
+                <div class="mb-3 bg-white p-3 rounded-md">
+                  <h3 class="font-bold text-gray-900 text-xs uppercase">
+                    {{ cert.name }}
+                  </h3>
+                  @if (cert.issuer) {
+                    <p class="text-gray-500 text-xs font-semibold">
+                      {{ cert.issuer }}
+                    </p>
+                  }
+                  @if (cert.date) {
+                    <p class="text-[10px] text-gray-500 mt-1">
+                      {{ formatDate(cert.date) }}
+                    </p>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+          <!-- Languages -->
+          @if (cv().sections.languages.length > 0) {
+            <section>
+              <h2
+                class="text-sm font-extrabold text-gray-900 mb-4 pb-2 uppercase tracking-wide"
+                [style.border-bottom]="'2px solid ' + accentColor()"
+              >
+                Languages
+              </h2>
+              <div class="space-y-2">
+                @for (lang of cv().sections.languages; track lang.id) {
+                  <div
+                    class="text-white px-3 py-2 rounded-md flex justify-between items-center"
+                    [style.background-color]="accentColor()"
+                  >
+                    <span class="font-semibold text-xs">{{ lang.name }}</span>
+                    <span
+                      class="text-[10px] bg-white px-2 py-0.5 rounded-full font-bold"
+                      [style.color]="accentColor()"
+                      >{{ lang.proficiency }}</span
+                    >
+                  </div>
+                }
+              </div>
+            </section>
+          }
+        </div>
       </div>
     </div>
   `,
@@ -172,6 +271,8 @@ export class ExecutiveTemplate {
   protected get headerBg(): string {
     return this.accentColor();
   }
+
+  protected renderRichText = renderRichText;
 
   protected formatDate(dateString: string): string {
     if (!dateString) return "";

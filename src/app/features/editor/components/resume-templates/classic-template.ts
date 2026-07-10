@@ -1,5 +1,6 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv-model";
+import { renderRichText } from "../../../../shared/utils/markdown";
 
 @Component({
   selector: "app-classic-template",
@@ -92,9 +93,10 @@ import { Cv } from "../../../../domain/models/cv-model";
                   }
                 </p>
                 @if (exp.description) {
-                  <p class="text-gray-500 text-sm leading-relaxed">
-                    {{ exp.description }}
-                  </p>
+                  <div
+                    class="text-gray-500 text-sm leading-relaxed"
+                    [innerHTML]="renderRichText(exp.description)"
+                  ></div>
                 }
               </div>
             }
@@ -158,6 +160,97 @@ import { Cv } from "../../../../domain/models/cv-model";
             </div>
           </section>
         }
+
+        <!-- Projects -->
+        @if (cv().sections.projects.length > 0) {
+          <section class="mb-6 mt-6">
+            <h2
+              class="text-sm font-bold text-gray-900 mb-3 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
+            >
+              Projects
+            </h2>
+            @for (proj of cv().sections.projects; track proj.id) {
+              <div class="mb-4">
+                <div class="flex justify-between items-baseline mb-0.5">
+                  <h3 class="text-base font-bold text-gray-900">
+                    {{ proj.name }}
+                  </h3>
+                  @if (proj.url) {
+                    <span class="text-xs text-gray-500 italic shrink-0 ml-4">{{
+                      proj.url
+                    }}</span>
+                  }
+                </div>
+                @if (proj.technologies) {
+                  <p class="text-gray-500 text-sm font-semibold mb-1">
+                    {{ proj.technologies }}
+                  </p>
+                }
+                @if (proj.description) {
+                  <div
+                    class="text-gray-500 text-sm leading-relaxed"
+                    [innerHTML]="renderRichText(proj.description)"
+                  ></div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Certifications -->
+        @if (cv().sections.certifications.length > 0) {
+          <section class="mb-6">
+            <h2
+              class="text-sm font-bold text-gray-900 mb-3 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
+            >
+              Certifications
+            </h2>
+            @for (cert of cv().sections.certifications; track cert.id) {
+              <div class="mb-2">
+                <div class="flex justify-between items-baseline">
+                  <h3 class="text-sm font-bold text-gray-900">
+                    {{ cert.name }}
+                  </h3>
+                  @if (cert.date) {
+                    <span class="text-xs text-gray-500 italic shrink-0 ml-4">{{
+                      formatDate(cert.date)
+                    }}</span>
+                  }
+                </div>
+                @if (cert.issuer) {
+                  <p class="text-gray-500 text-sm">{{ cert.issuer }}</p>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Languages -->
+        @if (cv().sections.languages.length > 0) {
+          <section>
+            <h2
+              class="text-sm font-bold text-gray-900 mb-2 uppercase tracking-[0.2em] pb-1"
+              [style.border-bottom]="'1px solid ' + accentColor() + '40'"
+            >
+              Languages
+            </h2>
+            <div class="flex flex-wrap gap-x-1 text-sm text-gray-500">
+              @for (
+                lang of cv().sections.languages;
+                track lang.id;
+                let last = $last
+              ) {
+                <span
+                  >{{ lang.name }} ({{ lang.proficiency }}){{
+                    last ? "" : " · "
+                  }}</span
+                >
+              }
+            </div>
+          </section>
+        }
       </div>
     </div>
   `,
@@ -167,6 +260,8 @@ export class ClassicTemplate {
   readonly accentColor = input("#475569");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+
+  protected renderRichText = renderRichText;
 
   protected formatDate(dateString: string): string {
     if (!dateString) return "";

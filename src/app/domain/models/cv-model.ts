@@ -22,6 +22,9 @@ export interface CvSections {
   experience: Experience[];
   education: Education[];
   skills: Skill[];
+  projects: Project[];
+  certifications: Certification[];
+  languages: Language[];
 }
 
 export interface PersonalInfo {
@@ -62,6 +65,35 @@ export interface Skill {
 }
 
 export type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  technologies: string;
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string; // ISO 8601 (yyyy-mm)
+  url: string;
+}
+
+export interface Language {
+  id: string;
+  name: string;
+  proficiency: LanguageProficiency;
+}
+
+export type LanguageProficiency =
+  | "Basic"
+  | "Conversational"
+  | "Professional"
+  | "Fluent"
+  | "Native";
 
 // ─── Settings ────────────────────────────────────────────────
 

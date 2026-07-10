@@ -13,18 +13,18 @@ import {
 } from "@angular/forms";
 import { VoltButton, VoltInput, VoltNativeSelect } from "@voltui/components";
 
-import { Skill, SkillLevel } from "../../../domain/models/cv-model";
-import { createDefaultSkill } from "../../../domain/models/cv-defaults";
+import { Language, LanguageProficiency } from "../../../domain/models/cv-model";
+import { createDefaultLanguage } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
 
 @Component({
-  selector: "app-skills-form",
+  selector: "app-languages-form",
   imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltNativeSelect],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold text-foreground">Skills</h2>
+        <h2 class="text-lg font-semibold text-foreground">Languages</h2>
         <volt-button
           (click)="toggleForm()"
           class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
@@ -34,7 +34,7 @@ import { moveItem } from "../../../core/utils/array";
               : 'bg-primary text-primary-foreground hover:bg-primary/90'
           "
         >
-          {{ showForm() ? "Cancel" : "+ Add Skill" }}
+          {{ showForm() ? "Cancel" : "+ Add Language" }}
         </volt-button>
       </div>
 
@@ -47,22 +47,22 @@ import { moveItem } from "../../../core/utils/array";
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
-                >Skill Name *</label
+                >Language *</label
               >
               <volt-input
                 type="text"
                 formControlName="name"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                placeholder="TypeScript, React, Docker..."
+                placeholder="Spanish, English, German..."
               />
             </div>
             <div>
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
-                >Level *</label
+                >Proficiency *</label
               >
               <volt-native-select
-                formControlName="level"
+                formControlName="proficiency"
                 class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               >
@@ -92,20 +92,22 @@ import { moveItem } from "../../../core/utils/array";
         </form>
       }
 
-      <!-- Skills grid -->
+      <!-- Languages grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        @for (skill of items(); track skill.id; let i = $index) {
+        @for (lang of items(); track lang.id; let i = $index) {
           <div
             class="p-3 bg-muted border border-border rounded-xl group
                       hover:border-primary/30 transition-all duration-200 flex justify-between items-center"
           >
-            <div class="cursor-pointer flex-grow" (click)="edit(skill)">
+            <div class="cursor-pointer flex-grow" (click)="edit(lang)">
               <p
                 class="font-medium text-foreground group-hover:text-primary transition-colors text-sm"
               >
-                {{ skill.name }}
+                {{ lang.name }}
               </p>
-              <p class="text-xs text-muted-foreground">{{ skill.level }}</p>
+              <p class="text-xs text-muted-foreground">
+                {{ lang.proficiency }}
+              </p>
             </div>
             <div
               class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -129,13 +131,7 @@ import { moveItem } from "../../../core/utils/array";
                 ↓
               </volt-button>
               <volt-button
-                (click)="edit(skill)"
-                class="px-2 py-1 text-xs text-primary hover:bg-primary/15 rounded-md transition-colors"
-              >
-                Edit
-              </volt-button>
-              <volt-button
-                (click)="remove(skill.id)"
+                (click)="remove(lang.id)"
                 class="px-2 py-1 text-xs text-destructive hover:bg-destructive/15 rounded-md transition-colors"
               >
                 ✕
@@ -146,22 +142,23 @@ import { moveItem } from "../../../core/utils/array";
       </div>
       @if (items().length === 0) {
         <p class="text-muted-foreground text-sm text-center py-6">
-          No skills added yet.
+          No languages added yet.
         </p>
       }
     </div>
   `,
 })
-export class SkillsForm {
-  readonly items = input.required<Skill[]>();
-  readonly itemsChange = output<Skill[]>();
+export class LanguagesForm {
+  readonly items = input.required<Language[]>();
+  readonly itemsChange = output<Language[]>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
-  readonly levels: SkillLevel[] = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "Expert",
+  readonly levels: LanguageProficiency[] = [
+    "Basic",
+    "Conversational",
+    "Professional",
+    "Fluent",
+    "Native",
   ];
 
   form = new FormGroup({
@@ -170,7 +167,7 @@ export class SkillsForm {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    level: new FormControl<SkillLevel>("Beginner", {
+    proficiency: new FormControl<LanguageProficiency>("Professional", {
       nonNullable: true,
       validators: [Validators.required],
     }),
@@ -182,12 +179,15 @@ export class SkillsForm {
   }
   startNew() {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultSkill().id, level: "Beginner" });
+    this.form.reset({
+      id: createDefaultLanguage().id,
+      proficiency: "Professional",
+    });
     this.showForm.set(true);
   }
-  edit(skill: Skill) {
-    this.editingId.set(skill.id);
-    this.form.patchValue(skill);
+  edit(lang: Language) {
+    this.editingId.set(lang.id);
+    this.form.patchValue(lang);
     this.showForm.set(true);
   }
   cancelEdit() {
@@ -200,10 +200,10 @@ export class SkillsForm {
       this.form.markAllAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Skill;
+    const value = this.form.getRawValue() as Language;
     if (this.editingId()) {
       this.itemsChange.emit(
-        this.items().map((s) => (s.id === this.editingId() ? value : s)),
+        this.items().map((l) => (l.id === this.editingId() ? value : l)),
       );
     } else {
       this.itemsChange.emit([...this.items(), value]);
@@ -211,7 +211,7 @@ export class SkillsForm {
     this.cancelEdit();
   }
   remove(id: string) {
-    this.itemsChange.emit(this.items().filter((s) => s.id !== id));
+    this.itemsChange.emit(this.items().filter((l) => l.id !== id));
     if (this.editingId() === id) this.cancelEdit();
   }
   move(index: number, direction: "up" | "down") {

@@ -1,13 +1,14 @@
 # Modern CV Builder
 
-Modern CV Builder is an Angular application that helps users create professional resumes in the browser. It provides structured forms, real-time previews, and PDF export capabilities powered by Tailwind CSS and modern web tooling.
+Modern CV Builder is a 100% client-side Angular 19 application (AnalogJS + Vite, zoneless, signals) that helps users create professional resumes in the browser. It provides structured forms, real-time previews, and PDF export. Everything is stored locally in IndexedDB — no backend, no account.
 
 ## Features
 
-- Forms for personal information, work experience, education, and skills
-- Template selection and live resume preview
+- Forms for personal info, experience, education, skills, projects, certifications, and languages
+- Reorder list items (↑/↓) and light markdown (`**bold**`, `*italic*`, `-` bullets) in descriptions
+- Template selection and live resume preview (5 distinct templates)
 - Responsive layout with optional mobile preview
-- One-click PDF export using `html-to-image` and `jspdf`
+- One-click PDF export using `html-to-image` and `jspdf`, plus ATS-friendly print/PDF
 
 ## Prerequisites
 
@@ -22,7 +23,7 @@ Install dependencies:
 pnpm install
 ```
 
-Start a development server at `http://localhost:4200/`:
+Start a development server at `http://localhost:5173/`:
 
 ```bash
 pnpm start

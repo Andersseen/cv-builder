@@ -1,6 +1,6 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
   input,
   output,
 } from "@angular/core";
@@ -10,6 +10,9 @@ export type EditorTab =
   | "experience"
   | "education"
   | "skills"
+  | "projects"
+  | "certifications"
+  | "languages"
   | "template";
 
 export interface TabConfig {

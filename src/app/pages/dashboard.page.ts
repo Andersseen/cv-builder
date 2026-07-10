@@ -1,8 +1,9 @@
-import { Component,
+import {
+  ChangeDetectionStrategy,
+  Component,
   inject,
   OnInit,
-  ChangeDetectionStrategy,
- } from "@angular/core";
+} from "@angular/core";
 import { Router } from "@angular/router";
 import { CvStore } from "../application/state/cv";
 import { Cv } from "../domain/models/cv-model";

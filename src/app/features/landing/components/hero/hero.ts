@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -50,7 +50,7 @@ import { RouterLink } from "@angular/router";
 
           <!-- Subtitle -->
           <p
-            class="max-w-2xl text-lg leading-8 text-muted-foreground-foreground mb-12 animate-slide-up"
+            class="max-w-2xl text-lg leading-8 text-muted-foreground mb-12 animate-slide-up"
             style="animation-delay: 200ms;"
           >
             Join thousands of professionals who have secured their dream jobs
@@ -109,17 +109,16 @@ import { RouterLink } from "@angular/router";
           >
             <!-- Window chrome -->
             <div
-              class="h-11 bg-card-alt border-b border-border flex items-center px-4 gap-2"
+              class="h-11 bg-muted border-b border-border flex items-center px-4 gap-2"
             >
-              <div class="w-3 h-3 rounded-full bg-danger/60"></div>
+              <div class="w-3 h-3 rounded-full bg-destructive/60"></div>
               <div class="w-3 h-3 rounded-full bg-warning/60"></div>
               <div class="w-3 h-3 rounded-full bg-accent/60"></div>
               <div class="ml-4 flex-1 max-w-xs mx-auto">
                 <div
                   class="h-5 bg-background rounded-md flex items-center justify-center"
                 >
-                  <span
-                    class="text-[10px] text-muted-foreground-foreground font-mono"
+                  <span class="text-[10px] text-muted-foreground font-mono"
                     >cvbuilder.app/editor</span
                   >
                 </div>

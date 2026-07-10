@@ -6,6 +6,9 @@ import {
   Experience,
   Education,
   Skill,
+  Project,
+  Certification,
+  Language,
 } from "./cv-model";
 
 // ─── Factory functions ───────────────────────────────────────
@@ -30,6 +33,9 @@ export function createDefaultSections(): CvSections {
     experience: [],
     education: [],
     skills: [],
+    projects: [],
+    certifications: [],
+    languages: [],
   };
 }
 
@@ -75,6 +81,34 @@ export function createDefaultSkill(): Skill {
     id: crypto.randomUUID(),
     name: "",
     level: "Beginner",
+  };
+}
+
+export function createDefaultProject(): Project {
+  return {
+    id: crypto.randomUUID(),
+    name: "",
+    description: "",
+    url: "",
+    technologies: "",
+  };
+}
+
+export function createDefaultCertification(): Certification {
+  return {
+    id: crypto.randomUUID(),
+    name: "",
+    issuer: "",
+    date: "",
+    url: "",
+  };
+}
+
+export function createDefaultLanguage(): Language {
+  return {
+    id: crypto.randomUUID(),
+    name: "",
+    proficiency: "Professional",
   };
 }
 

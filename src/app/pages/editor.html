@@ -53,6 +53,21 @@
             [items]="cvStore.activeCv()!.sections.skills"
             (itemsChange)="updateSkills($event)"
           />
+          } @case ("projects") {
+          <app-projects-form
+            [items]="cvStore.activeCv()!.sections.projects"
+            (itemsChange)="updateProjects($event)"
+          />
+          } @case ("certifications") {
+          <app-certifications-form
+            [items]="cvStore.activeCv()!.sections.certifications"
+            (itemsChange)="updateCertifications($event)"
+          />
+          } @case ("languages") {
+          <app-languages-form
+            [items]="cvStore.activeCv()!.sections.languages"
+            (itemsChange)="updateLanguages($event)"
+          />
           } @case ("template") {
           <app-template-selector
             [selectedTemplateId]="cvStore.activeCv()!.templateId"
@@ -84,7 +99,7 @@
   <!-- Preview toggle button -->
   <button
     (click)="previewOpen.set(!previewOpen())"
-    class="hidden lg:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-xl shadow-foreground/10 hover:bg-card-hover transition-all duration-200 text-sm font-medium text-foreground"
+    class="hidden lg:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-xl shadow-foreground/10 hover:bg-accent transition-all duration-200 text-sm font-medium text-foreground"
     [title]="previewOpen() ? 'Hide preview' : 'Show preview'"
   >
     <span class="text-base">{{ previewOpen() ? "👁️" : "👁️‍🗨️" }}</span>
@@ -93,10 +108,10 @@
   } @else {
   <!-- No CV found -->
   <div class="text-center py-24">
-    <p class="text-muted-foreground-foreground mb-4">Resume not found</p>
+    <p class="text-muted-foreground mb-4">Resume not found</p>
     <button
       (click)="goBack()"
-      class="text-primary hover:text-primary-700 transition-colors"
+      class="text-primary hover:text-primary transition-colors"
     >
       &larr; Back to dashboard
     </button>

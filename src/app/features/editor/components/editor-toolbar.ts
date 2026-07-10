@@ -1,14 +1,26 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
 } from "@angular/core";
+import { VoltButton } from "@voltui/components";
+import { LmnArrowLeftIcon } from "lumen-icons/arrow-left";
+import { LmnPrinterIcon } from "lumen-icons/printer";
+import { LmnPhotoIcon } from "lumen-icons/photo";
+import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
 
 @Component({
   selector: "app-editor-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    VoltButton,
+    LmnArrowLeftIcon,
+    LmnPrinterIcon,
+    LmnPhotoIcon,
+    LmnChevronDownIcon,
+  ],
   template: `
     <div
       class="bg-card/75 backdrop-blur-xl border-b border-border sticky top-0 z-30 shadow-glass transition-colors duration-300"
@@ -20,7 +32,7 @@ import {
         <div class="flex items-center gap-3 min-w-0">
           <button
             (click)="back.emit()"
-            class="text-muted-foreground-foreground hover:text-foreground transition-colors shrink-0"
+            class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
             title="Back to dashboard"
           >
             &larr; Back
@@ -36,7 +48,7 @@ import {
         <div class="flex items-center gap-3 shrink-0">
           @if (saving()) {
             <span
-              class="text-xs text-muted-foreground-foreground flex items-center gap-1.5"
+              class="text-xs text-muted-foreground flex items-center gap-1.5"
             >
               <span
                 class="w-2 h-2 rounded-full bg-warning animate-pulse"
@@ -44,9 +56,7 @@ import {
               Saving...
             </span>
           } @else if (lastSavedAt()) {
-            <span class="text-xs text-muted-foreground-foreground">
-              Saved &check;
-            </span>
+            <span class="text-xs text-muted-foreground"> Saved &check; </span>
           }
 
           <!-- Export dropdown -->
@@ -109,14 +119,12 @@ import {
               >
                 <button
                   (click)="onPrintPdf()"
-                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-card-hover transition-colors flex items-start gap-3"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
                 >
                   <span class="text-lg leading-none mt-0.5">🖨️</span>
                   <div>
                     <div class="font-medium">Print PDF</div>
-                    <div
-                      class="text-xs text-muted-foreground-foreground mt-0.5"
-                    >
+                    <div class="text-xs text-muted-foreground mt-0.5">
                       Selectable text · ATS-friendly · Small file
                     </div>
                   </div>
@@ -124,14 +132,12 @@ import {
                 <div class="border-t border-border"></div>
                 <button
                   (click)="onExportImage()"
-                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-card-hover transition-colors flex items-start gap-3"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
                 >
                   <span class="text-lg leading-none mt-0.5">📸</span>
                   <div>
                     <div class="font-medium">Image PDF</div>
-                    <div
-                      class="text-xs text-muted-foreground-foreground mt-0.5"
-                    >
+                    <div class="text-xs text-muted-foreground mt-0.5">
                       Pixel-perfect snapshot · Larger file
                     </div>
                   </div>

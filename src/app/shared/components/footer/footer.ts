@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -19,7 +19,7 @@ import { RouterLink } from "@angular/router";
             >
               CV Builder
             </a>
-            <p class="text-muted-foreground-foreground text-xs">
+            <p class="text-muted-foreground text-xs">
               © {{ currentYear }} Modern CV Builder. All rights reserved.
             </p>
           </div>
@@ -28,19 +28,19 @@ import { RouterLink } from "@angular/router";
           <div class="flex items-center gap-6">
             <a
               href="#"
-              class="text-muted-foreground-foreground hover:text-foreground text-sm transition-colors duration-200"
+              class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
             >
               Privacy
             </a>
             <a
               href="#"
-              class="text-muted-foreground-foreground hover:text-foreground text-sm transition-colors duration-200"
+              class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
             >
               Terms
             </a>
             <a
               href="#"
-              class="text-muted-foreground-foreground hover:text-foreground text-sm transition-colors duration-200"
+              class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
             >
               Contact
             </a>

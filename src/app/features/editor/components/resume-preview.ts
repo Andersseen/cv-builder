@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 
 import { Cv } from "../../../domain/models/cv-model";
 import { ModernTemplate } from "./resume-templates/modern-template";
@@ -20,7 +20,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
   template: `
     <div class="bg-card rounded-xl border border-border p-4">
       <h2
-        class="text-sm font-medium text-muted-foreground-foreground mb-3 uppercase tracking-wider"
+        class="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider"
       >
         Preview
       </h2>

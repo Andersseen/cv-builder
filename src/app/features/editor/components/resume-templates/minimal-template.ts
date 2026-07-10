@@ -1,5 +1,6 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { Cv } from "../../../../domain/models/cv-model";
+import { renderRichText } from "../../../../shared/utils/markdown";
 
 @Component({
   selector: "app-minimal-template",
@@ -70,9 +71,10 @@ import { Cv } from "../../../../domain/models/cv-model";
                   }
                 </p>
                 @if (exp.description) {
-                  <p class="text-gray-500 text-xs leading-relaxed">
-                    {{ exp.description }}
-                  </p>
+                  <div
+                    class="text-gray-500 text-xs leading-relaxed"
+                    [innerHTML]="renderRichText(exp.description)"
+                  ></div>
                 }
               </div>
             }
@@ -131,6 +133,91 @@ import { Cv } from "../../../../domain/models/cv-model";
             </div>
           </section>
         }
+
+        @if (cv().sections.projects.length > 0) {
+          <section class="mt-10">
+            <h2
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
+              [style.color]="accentColor()"
+            >
+              Projects
+            </h2>
+            @for (proj of cv().sections.projects; track proj.id) {
+              <div class="mb-6">
+                <div class="flex justify-between items-baseline mb-0.5">
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ proj.name }}
+                  </h3>
+                  @if (proj.url) {
+                    <span class="text-xs text-gray-500 shrink-0 ml-4">{{
+                      proj.url
+                    }}</span>
+                  }
+                </div>
+                @if (proj.technologies) {
+                  <p class="text-xs text-gray-500 mb-1.5">
+                    {{ proj.technologies }}
+                  </p>
+                }
+                @if (proj.description) {
+                  <div
+                    class="text-gray-500 text-xs leading-relaxed"
+                    [innerHTML]="renderRichText(proj.description)"
+                  ></div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        @if (cv().sections.certifications.length > 0) {
+          <section class="mt-10">
+            <h2
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-5"
+              [style.color]="accentColor()"
+            >
+              Certifications
+            </h2>
+            @for (cert of cv().sections.certifications; track cert.id) {
+              <div class="mb-3">
+                <div class="flex justify-between items-baseline mb-0.5">
+                  <h3 class="text-sm font-medium text-gray-900">
+                    {{ cert.name }}
+                  </h3>
+                  @if (cert.date) {
+                    <span class="text-xs text-gray-500 shrink-0 ml-4">{{
+                      formatDate(cert.date)
+                    }}</span>
+                  }
+                </div>
+                @if (cert.issuer) {
+                  <p class="text-xs text-gray-500">{{ cert.issuer }}</p>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        @if (cv().sections.languages.length > 0) {
+          <section class="mt-10">
+            <h2
+              class="text-xs font-medium uppercase tracking-[0.15em] mb-4"
+              [style.color]="accentColor()"
+            >
+              Languages
+            </h2>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+              @for (lang of cv().sections.languages; track lang.id) {
+                <div>
+                  <span class="text-xs text-gray-900">{{ lang.name }}</span>
+                  <span class="text-xs text-gray-300 ml-1">{{
+                    lang.proficiency
+                  }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        }
       </div>
     </div>
   `,
@@ -140,6 +227,8 @@ export class MinimalTemplate {
   readonly accentColor = input("#171717");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+
+  protected renderRichText = renderRichText;
 
   protected formatDate(dateString: string): string {
     if (!dateString) return "";
