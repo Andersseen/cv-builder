@@ -9,8 +9,12 @@ import { test, expect } from "@playwright/test";
 /** Create a fresh resume from the dashboard and land in the editor. */
 async function createResume(page: import("@playwright/test").Page) {
   await page.goto("/dashboard");
-  await page.getByRole("button", { name: /New Resume/i }).click();
-  await page.waitForURL(/\/editor\?cv=/);
+  const btn = page.getByRole("button", { name: /New Resume/i });
+  await btn.waitFor({ state: "visible" });
+  await Promise.all([
+    page.waitForURL(/\/editor\?cv=/, { waitUntil: "networkidle" }),
+    btn.click(),
+  ]);
 }
 
 test.describe("Landing", () => {
@@ -47,7 +51,8 @@ test.describe("Editor live preview (zoneless signals)", () => {
     await createResume(page);
 
     const name = "Ada Lovelace";
-    await page.locator('input[formcontrolname="fullName"]').fill(name);
+    // volt-input wraps the native input, so target the inner textbox by placeholder.
+    await page.locator("input[type='text'][placeholder='John Doe']").fill(name);
 
     // The name must appear inside the rendered resume preview without a reload —
     // proves OnPush + signals change detection works under zoneless Angular 21.
@@ -61,13 +66,46 @@ test.describe("Persistence", () => {
     const editorUrl = page.url();
 
     const name = "Grace Hopper";
-    await page.locator('input[formcontrolname="fullName"]').fill(name);
+    await page.locator("input[type='text'][placeholder='John Doe']").fill(name);
     // Autosave debounce is 800ms; wait it out before reloading.
     await page.waitForTimeout(1200);
 
     // Reload the same editor URL — the persisted value must come back from IndexedDB.
     await page.goto(editorUrl);
-    await expect(page.locator('input[formcontrolname="fullName"]')).toHaveValue(name);
+    await expect(page.locator("input[type='text'][placeholder='John Doe']")).toHaveValue(name);
     await expect(page.locator("#resume-content").getByText(name)).toBeVisible();
+  });
+});
+
+test.describe("Full editor flow", () => {
+  test("create, fill, preview and return to dashboard", async ({ page }) => {
+    await createResume(page);
+
+    // Fill personal info
+    await page.locator("input[type='text'][placeholder='John Doe']").fill("Ada Lovelace");
+    await page.locator("input[type='email']").fill("ada@example.com");
+    await page.locator("textarea[placeholder='Brief overview of your professional background and key achievements...']").fill("Mathematician and writer.");
+
+    // Add one experience entry
+    await page.getByRole("button", { name: /Experience/i }).first().click();
+    await page.getByRole("button", { name: /\+ Add Experience/i }).click();
+    await page.locator("input[type='text'][placeholder='Software Engineer']").fill("Software Engineer");
+    await page.locator("input[type='text'][placeholder='Tech Corp']").fill("Tech Corp");
+    await page.locator("input[type='text'][placeholder='San Francisco, CA']").fill("London");
+    await page.locator('input[type="month"]').first().fill("2020-01");
+    await page.locator("textarea[placeholder='Key responsibilities and achievements...']").fill("- Built the first algorithm\n- **Led** team");
+    await page.getByRole("button", { name: /^Add$/i }).click();
+
+    // Verify preview reflects both personal and experience data
+    await expect(page.locator("#resume-content").getByText("Ada Lovelace")).toBeVisible();
+    await expect(page.locator("#resume-content").getByText("Tech Corp")).toBeVisible();
+
+    // Wait for autosave
+    await page.waitForTimeout(1200);
+
+    // Return to dashboard and verify the card exists
+    await page.getByRole("button", { name: /Back/i }).click();
+    await page.waitForURL(/\/dashboard/);
+    await expect(page.locator("h3", { hasText: /Untitled Resume/ })).toBeVisible();
   });
 });

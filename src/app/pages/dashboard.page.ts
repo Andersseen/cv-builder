@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   OnInit,
+  signal,
 } from "@angular/core";
 import { Router } from "@angular/router";
 import { CvStore } from "../application/state/cv";
@@ -11,6 +12,8 @@ import { DashboardHeader } from "../features/dashboard/components/dashboard-head
 import { EmptyState } from "../features/dashboard/components/empty-state";
 import { CvCard } from "../features/dashboard/components/cv-card";
 
+const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
+
 @Component({
   selector: "app-dashboard",
   imports: [DashboardHeader, EmptyState, CvCard],
@@ -18,7 +21,39 @@ import { CvCard } from "../features/dashboard/components/cv-card";
   template: `
     <div class="min-h-screen bg-background">
       <div class="max-w-6xl mx-auto px-4 py-12">
-        <app-dashboard-header (create)="createNew()" />
+        <app-dashboard-header
+          (create)="createNew()"
+          (importBackup)="importBackup($event)"
+          (exportBackup)="exportBackup()"
+        />
+
+        <!-- Backup reminder banner -->
+        @if (showBackupBanner()) {
+          <div
+            class="mb-6 p-4 rounded-xl border border-border bg-card/80 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center gap-4"
+          >
+            <div class="flex-1">
+              <p class="text-sm text-foreground">
+                <span class="font-semibold">Your resumes live only in this browser.</span>
+                Download a backup copy to keep them safe.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                (click)="exportBackup()"
+                class="px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Download Backup
+              </button>
+              <button
+                (click)="dismissBackupBanner()"
+                class="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        }
 
         <!-- Loading -->
         @if (cvStore.loading()) {
@@ -44,6 +79,7 @@ import { CvCard } from "../features/dashboard/components/cv-card";
                 (duplicate)="duplicateCv($event)"
                 (delete)="deleteCv($event)"
                 (renamed)="renameCv($event.id, $event.name)"
+                (exportJson)="exportCvJson($event)"
               />
             }
           </div>
@@ -56,13 +92,15 @@ export default class Dashboard implements OnInit {
   readonly cvStore = inject(CvStore);
   private readonly router = inject(Router);
 
+  protected showBackupBanner = signal(!localStorage.getItem(DISMISS_BANNER_KEY));
+
   async ngOnInit() {
     await this.cvStore.loadAll();
   }
 
   protected async createNew() {
     const cv = await this.cvStore.create();
-    this.openEditor(cv.id);
+    if (cv) this.openEditor(cv.id);
   }
 
   protected openEditor(id: string) {
@@ -81,5 +119,22 @@ export default class Dashboard implements OnInit {
 
   protected renameCv(id: string, name: string) {
     this.cvStore.rename(id, name);
+  }
+
+  protected exportCvJson(cv: Cv) {
+    this.cvStore.exportCv(cv);
+  }
+
+  protected exportBackup() {
+    this.cvStore.exportAll();
+  }
+
+  protected async importBackup(file: File) {
+    await this.cvStore.importAll(file);
+  }
+
+  protected dismissBackupBanner() {
+    localStorage.setItem(DISMISS_BANNER_KEY, "true");
+    this.showBackupBanner.set(false);
   }
 }

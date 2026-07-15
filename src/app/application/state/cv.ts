@@ -1,7 +1,9 @@
 import { Injectable, signal, computed, inject } from "@angular/core";
 import { Cv, DeepPartial } from "../../domain/models/cv-model";
 import { createDefaultCv } from "../../domain/models/cv-defaults";
+import { migrateCv } from "../../domain/models/cv-migration";
 import { LocalCvRepository } from "../../infrastructure/persistence/cv-repository";
+import { CvPortability } from "../../infrastructure/portability/cv-portability";
 import { ToastService } from "../../core/services/toast";
 import { deepMerge } from "./deep-merge";
 
@@ -13,12 +15,14 @@ import { deepMerge } from "./deep-merge";
  *   - Holds in-memory list of CVs + active CV id
  *   - Provides computed selectors (activeCv, loading)
  *   - Orchestrates CRUD via Cv
+ *   - Imports/exports portable JSON backups
  *   - Does NOT handle autosave (see Autosave)
  */
 @Injectable({ providedIn: "root" })
 export class CvStore {
   private readonly repo = inject(LocalCvRepository);
   private readonly toast = inject(ToastService);
+  private readonly portability = inject(CvPortability);
 
   // ─── Private state ────────────────────────────────────────
   private readonly _cvs = signal<Cv[]>([]);
@@ -41,39 +45,36 @@ export class CvStore {
   /** Load all CVs from IndexedDB into memory. Call once on app/page init. */
   async loadAll(): Promise<void> {
     this._loading.set(true);
-    try {
-      const cvs = await this.repo.getAll();
+    const cvs = await this.withIndexedDbError(
+      () => this.repo.getAll(),
+      "Could not load your resumes. Browser storage may be unavailable.",
+    );
+    if (cvs !== null) {
       // Backfill fields added after the initial schema so CVs stored before
       // the change still load with a complete shape.
-      const migrated = cvs.map((cv) => ({
-        ...cv,
-        settings: {
-          ...cv.settings,
-          backgroundColor: cv.settings.backgroundColor ?? "#ffffff",
-          primaryColor: cv.settings.primaryColor ?? "#111827",
-        },
-        sections: {
-          ...cv.sections,
-          projects: cv.sections.projects ?? [],
-          certifications: cv.sections.certifications ?? [],
-          languages: cv.sections.languages ?? [],
-        },
-      }));
+      const migrated = cvs
+        .map((cv) => migrateCv(cv))
+        .filter((cv): cv is Cv => cv !== null);
       this._cvs.set(migrated);
-    } finally {
-      this._loading.set(false);
     }
+    this._loading.set(false);
   }
 
   // ─── Commands ─────────────────────────────────────────────
 
   /** Create a new CV and persist it. */
-  async create(name?: string): Promise<Cv> {
+  async create(name?: string): Promise<Cv | null> {
     const cv = createDefaultCv(name ? { name } : undefined);
-    await this.repo.save(cv);
+    const saved = await this.withIndexedDbError(
+      () => this.repo.save(cv),
+      "Could not save the new resume. Storage may be full or disabled.",
+    );
+    if (!saved) return null;
+
     this._cvs.update((cvs) => [cv, ...cvs]);
     this._activeCvId.set(cv.id);
     this.toast.show("Resume created", "success");
+    this.requestStoragePersistence();
     return cv;
   }
 
@@ -90,7 +91,12 @@ export class CvStore {
       createdAt: now,
       updatedAt: now,
     };
-    await this.repo.save(copy);
+    const saved = await this.withIndexedDbError(
+      () => this.repo.save(copy),
+      "Could not duplicate the resume. Storage may be full or disabled.",
+    );
+    if (!saved) return null;
+
     this._cvs.update((cvs) => [copy, ...cvs]);
     this.toast.show("Resume duplicated", "success");
     return copy;
@@ -111,7 +117,12 @@ export class CvStore {
       ),
     );
     const updated = this._cvs().find((cv) => cv.id === id);
-    if (updated) await this.repo.save(updated);
+    if (!updated) return;
+
+    await this.withIndexedDbError(
+      () => this.repo.save(updated),
+      "Could not save the new name. Storage may be full or disabled.",
+    );
   }
 
   /**
@@ -136,12 +147,20 @@ export class CvStore {
 
   /** Persist a specific CV to IndexedDB. Called by Autosave. */
   async persist(cv: Cv): Promise<void> {
-    await this.repo.save(cv);
+    await this.withIndexedDbError(
+      () => this.repo.save(cv),
+      "Could not autosave. Your latest changes may not persist after closing.",
+    );
   }
 
   /** Delete a CV by ID. */
   async deleteById(id: string): Promise<void> {
-    await this.repo.delete(id);
+    const deleted = await this.withIndexedDbError(
+      () => this.repo.delete(id),
+      "Could not delete the resume. Please try again.",
+    );
+    if (!deleted) return;
+
     this._cvs.update((cvs) => cvs.filter((cv) => cv.id !== id));
 
     // If we deleted the active CV, switch to the first remaining
@@ -151,5 +170,95 @@ export class CvStore {
     }
 
     this.toast.show("Resume deleted", "success");
+  }
+
+  // ─── Portability ──────────────────────────────────────────
+
+  /** Export a single CV as a downloadable `.cv.json` file. */
+  exportCv(cv: Cv): void {
+    this.portability.exportCv(cv);
+    this.toast.show("CV exported", "success");
+  }
+
+  /** Export all CVs as a single downloadable backup file. */
+  exportAll(): void {
+    this.portability.exportAll(this._cvs());
+    this.toast.show("Backup downloaded", "success");
+  }
+
+  /** Import a single CV from a `.cv.json` file. */
+  async importCv(file: File): Promise<Cv | null> {
+    const existingIds = new Set(this._cvs().map((cv) => cv.id));
+    const result = await this.portability.importCv(file, existingIds);
+    if (!result.success) {
+      this.toast.show(result.error, "error");
+      return null;
+    }
+
+    const saved = await this.withIndexedDbError(
+      () => this.repo.save(result.cv),
+      "Could not save the imported resume. Storage may be full or disabled.",
+    );
+    if (!saved) return null;
+
+    this._cvs.update((cvs) => [result.cv, ...cvs]);
+    this.toast.show("CV imported", "success");
+    return result.cv;
+  }
+
+  /** Import a full backup file and add all CVs to the store. */
+  async importAll(file: File): Promise<number> {
+    const existingIds = new Set(this._cvs().map((cv) => cv.id));
+    const result = await this.portability.importAll(file, existingIds);
+    if (!result.success) {
+      this.toast.show(result.error, "error");
+      return 0;
+    }
+
+    for (const cv of result.cvs) {
+      const saved = await this.withIndexedDbError(
+        () => this.repo.save(cv),
+        `Could not save imported resume "${cv.name}".`,
+      );
+      if (!saved) return 0;
+    }
+
+    this._cvs.update((cvs) => [...result.cvs, ...cvs]);
+    this.toast.show(
+      `${result.cvs.length} resume${result.cvs.length === 1 ? "" : "s"} restored from backup`,
+      "success",
+    );
+    return result.cvs.length;
+  }
+
+  // ─── Private helpers ───────────────────────────────────────
+
+  /**
+   * Ask the browser to persist storage so IndexedDB is not cleared
+   * automatically under storage pressure.
+   */
+  private requestStoragePersistence(): void {
+    if (typeof navigator !== "undefined" && navigator.storage?.persist) {
+      navigator.storage.persist().catch(() => {
+        // Failure is non-fatal; the user can still use the app normally.
+      });
+    }
+  }
+
+  /**
+   * Wrap an IndexedDB operation with a clear toast on failure.
+   * Returns the operation result, or `null` if it failed.
+   */
+  private async withIndexedDbError<T>(
+    operation: () => Promise<T>,
+    errorMessage: string,
+  ): Promise<T | null> {
+    try {
+      return await operation();
+    } catch (err) {
+      console.error("IndexedDB error:", err);
+      this.toast.show(errorMessage, "error");
+      return null;
+    }
   }
 }

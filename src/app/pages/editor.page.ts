@@ -189,4 +189,10 @@ export default class Editor implements OnInit, OnDestroy {
       this.toast.show("Error opening print dialog", "error");
     }
   }
+
+  protected exportCvJson() {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    this.cvStore.exportCv(cv);
+  }
 }

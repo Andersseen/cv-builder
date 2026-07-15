@@ -5,22 +5,10 @@ import {
   output,
   signal,
 } from "@angular/core";
-import { VoltButton } from "@voltui/components";
-import { LmnArrowLeftIcon } from "lumen-icons/arrow-left";
-import { LmnPrinterIcon } from "lumen-icons/printer";
-import { LmnPhotoIcon } from "lumen-icons/photo";
-import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
-
 @Component({
   selector: "app-editor-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    VoltButton,
-    LmnArrowLeftIcon,
-    LmnPrinterIcon,
-    LmnPhotoIcon,
-    LmnChevronDownIcon,
-  ],
+  imports: [],
   template: `
     <div
       class="bg-card/75 backdrop-blur-xl border-b border-border sticky top-0 z-30 shadow-glass transition-colors duration-300"
@@ -142,6 +130,19 @@ import { LmnChevronDownIcon } from "lumen-icons/chevron-down";
                     </div>
                   </div>
                 </button>
+                <div class="border-t border-border"></div>
+                <button
+                  (click)="onExportJson()"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
+                >
+                  <span class="text-lg leading-none mt-0.5">📤</span>
+                  <div>
+                    <div class="font-medium">Export JSON</div>
+                    <div class="text-xs text-muted-foreground mt-0.5">
+                      Portable backup of this resume
+                    </div>
+                  </div>
+                </button>
               </div>
             }
           </div>
@@ -164,6 +165,7 @@ export class EditorToolbar {
   readonly back = output<void>();
   readonly exportPdf = output<void>();
   readonly printPdf = output<void>();
+  readonly exportJson = output<void>();
 
   dropdownOpen = signal(false);
 
@@ -175,5 +177,10 @@ export class EditorToolbar {
   onExportImage() {
     this.dropdownOpen.set(false);
     this.exportPdf.emit();
+  }
+
+  onExportJson() {
+    this.dropdownOpen.set(false);
+    this.exportJson.emit();
   }
 }

@@ -8,6 +8,7 @@ import {
 import { VoltButton } from "@voltui/components";
 import { LmnDocumentDuplicateIcon } from "lumen-icons/document-duplicate";
 import { LmnTrashIcon } from "lumen-icons/trash";
+import { LmnArrowDownTrayIcon } from "lumen-icons/arrow-down-tray";
 import { MoveHoverDirective } from "angular-movement";
 import { Cv } from "../../../domain/models/cv-model";
 
@@ -18,6 +19,7 @@ import { Cv } from "../../../domain/models/cv-model";
     VoltButton,
     LmnDocumentDuplicateIcon,
     LmnTrashIcon,
+    LmnArrowDownTrayIcon,
     MoveHoverDirective,
   ],
   template: `
@@ -88,9 +90,17 @@ import { Cv } from "../../../domain/models/cv-model";
         </p>
 
         <!-- Actions -->
-        <div class="grid grid-cols-[1fr_auto_auto] gap-2">
+        <div class="grid grid-cols-[1fr_auto_auto_auto] gap-2">
           <volt-button size="sm" class="w-full" (click)="edit.emit(cv().id)">
             Edit
+          </volt-button>
+          <volt-button
+            variant="outline"
+            size="icon"
+            (click)="exportJson.emit(cv())"
+            title="Export JSON"
+          >
+            <lmn-arrow-down-tray [size]="16" ariaLabel="Export JSON" />
           </volt-button>
           <volt-button
             variant="outline"
@@ -119,6 +129,7 @@ export class CvCard {
   readonly duplicate = output<string>();
   readonly delete = output<Cv>();
   readonly renamed = output<{ id: string; name: string }>();
+  readonly exportJson = output<Cv>();
 
   isEditing = signal(false);
 
