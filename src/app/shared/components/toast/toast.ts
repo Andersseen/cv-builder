@@ -45,6 +45,14 @@ import { ToastService } from "../../../core/services/toast";
             }
           }
           <p class="text-sm font-medium">{{ toast.message }}</p>
+          @if (toast.action) {
+            <button
+              class="text-sm font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
+              (click)="toast.action.handler(); toastService.remove(toast.id)"
+            >
+              {{ toast.action.label }}
+            </button>
+          }
           <button
             class="ml-auto opacity-70 hover:opacity-100 transition-opacity"
             (click)="toastService.remove(toast.id)"

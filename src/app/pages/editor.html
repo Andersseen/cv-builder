@@ -5,7 +5,11 @@
     [saving]="autosave.saving()"
     [lastSavedAt]="autosave.lastSavedAt()"
     [isExporting]="isExporting()"
+    [canUndo]="cvStore.canUndo()"
+    [canRedo]="cvStore.canRedo()"
     (back)="goBack()"
+    (undo)="cvStore.undo()"
+    (redo)="cvStore.redo()"
     (exportPdf)="exportPdf()"
     (printPdf)="printResume()"
     (exportJson)="exportCvJson()"
@@ -18,11 +22,21 @@
     ></div>
   </div>
   } @else if (cvStore.activeCv()) {
+  <!-- Hidden off-screen preview: always rendered so exports work on mobile -->
+  <div
+    data-export-preview
+    data-testid="export-preview-offscreen"
+    class="fixed -left-[9999px] top-0 z-0"
+    aria-hidden="true"
+  >
+    <app-resume-preview [cv]="cvStore.activeCv()!" />
+  </div>
+
   <!-- Main layout -->
   <div class="max-w-[1600px] mx-auto px-4 py-6">
-    <div class="flex gap-6">
+    <div class="flex flex-col lg:flex-row gap-6">
       <!-- LEFT: Sidebar Tabs + Form Content -->
-      <div class="flex-1 min-w-0 flex gap-0">
+      <div class="flex-1 min-w-0 flex flex-col md:flex-row gap-0">
         <!-- Editor Tabs Component -->
         <app-editor-tabs
           [activeTab]="activeTab()"
@@ -43,31 +57,37 @@
           <app-experience-form
             [items]="cvStore.activeCv()!.sections.experience"
             (itemsChange)="updateExperience($event)"
+            (removed)="onListItemRemoved('Experience')"
           />
           } @case ("education") {
           <app-education-form
             [items]="cvStore.activeCv()!.sections.education"
             (itemsChange)="updateEducation($event)"
+            (removed)="onListItemRemoved('Education')"
           />
           } @case ("skills") {
           <app-skills-form
             [items]="cvStore.activeCv()!.sections.skills"
             (itemsChange)="updateSkills($event)"
+            (removed)="onListItemRemoved('Skill')"
           />
           } @case ("projects") {
           <app-projects-form
             [items]="cvStore.activeCv()!.sections.projects"
             (itemsChange)="updateProjects($event)"
+            (removed)="onListItemRemoved('Project')"
           />
           } @case ("certifications") {
           <app-certifications-form
             [items]="cvStore.activeCv()!.sections.certifications"
             (itemsChange)="updateCertifications($event)"
+            (removed)="onListItemRemoved('Certification')"
           />
           } @case ("languages") {
           <app-languages-form
             [items]="cvStore.activeCv()!.sections.languages"
             (itemsChange)="updateLanguages($event)"
+            (removed)="onListItemRemoved('Language')"
           />
           } @case ("template") {
           <app-template-selector
@@ -86,9 +106,10 @@
         </div>
       </div>
 
-      <!-- RIGHT: Preview (collapsible) -->
+      <!-- RIGHT: Preview (collapsible, desktop only) -->
       @if (previewOpen()) {
       <div
+        data-testid="desktop-preview-panel"
         class="hidden lg:block w-[45%] shrink-0 lg:sticky lg:top-20 lg:self-start"
       >
         <app-resume-preview [cv]="cvStore.activeCv()!" />
@@ -97,14 +118,56 @@
     </div>
   </div>
 
+  <!-- Mobile fullscreen preview overlay -->
+  @if (viewport.isMobile() && mobilePreviewOpen()) {
+  <div
+    data-testid="mobile-preview-overlay"
+    class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex flex-col"
+    (click)="closeMobilePreview()"
+  >
+    <!-- Header -->
+    <div
+      class="flex items-center justify-between px-4 py-3 border-b border-border/30 bg-background/90"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 class="text-sm font-medium text-foreground uppercase tracking-wider">
+        Preview
+      </h2>
+      <button
+        (click)="closeMobilePreview()"
+        class="px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+      >
+        Close
+      </button>
+    </div>
+
+    <!-- Scaled CV -->
+    <div class="flex-1 overflow-auto p-4 flex justify-center">
+      <div
+        [style.transform]="'scale(' + previewScale() + ')'"
+        style="transform-origin: top center; width: 794px"
+      >
+        <app-resume-preview [cv]="cvStore.activeCv()!" />
+      </div>
+    </div>
+  </div>
+  }
+
   <!-- Preview toggle button -->
   <button
-    (click)="previewOpen.set(!previewOpen())"
-    class="hidden lg:flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-xl shadow-foreground/10 hover:bg-accent transition-all duration-200 text-sm font-medium text-foreground"
-    [title]="previewOpen() ? 'Hide preview' : 'Show preview'"
+    (click)="togglePreview()"
+    class="flex fixed bottom-6 right-6 z-50 items-center gap-2 px-4 py-2.5 rounded-full bg-card border border-border shadow-xl shadow-foreground/10 hover:bg-accent transition-all duration-200 text-sm font-medium text-foreground"
+    [title]="
+      viewport.isMobile()
+        ? (mobilePreviewOpen() ? 'Hide preview' : 'Show preview')
+        : (previewOpen() ? 'Hide preview' : 'Show preview')
+    "
   >
-    <span class="text-base">{{ previewOpen() ? "👁️" : "👁️‍🗨️" }}</span>
-    {{ previewOpen() ? "Hide Preview" : "Show Preview" }}
+    <span class="text-base"
+      >{{ viewport.isMobile() ? "👁️" : (previewOpen() ? "👁️" : "👁️‍🗨️") }}</span
+    >
+    {{ viewport.isMobile() ? "Preview" : (previewOpen() ? "Hide Preview" : "Show
+    Preview") }}
   </button>
   } @else {
   <!-- No CV found -->

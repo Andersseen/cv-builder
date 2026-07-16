@@ -8,7 +8,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
   template: `
     <div
       class="max-w-4xl mx-auto"
-      id="resume-content"
+      class="resume-content"
       [style.background-color]="backgroundColor()"
       [style.font-family]="'Georgia, Times New Roman, serif'"
     >

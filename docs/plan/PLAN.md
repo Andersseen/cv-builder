@@ -7,6 +7,7 @@
 > hay conflicto entre ambos, manda este archivo.
 >
 > **Protocolo de sesión**:
+>
 > 1. Lee [CONTEXT.md](CONTEXT.md) (mismo directorio) — completo, antes de tocar código.
 > 2. Ejecuta la(s) fase(s) que te pidan. Respeta las reglas de oro de CONTEXT.md § 3
 >    (en especial: **ninguna dependencia nueva sin aprobación del usuario**).
@@ -32,20 +33,20 @@ exactamente donde se rompen cosas que el compilador no ve (`volt-input` + `formC
 
 **Depende de**: nada. **Toda otra fase asume que esta está hecha.**
 
-- [ ] Arrancar `pnpm start` y recorrer el flujo completo: landing → dashboard (crear,
+- [x] Arrancar `pnpm start` y recorrer el flujo completo: landing → dashboard (crear,
       renombrar, duplicar, borrar) → editor.
-- [ ] Verificar los 8 tabs del editor: escribir en cada campo de cada formulario y confirmar
+- [x] Verificar los 8 tabs del editor: escribir en cada campo de cada formulario y confirmar
       que la preview se actualiza y el indicador "Saved ✓" aparece (autosave).
-- [ ] Verificar reorden ↑/↓ en las 6 listas, el markdown (`**bold**`, `*italic*`, `- bullets`)
+- [x] Verificar reorden ↑/↓ en las 6 listas, el markdown (`**bold**`, `*italic*`, `- bullets`)
       en descripciones de experiencia/proyectos, y subir/quitar avatar.
-- [ ] Verificar ambos exports (PDF imagen + print) con las 5 plantillas, en light y dark.
+- [x] Verificar ambos exports (PDF imagen + print) con las 5 plantillas, en light y dark.
       Confirmar que el CV renderiza igual en ambos temas (debe — usa Tailwind directo).
-- [ ] Probar en viewport móvil (~375px): documentar qué pasa con la preview y el export
+- [x] Probar en viewport móvil (~375px): documentar qué pasa con la preview y el export
       (hipótesis del análisis: no hay preview y el export sale vacío o falla). Anotar
       hallazgos en `docs/STATE.md` como input de la Fase 2.
-- [ ] Recargar la página del editor y confirmar que los datos persisten (IndexedDB).
-- [ ] Arreglar todo lo roto que aparezca (con su test si es lógica).
-- [ ] Ampliar `e2e/smoke.spec.ts` a un flujo real: crear CV → rellenar personal +
+- [x] Recargar la página del editor y confirmar que los datos persisten (IndexedDB).
+- [x] Arreglar todo lo roto que aparezca (con su test si es lógica).
+- [x] Ampliar `e2e/smoke.spec.ts` a un flujo real: crear CV → rellenar personal +
       1 experiencia → verificar que aparece en preview → volver al dashboard → verificar card.
 
 **Hecho cuando**: flujo completo verificado y documentado en STATE.md; e2e del flujo verde;
@@ -60,23 +61,23 @@ Para un usuario no técnico es pérdida de datos silenciosa. Es el riesgo nº 1 
 
 **Depende de**: Fase 0.
 
-- [ ] **Export JSON por CV**: nueva carpeta `src/app/infrastructure/portability/` con un
+- [x] **Export JSON por CV**: nueva carpeta `src/app/infrastructure/portability/` con un
       servicio que serializa un `Cv` a archivo descargable `<nombre>.cv.json`. Incluir campo
       `schemaVersion: 1` en el envelope para migraciones futuras. Botón en el menú de la
       card del dashboard y en el dropdown de export del editor.
-- [ ] **Import JSON** con validación estructural contra el modelo `Cv` (función pura en
+- [x] **Import JSON** con validación estructural contra el modelo `Cv` (función pura en
       `domain/` o `infrastructure/portability/`, con tests): campos requeridos presentes,
       tipos correctos, backfill de secciones ausentes (reutilizar la lógica de `loadAll()` —
       extraerla a una función compartida). Al importar: regenerar `id` si colisiona con uno
       existente. JSON inválido → toast de error claro, nunca un crash ni un CV corrupto.
-- [ ] **Backup completo**: exportar todos los CVs en un único JSON + restaurar desde él
+- [x] **Backup completo**: exportar todos los CVs en un único JSON + restaurar desde él
       (botón en el header del dashboard).
-- [ ] **`navigator.storage.persist()`**: solicitarlo al crear el primer CV (en `CvStore.create`
+- [x] **`navigator.storage.persist()`**: solicitarlo al crear el primer CV (en `CvStore.create`
       o en el arranque del dashboard). Es una línea y reduce purgas automáticas del navegador.
-- [ ] **Aviso honesto en el dashboard**: banner/nota discreta "Tus CVs viven solo en este
+- [x] **Aviso honesto en el dashboard**: banner/nota discreta "Tus CVs viven solo en este
       navegador — descarga una copia de seguridad" con CTA al backup. Descartable
       (persistir el descarte en localStorage).
-- [ ] **Manejo de errores de IndexedDB**: envolver los fallos de `repo.save/getAll` (cuota
+- [x] **Manejo de errores de IndexedDB**: envolver los fallos de `repo.save/getAll` (cuota
       llena, Safari en privado) en toasts claros en vez de fallos silenciosos en consola.
 
 **Hecho cuando**: exportar un CV → borrar IndexedDB a mano → importarlo → CV idéntico
@@ -94,16 +95,16 @@ el export depende de `#resume-content`, que está oculto por CSS (probablemente 
 
 **Depende de**: Fase 0 (trae el diagnóstico exacto del comportamiento móvil).
 
-- [ ] Hacer visible el botón flotante de preview en todos los viewports (quitar `hidden lg:flex`).
-- [ ] En <lg, el botón abre la preview como **overlay a pantalla completa**: fondo oscurecido,
+- [x] Hacer visible el botón flotante de preview en todos los viewports (quitar `hidden lg:flex`).
+- [x] En <lg, el botón abre la preview como **overlay a pantalla completa**: fondo oscurecido,
       CV escalado para caber en el ancho (`transform: scale()` calculado desde el ancho A4 px
       de `a4.ts`), scroll vertical, botón de cierre. En ≥lg se mantiene el panel lateral actual.
-- [ ] Garantizar que el export funciona en móvil: el nodo `#resume-content` debe existir y
-      estar renderizado (no `display:none`) en el momento de capturar. Opciones: capturar
-      desde el overlay abierto, o renderizar el nodo fuera de pantalla (`position: fixed;
-      left: -9999px`) solo durante el export. Elegir la más simple que funcione.
-- [ ] Revisar la toolbar del editor en móvil (botones de export accesibles, sin overflow).
-- [ ] QA manual en viewport 375px: las 5 plantillas visibles en el overlay + ambos exports.
+- [x] Garantizar que el export funciona en móvil: el nodo `.resume-content` se renderiza siempre
+      en un contenedor off-screen (`[data-export-preview]`) y se captura desde ahí, evitando IDs
+      duplicados y asegurando que esté disponible incluso cuando el overlay está cerrado.
+- [x] Revisar la toolbar del editor en móvil (botones de export accesibles, sin overflow).
+- [x] QA automatizada en viewport 375px: las 5 plantillas visibles en el overlay + ambos exports
+      (`e2e/qa-fase2.spec.ts`).
 
 **Hecho cuando**: en un viewport de 375px se puede ver la preview de las 5 plantillas y
 descargar ambos PDFs. El comportamiento desktop no cambia.
@@ -117,20 +118,20 @@ vuelta atrás. Para un no-dev eso es "la app me borró mi trabajo".
 
 **Depende de**: Fase 0. Independiente de 1 y 2.
 
-- [ ] **Historial en el editor**: stack de snapshots del `Cv` activo en `application/`
+- [x] **Historial en el editor**: stack de snapshots del `Cv` activo en `application/`
       (nuevo servicio `application/services/history.ts` o integrado en `CvStore`). Push en
       cada `updateActiveCv` (con coalescing: agrupar ediciones de tipeo separadas por <1s
       para no guardar un snapshot por tecla), límite ~50 entradas, solo en memoria (no
       persiste entre sesiones).
-- [ ] `undo()` / `redo()` en el store + signals `canUndo` / `canRedo`.
-- [ ] Atajos de teclado en la página del editor: Ctrl/Cmd+Z y Ctrl/Cmd+Shift+Z.
-- [ ] Botones undo/redo en la toolbar del editor con estados disabled.
-- [ ] **Borrado de ítems con deshacer**: al borrar un ítem de una lista (experiencia, etc.),
+- [x] `undo()` / `redo()` en el store + signals `canUndo` / `canRedo`.
+- [x] Atajos de teclado en la página del editor: Ctrl/Cmd+Z y Ctrl/Cmd+Shift+Z.
+- [x] Botones undo/redo en la toolbar del editor con estados disabled.
+- [x] **Borrado de ítems con deshacer**: al borrar un ítem de una lista (experiencia, etc.),
       toast "Elemento borrado — Deshacer" (~5 s) que restaura vía el historial.
-- [ ] **Reemplazar el `confirm()` nativo** de borrado de CV (`dashboard.page.ts`) por un
+- [x] **Reemplazar el `confirm()` nativo** de borrado de CV (`dashboard.page.ts`) por un
       modal propio con tokens del design system (o patrón borrado + toast deshacer; elegir
       uno y ser consistente).
-- [ ] Tests unit del historial (push/undo/redo/límite/coalescing).
+- [x] Tests unit del historial (push/undo/redo/límite/coalescing).
 
 **Hecho cuando**: Ctrl+Z revierte una edición de campo y un borrado de ítem; borrar un CV
 pide confirmación en un modal propio (o es deshacible); no queda ningún `confirm()` nativo.
@@ -145,22 +146,22 @@ puede cortar una línea de texto entre páginas.
 
 **Depende de**: Fase 0. Independiente de 1–3.
 
-- [ ] **Etiquetas claras** en la toolbar (`editor-toolbar.ts`): acción primaria
+- [x] **Etiquetas claras** en la toolbar (`editor-toolbar.ts`): acción primaria
       "Download PDF — recommended for job applications" (path print/texto) y en el dropdown
       "High-fidelity PDF (image — not readable by ATS systems)" con una línea explicativa.
       El texto exacto puede ajustarse, pero el usuario debe entender cuál usar sin saber qué es ATS.
-- [ ] **Nombre de archivo también en el print export**: setear `document.title` al nombre del
+- [x] **Nombre de archivo también en el print export**: setear `document.title` al nombre del
       CV durante la impresión (es el filename por defecto del "guardar como PDF" del navegador)
       y restaurarlo después.
-- [ ] **Lazy-load de las libs de export**: en `pdf-export.ts`, pasar `html-to-image` y `jspdf`
+- [x] **Lazy-load de las libs de export**: en `pdf-export.ts`, pasar `html-to-image` y `jspdf`
       a `await import(...)` dentro de `exportToPdf()` para sacarlas del chunk del editor.
       Verificar con el output del build que ya no están en el chunk.
-- [ ] **Cortes de página del PDF imagen** (`addImagePages` en `pdf-export.ts`): evitar cortar
+- [x] **Cortes de página del PDF imagen** (`addImagePages` en `pdf-export.ts`): evitar cortar
       una línea por la mitad. Enfoque sugerido sin deps: antes de capturar, medir los bloques
       hijos de `#resume-content` y añadir spacers/padding para que ningún bloque cruce un
       límite A4; alternativa mínima: documentar la limitación y añadir margen inferior de
       seguridad por página. Elegir según complejidad real de las plantillas.
-- [ ] QA: CV de 2 páginas exportado por ambos paths con las 5 plantillas.
+- [x] QA: CV de 2 páginas exportado por ambos paths con las 5 plantillas.
 
 **Hecho cuando**: los botones explican qué export usar; ambos PDFs se descargan con el nombre
 del CV; `jspdf`/`html-to-image` fuera del chunk inicial del editor; sin líneas cortadas (o

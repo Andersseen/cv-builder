@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
   signal,
@@ -11,12 +12,13 @@ import { Cv } from "../domain/models/cv-model";
 import { DashboardHeader } from "../features/dashboard/components/dashboard-header";
 import { EmptyState } from "../features/dashboard/components/empty-state";
 import { CvCard } from "../features/dashboard/components/cv-card";
+import { ConfirmDialog } from "../shared/components/confirm-dialog";
 
 const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
 
 @Component({
   selector: "app-dashboard",
-  imports: [DashboardHeader, EmptyState, CvCard],
+  imports: [DashboardHeader, EmptyState, CvCard, ConfirmDialog],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen bg-background">
@@ -34,7 +36,9 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
           >
             <div class="flex-1">
               <p class="text-sm text-foreground">
-                <span class="font-semibold">Your resumes live only in this browser.</span>
+                <span class="font-semibold"
+                  >Your resumes live only in this browser.</span
+                >
                 Download a backup copy to keep them safe.
               </p>
             </div>
@@ -77,7 +81,7 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
                 [cv]="cv"
                 (edit)="openEditor($event)"
                 (duplicate)="duplicateCv($event)"
-                (delete)="deleteCv($event)"
+                (delete)="promptDeleteCv($event)"
                 (renamed)="renameCv($event.id, $event.name)"
                 (exportJson)="exportCvJson($event)"
               />
@@ -86,13 +90,33 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
         }
       </div>
     </div>
+
+    @if (deleteCandidate()) {
+      <app-confirm-dialog
+        [title]="'Delete resume'"
+        [message]="deleteMessage()"
+        [confirmLabel]="'Delete'"
+        [destructive]="true"
+        (confirm)="confirmDeleteCv()"
+        (cancelled)="deleteCandidate.set(null)"
+      />
+    }
   `,
 })
 export default class Dashboard implements OnInit {
   readonly cvStore = inject(CvStore);
   private readonly router = inject(Router);
 
-  protected showBackupBanner = signal(!localStorage.getItem(DISMISS_BANNER_KEY));
+  protected showBackupBanner = signal(
+    !localStorage.getItem(DISMISS_BANNER_KEY),
+  );
+  protected deleteCandidate = signal<Cv | null>(null);
+  protected deleteMessage = computed(() => {
+    const cv = this.deleteCandidate();
+    return cv
+      ? `Are you sure you want to delete "${cv.name}"? This action cannot be undone.`
+      : "";
+  });
 
   async ngOnInit() {
     await this.cvStore.loadAll();
@@ -111,10 +135,14 @@ export default class Dashboard implements OnInit {
     await this.cvStore.duplicate(id);
   }
 
-  protected async deleteCv(cv: Cv) {
-    if (confirm(`Delete "${cv.name}"? This cannot be undone.`)) {
-      await this.cvStore.deleteById(cv.id);
-    }
+  protected promptDeleteCv(cv: Cv) {
+    this.deleteCandidate.set(cv);
+  }
+
+  protected async confirmDeleteCv() {
+    const cv = this.deleteCandidate();
+    this.deleteCandidate.set(null);
+    if (cv) await this.cvStore.deleteById(cv.id);
   }
 
   protected renameCv(id: string, name: string) {

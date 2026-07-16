@@ -70,7 +70,7 @@ function printAppVisibility(): string {
 function printResumeA4(): string {
   return `
     @media print {
-      #print-wrapper #resume-content {
+      #print-wrapper .resume-content {
         width: ${A4.WIDTH_MM}mm !important;
         max-width: ${A4.WIDTH_MM}mm !important;
         min-width: ${A4.WIDTH_MM}mm !important;
@@ -99,18 +99,19 @@ function printTailwindOverrides(): string {
 function printFlexStretch(): string {
   return `
     @media print {
-      #print-wrapper #resume-content > .flex,
-      #print-wrapper #resume-content > div > .flex {
+      #print-wrapper .resume-content > .flex,
+      #print-wrapper .resume-content > div > .flex {
         min-height: ${A4.HEIGHT_MM}mm !important;
       }
     }`;
 }
 
-/** Prevent awkward page breaks inside sections / after headings. */
+/** Prevent awkward page breaks inside sections and list items. */
 function printPageBreaks(): string {
   return `
     @media print {
       section { break-inside: avoid; }
+      section > div { break-inside: avoid-page; }
       h1, h2, h3 { break-after: avoid; }
     }`;
 }

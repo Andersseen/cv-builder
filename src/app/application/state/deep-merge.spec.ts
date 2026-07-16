@@ -5,7 +5,10 @@ describe("deepMerge", () => {
   it("merges nested objects recursively", () => {
     const target = { settings: { accentColor: "#000", fontFamily: "Inter" } };
     const result = deepMerge(target, { settings: { accentColor: "#fff" } });
-    expect(result.settings).toEqual({ accentColor: "#fff", fontFamily: "Inter" });
+    expect(result.settings).toEqual({
+      accentColor: "#fff",
+      fontFamily: "Inter",
+    });
   });
 
   it("replaces arrays wholesale instead of merging them", () => {

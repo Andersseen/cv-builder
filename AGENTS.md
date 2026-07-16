@@ -51,18 +51,18 @@ There are **no tests and no linter configured yet**. Verify changes by building 
 
 ## Where things live (quick map)
 
-| Concern | File |
-|---|---|
+| Concern                                                     | File                                                                  |
+| ----------------------------------------------------------- | --------------------------------------------------------------------- |
 | Routes (3 lazy pages: landing `/`, `/dashboard`, `/editor`) | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` |
-| Domain models (`Cv`, sections, settings, `TemplateInfo`) | `src/app/domain/models/cv-model.ts` |
-| Default/factory CV | `src/app/domain/models/cv-defaults.ts` |
-| Template catalog (add new templates here) | `src/app/domain/models/template-registry.ts` |
-| Central state (signals store, CRUD, deep-merge patch) | `src/app/application/state/cv.ts` |
-| Debounced autosave (800 ms) | `src/app/application/services/autosave.ts` |
-| IndexedDB schema / repository | `src/app/infrastructure/persistence/` |
-| PDF export (image-based) + print export (text-based) | `src/app/infrastructure/export/` |
-| Design system tokens (Tailwind v4 `@theme` + HSL vars) | `src/styles.css` |
-| Theme service (dark/light, localStorage) | `src/app/core/services/theme.ts` |
-| Toasts | `src/app/core/services/toast.ts` + `src/app/shared/components/toast/` |
+| Domain models (`Cv`, sections, settings, `TemplateInfo`)    | `src/app/domain/models/cv-model.ts`                                   |
+| Default/factory CV                                          | `src/app/domain/models/cv-defaults.ts`                                |
+| Template catalog (add new templates here)                   | `src/app/domain/models/template-registry.ts`                          |
+| Central state (signals store, CRUD, deep-merge patch)       | `src/app/application/state/cv.ts`                                     |
+| Debounced autosave (800 ms)                                 | `src/app/application/services/autosave.ts`                            |
+| IndexedDB schema / repository                               | `src/app/infrastructure/persistence/`                                 |
+| PDF export (image-based) + print export (text-based)        | `src/app/infrastructure/export/`                                      |
+| Design system tokens (Tailwind v4 `@theme` + HSL vars)      | `src/styles.css`                                                      |
+| Theme service (dark/light, localStorage)                    | `src/app/core/services/theme.ts`                                      |
+| Toasts                                                      | `src/app/core/services/toast.ts` + `src/app/shared/components/toast/` |
 
 Full architecture and data flow: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

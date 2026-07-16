@@ -96,31 +96,31 @@ Detalles clave:
 
 ## 5. Mapa de archivos
 
-| Qué | Dónde |
-|---|---|
-| Páginas (rutas lazy) | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` + `editor.html` |
-| Modelos de dominio | `src/app/domain/models/cv-model.ts` |
-| Factory/defaults de CV | `src/app/domain/models/cv-defaults.ts` (`createDefaultCv()`) |
-| Catálogo de plantillas | `src/app/domain/models/template-registry.ts` |
-| Store central (signals) | `src/app/application/state/cv.ts` (`CvStore`) + `deep-merge.ts` |
-| Autosave (debounce 800 ms) | `src/app/application/services/autosave.ts` |
-| Persistencia | `src/app/infrastructure/persistence/cv-database.ts` (Dexie) + `cv-repository.ts` (`getAll/save/delete`) |
-| Export PDF imagen | `src/app/infrastructure/export/pdf-export.ts` + `a4.ts` (constantes A4 mm/px) |
-| Export print/texto | `src/app/infrastructure/export/print-export.ts` + `print-stylesheet.ts` |
-| Toolbar del editor (export, saved) | `src/app/features/editor/components/editor-toolbar.ts` |
-| Tabs del editor (8 tabs) | `src/app/features/editor/components/editor-tabs.ts` |
-| Formularios de sección | `src/app/features/editor/components/{personal-info,experience,education,skills,projects,certifications,languages}-form.ts` |
-| Selector de plantilla + colores | `src/app/features/editor/components/template-selector.ts` + `color-picker.ts` |
-| Preview (switch de plantillas) | `src/app/features/editor/components/resume-preview.ts` |
-| Las 5 plantillas de CV | `src/app/features/editor/components/resume-templates/{modern,classic,minimal,creative,executive}-template.ts` |
-| Dashboard (cards, empty state) | `src/app/features/dashboard/components/` |
-| Landing | `src/app/features/landing/components/` |
-| Header/footer/toast compartidos | `src/app/shared/components/` |
-| Markdown ligero (bold/italic/bullets) | `src/app/shared/utils/markdown.ts` (render con `[innerHTML]`) |
-| Reorden ↑/↓ de listas | `src/app/core/utils/array.ts` |
-| Tokens de diseño (`@theme`) | `src/styles.css` |
-| Tests unit existentes | `*.spec.ts` junto a deep-merge, cv-defaults, a4, array, markdown (22 tests) |
-| E2E | `e2e/smoke.spec.ts` + `playwright.config.ts` (solo smoke) |
+| Qué                                   | Dónde                                                                                                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Páginas (rutas lazy)                  | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` + `editor.html`                                      |
+| Modelos de dominio                    | `src/app/domain/models/cv-model.ts`                                                                                        |
+| Factory/defaults de CV                | `src/app/domain/models/cv-defaults.ts` (`createDefaultCv()`)                                                               |
+| Catálogo de plantillas                | `src/app/domain/models/template-registry.ts`                                                                               |
+| Store central (signals)               | `src/app/application/state/cv.ts` (`CvStore`) + `deep-merge.ts`                                                            |
+| Autosave (debounce 800 ms)            | `src/app/application/services/autosave.ts`                                                                                 |
+| Persistencia                          | `src/app/infrastructure/persistence/cv-database.ts` (Dexie) + `cv-repository.ts` (`getAll/save/delete`)                    |
+| Export PDF imagen                     | `src/app/infrastructure/export/pdf-export.ts` + `a4.ts` (constantes A4 mm/px)                                              |
+| Export print/texto                    | `src/app/infrastructure/export/print-export.ts` + `print-stylesheet.ts`                                                    |
+| Toolbar del editor (export, saved)    | `src/app/features/editor/components/editor-toolbar.ts`                                                                     |
+| Tabs del editor (8 tabs)              | `src/app/features/editor/components/editor-tabs.ts`                                                                        |
+| Formularios de sección                | `src/app/features/editor/components/{personal-info,experience,education,skills,projects,certifications,languages}-form.ts` |
+| Selector de plantilla + colores       | `src/app/features/editor/components/template-selector.ts` + `color-picker.ts`                                              |
+| Preview (switch de plantillas)        | `src/app/features/editor/components/resume-preview.ts`                                                                     |
+| Las 5 plantillas de CV                | `src/app/features/editor/components/resume-templates/{modern,classic,minimal,creative,executive}-template.ts`              |
+| Dashboard (cards, empty state)        | `src/app/features/dashboard/components/`                                                                                   |
+| Landing                               | `src/app/features/landing/components/`                                                                                     |
+| Header/footer/toast compartidos       | `src/app/shared/components/`                                                                                               |
+| Markdown ligero (bold/italic/bullets) | `src/app/shared/utils/markdown.ts` (render con `[innerHTML]`)                                                              |
+| Reorden ↑/↓ de listas                 | `src/app/core/utils/array.ts`                                                                                              |
+| Tokens de diseño (`@theme`)           | `src/styles.css`                                                                                                           |
+| Tests unit existentes                 | `*.spec.ts` junto a deep-merge, cv-defaults, a4, array, markdown (22 tests)                                                |
+| E2E                                   | `e2e/smoke.spec.ts` + `playwright.config.ts` (solo smoke)                                                                  |
 
 ## 6. API exacta (no adivinar firmas)
 

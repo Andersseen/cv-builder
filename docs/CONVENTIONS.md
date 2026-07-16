@@ -80,6 +80,7 @@ Usage: `bg-background`, `text-foreground`, `bg-card border border-border`, `text
 ## Common recipes
 
 **Add a field to the CV model** — touch all of these or data will be inconsistent:
+
 1. `domain/models/cv-model.ts` — add to the interface.
 2. `domain/models/cv-defaults.ts` — add default value for new CVs.
 3. `application/state/cv.ts` → `loadAll()` — add backfill default for CVs already stored in IndexedDB.

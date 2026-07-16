@@ -12,7 +12,7 @@ async function createResume(page: import("@playwright/test").Page) {
   const btn = page.getByRole("button", { name: /New Resume/i });
   await btn.waitFor({ state: "visible" });
   await Promise.all([
-    page.waitForURL(/\/editor\?cv=/, { waitUntil: "networkidle" }),
+    page.waitForURL(/\/editor\?cv=/, { waitUntil: "load" }),
     btn.click(),
   ]);
 }
@@ -33,21 +33,29 @@ test.describe("Landing", () => {
 test.describe("Dashboard", () => {
   test("shows the empty state on a fresh profile", async ({ page }) => {
     await page.goto("/dashboard");
-    await expect(page.getByRole("heading", { name: /My Resumes/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /My Resumes/i }),
+    ).toBeVisible();
     await expect(page.getByText(/No resumes yet/i)).toBeVisible();
   });
 
   test("creating a resume opens the editor", async ({ page }) => {
     await createResume(page);
     // Editor tabs render (there are desktop + mobile copies, take the first).
-    await expect(page.getByRole("button", { name: /Personal/ }).first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Personal/ }).first(),
+    ).toBeVisible();
     // Live preview container is present.
-    await expect(page.locator("#resume-content")).toBeVisible();
+    await expect(
+      page.locator('[data-testid="desktop-preview-panel"] .resume-content'),
+    ).toBeVisible();
   });
 });
 
 test.describe("Editor live preview (zoneless signals)", () => {
-  test("typing the full name updates the preview instantly", async ({ page }) => {
+  test("typing the full name updates the preview instantly", async ({
+    page,
+  }) => {
     await createResume(page);
 
     const name = "Ada Lovelace";
@@ -56,7 +64,11 @@ test.describe("Editor live preview (zoneless signals)", () => {
 
     // The name must appear inside the rendered resume preview without a reload —
     // proves OnPush + signals change detection works under zoneless Angular 21.
-    await expect(page.locator("#resume-content").getByText(name)).toBeVisible();
+    await expect(
+      page
+        .locator('[data-testid="desktop-preview-panel"] .resume-content')
+        .getByText(name),
+    ).toBeVisible();
   });
 });
 
@@ -72,8 +84,14 @@ test.describe("Persistence", () => {
 
     // Reload the same editor URL — the persisted value must come back from IndexedDB.
     await page.goto(editorUrl);
-    await expect(page.locator("input[type='text'][placeholder='John Doe']")).toHaveValue(name);
-    await expect(page.locator("#resume-content").getByText(name)).toBeVisible();
+    await expect(
+      page.locator("input[type='text'][placeholder='John Doe']"),
+    ).toHaveValue(name);
+    await expect(
+      page
+        .locator('[data-testid="desktop-preview-panel"] .resume-content')
+        .getByText(name),
+    ).toBeVisible();
   });
 });
 
@@ -82,23 +100,50 @@ test.describe("Full editor flow", () => {
     await createResume(page);
 
     // Fill personal info
-    await page.locator("input[type='text'][placeholder='John Doe']").fill("Ada Lovelace");
+    await page
+      .locator("input[type='text'][placeholder='John Doe']")
+      .fill("Ada Lovelace");
     await page.locator("input[type='email']").fill("ada@example.com");
-    await page.locator("textarea[placeholder='Brief overview of your professional background and key achievements...']").fill("Mathematician and writer.");
+    await page
+      .locator(
+        "textarea[placeholder='Brief overview of your professional background and key achievements...']",
+      )
+      .fill("Mathematician and writer.");
 
     // Add one experience entry
-    await page.getByRole("button", { name: /Experience/i }).first().click();
+    await page
+      .getByRole("button", { name: /Experience/i })
+      .first()
+      .click();
     await page.getByRole("button", { name: /\+ Add Experience/i }).click();
-    await page.locator("input[type='text'][placeholder='Software Engineer']").fill("Software Engineer");
-    await page.locator("input[type='text'][placeholder='Tech Corp']").fill("Tech Corp");
-    await page.locator("input[type='text'][placeholder='San Francisco, CA']").fill("London");
+    await page
+      .locator("input[type='text'][placeholder='Software Engineer']")
+      .fill("Software Engineer");
+    await page
+      .locator("input[type='text'][placeholder='Tech Corp']")
+      .fill("Tech Corp");
+    await page
+      .locator("input[type='text'][placeholder='San Francisco, CA']")
+      .fill("London");
     await page.locator('input[type="month"]').first().fill("2020-01");
-    await page.locator("textarea[placeholder='Key responsibilities and achievements...']").fill("- Built the first algorithm\n- **Led** team");
+    await page
+      .locator(
+        "textarea[placeholder='Key responsibilities and achievements...']",
+      )
+      .fill("- Built the first algorithm\n- **Led** team");
     await page.getByRole("button", { name: /^Add$/i }).click();
 
     // Verify preview reflects both personal and experience data
-    await expect(page.locator("#resume-content").getByText("Ada Lovelace")).toBeVisible();
-    await expect(page.locator("#resume-content").getByText("Tech Corp")).toBeVisible();
+    await expect(
+      page
+        .locator('[data-testid="desktop-preview-panel"] .resume-content')
+        .getByText("Ada Lovelace"),
+    ).toBeVisible();
+    await expect(
+      page
+        .locator('[data-testid="desktop-preview-panel"] .resume-content')
+        .getByText("Tech Corp"),
+    ).toBeVisible();
 
     // Wait for autosave
     await page.waitForTimeout(1200);
@@ -106,6 +151,8 @@ test.describe("Full editor flow", () => {
     // Return to dashboard and verify the card exists
     await page.getByRole("button", { name: /Back/i }).click();
     await page.waitForURL(/\/dashboard/);
-    await expect(page.locator("h3", { hasText: /Untitled Resume/ })).toBeVisible();
+    await expect(
+      page.locator("h3", { hasText: /Untitled Resume/ }),
+    ).toBeVisible();
   });
 });

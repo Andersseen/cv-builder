@@ -234,6 +234,7 @@ import { moveItem } from "../../../core/utils/array";
 export class ExperienceForm {
   readonly items = input.required<Experience[]>();
   readonly itemsChange = output<Experience[]>();
+  readonly removed = output<Experience>();
 
   showForm = signal(false);
   editingId = signal<string | null>(null);
@@ -306,10 +307,11 @@ export class ExperienceForm {
     this.cancelEdit();
   }
   remove(id: string) {
-    if (confirm("Delete this experience?")) {
-      this.itemsChange.emit(this.items().filter((e) => e.id !== id));
-      if (this.editingId() === id) this.cancelEdit();
-    }
+    const removed = this.items().find((e) => e.id === id);
+    if (!removed) return;
+    this.itemsChange.emit(this.items().filter((e) => e.id !== id));
+    this.removed.emit(removed);
+    if (this.editingId() === id) this.cancelEdit();
   }
   move(index: number, direction: "up" | "down") {
     this.itemsChange.emit(moveItem(this.items(), index, direction));

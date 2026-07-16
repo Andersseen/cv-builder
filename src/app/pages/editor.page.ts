@@ -37,6 +37,8 @@ import {
   Language,
 } from "../domain/models/cv-model";
 import { ToastService } from "../core/services/toast";
+import { Viewport } from "../core/services/viewport";
+import { A4 } from "../infrastructure/export/a4";
 
 @Component({
   selector: "app-editor",
@@ -55,10 +57,14 @@ import { ToastService } from "../core/services/toast";
     EditorTabs,
   ],
   templateUrl: "./editor.html",
+  host: {
+    "(window:keydown)": "onKeydown($event)",
+  },
 })
 export default class Editor implements OnInit, OnDestroy {
   readonly cvStore = inject(CvStore);
   readonly autosave = inject(Autosave);
+  readonly viewport = inject(Viewport);
   private readonly pdfExport = inject(PdfExport);
   private readonly printExport = inject(PrintExport);
   private readonly toast = inject(ToastService);
@@ -68,6 +74,8 @@ export default class Editor implements OnInit, OnDestroy {
   protected isExporting = signal(false);
   protected activeTab = signal<EditorTab>("personal");
   protected previewOpen = signal(true);
+  protected mobilePreviewOpen = signal(false);
+  protected previewScale = signal(1);
 
   protected readonly tabs: TabConfig[] = [
     { id: "personal", label: "Personal", icon: "👤" },
@@ -84,6 +92,14 @@ export default class Editor implements OnInit, OnDestroy {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
     this.autosave.scheduleAutosave(cv);
+  });
+
+  private scaleEffect = effect(() => {
+    const width = this.viewport.width();
+    const padding = 32;
+    const available = Math.max(width - padding, 0);
+    const scale = Math.min(available / A4.WIDTH_PX, 1);
+    this.previewScale.set(scale);
   });
 
   async ngOnInit() {
@@ -110,6 +126,18 @@ export default class Editor implements OnInit, OnDestroy {
 
   protected goBack() {
     this.router.navigate(["/dashboard"]);
+  }
+
+  protected togglePreview() {
+    if (this.viewport.isMobile()) {
+      this.mobilePreviewOpen.set(!this.mobilePreviewOpen());
+    } else {
+      this.previewOpen.set(!this.previewOpen());
+    }
+  }
+
+  protected closeMobilePreview() {
+    this.mobilePreviewOpen.set(false);
   }
 
   protected updatePersonalInfo(personal: PersonalInfo) {
@@ -159,7 +187,7 @@ export default class Editor implements OnInit, OnDestroy {
   protected async exportPdf() {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
-    const el = document.getElementById("resume-content");
+    const el = this.findResumeContentElement();
     if (!el) {
       this.toast.show("Preview not ready", "error");
       return;
@@ -177,13 +205,15 @@ export default class Editor implements OnInit, OnDestroy {
   }
 
   protected async printResume() {
-    const el = document.getElementById("resume-content");
+    const cv = this.cvStore.activeCv();
+    const el = this.findResumeContentElement();
     if (!el) {
       this.toast.show("Preview not ready — show the preview first", "error");
       return;
     }
+    if (!cv) return;
     try {
-      await this.printExport.printResume(el);
+      await this.printExport.printResume(cv, el);
     } catch (err) {
       console.error("Print error:", err);
       this.toast.show("Error opening print dialog", "error");
@@ -194,5 +224,34 @@ export default class Editor implements OnInit, OnDestroy {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
     this.cvStore.exportCv(cv);
+  }
+
+  protected onKeydown(event: KeyboardEvent) {
+    const isMod = event.ctrlKey || event.metaKey;
+    if (!isMod || event.key.toLowerCase() !== "z") return;
+
+    event.preventDefault();
+    if (event.shiftKey) {
+      this.cvStore.redo();
+    } else {
+      this.cvStore.undo();
+    }
+  }
+
+  /** Show an undo toast when a list item is deleted. */
+  protected onListItemRemoved(label: string) {
+    this.toast.show(
+      `${label} deleted`,
+      "info",
+      5000,
+      { label: "Undo", handler: () => this.cvStore.undo() },
+    );
+  }
+
+  private findResumeContentElement(): HTMLElement | null {
+    return (
+      document.querySelector("[data-export-preview] .resume-content") ??
+      document.querySelector(".resume-content")
+    );
   }
 }

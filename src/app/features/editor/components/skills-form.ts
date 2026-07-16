@@ -155,6 +155,7 @@ import { moveItem } from "../../../core/utils/array";
 export class SkillsForm {
   readonly items = input.required<Skill[]>();
   readonly itemsChange = output<Skill[]>();
+  readonly removed = output<Skill>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
   readonly levels: SkillLevel[] = [
@@ -211,7 +212,10 @@ export class SkillsForm {
     this.cancelEdit();
   }
   remove(id: string) {
+    const removed = this.items().find((s) => s.id === id);
+    if (!removed) return;
     this.itemsChange.emit(this.items().filter((s) => s.id !== id));
+    this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
   move(index: number, direction: "up" | "down") {
