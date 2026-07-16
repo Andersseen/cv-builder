@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Cv } from "../../domain/models/cv-model";
 import { buildPrintStylesheet } from "./print-stylesheet";
 
 /**
@@ -32,17 +33,23 @@ export class PrintExport {
    * Opens the browser's print dialog with only the resume visible,
    * rendered at full A4 dimensions.
    *
+   * @param cv The CV model (used for the print filename via document.title).
    * @param element The `#resume-content` DOM node to print.
    */
-  async printResume(element: HTMLElement): Promise<void> {
+  async printResume(cv: Cv, element: HTMLElement): Promise<void> {
     const { wrapper, style } = this.preparePrintDOM(element);
+    const originalTitle = document.title;
 
     // Allow the browser one frame to lay out the injected nodes
     await this.waitForRender();
 
-    window.print();
-
-    this.cleanup(wrapper, style);
+    try {
+      document.title = this.buildTitle(cv);
+      window.print();
+    } finally {
+      document.title = originalTitle;
+      this.cleanup(wrapper, style);
+    }
   }
 
   // ─── Private helpers ─────────────────────────────────────────
@@ -77,5 +84,10 @@ export class PrintExport {
   private cleanup(wrapper: HTMLElement, style: HTMLStyleElement): void {
     wrapper.remove();
     style.remove();
+  }
+
+  /** Derive a print-dialog filename from the CV name. */
+  private buildTitle(cv: Cv): string {
+    return cv.name ? `${cv.name} - Resume` : "Resume";
   }
 }

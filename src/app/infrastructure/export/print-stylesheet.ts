@@ -106,11 +106,12 @@ function printFlexStretch(): string {
     }`;
 }
 
-/** Prevent awkward page breaks inside sections / after headings. */
+/** Prevent awkward page breaks inside sections and list items. */
 function printPageBreaks(): string {
   return `
     @media print {
       section { break-inside: avoid; }
+      section > div { break-inside: avoid-page; }
       h1, h2, h3 { break-after: avoid; }
     }`;
 }

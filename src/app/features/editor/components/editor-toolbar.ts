@@ -102,11 +102,13 @@ import {
           <!-- Export dropdown -->
           <div class="relative">
             <div class="flex items-center">
-              <!-- Primary action: Print PDF -->
+              <!-- Primary action: Download PDF (print/text) -->
               <button
+                data-testid="export-print-pdf"
                 (click)="printPdf.emit()"
                 [disabled]="isExporting()"
-                aria-label="Print PDF"
+                aria-label="Download PDF"
+                title="Best for job applications — selectable text, ATS-friendly"
                 class="px-4 py-2 bg-accent hover:bg-accent/90 disabled:opacity-50
                        text-accent-foreground text-sm font-medium rounded-l-lg transition-all duration-300
                        shadow-md hover:shadow-glass hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center gap-2"
@@ -125,9 +127,8 @@ import {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                <span class="hidden sm:inline">{{
-                  isExporting() ? "Exporting..." : "Print PDF"
-                }}</span>
+                <span class="hidden sm:inline">{{ isExporting() ? "Exporting..." : "Download PDF" }}</span>
+                <span class="sm:hidden">PDF</span>
               </button>
 
               <!-- Dropdown toggle -->
@@ -135,6 +136,8 @@ import {
                 data-testid="export-dropdown-toggle"
                 (click)="dropdownOpen.set(!dropdownOpen())"
                 [disabled]="isExporting()"
+                aria-label="More export options"
+                title="More export options"
                 class="px-2 py-2 bg-accent hover:bg-accent/80 disabled:opacity-50
                        text-accent-foreground rounded-r-lg transition-all duration-200
                        shadow-lg shadow-accent/20 border-l border-accent-foreground/20"
@@ -167,7 +170,7 @@ import {
                 >
                   <span class="text-lg leading-none mt-0.5">🖨️</span>
                   <div>
-                    <div class="font-medium">Print PDF</div>
+                    <div class="font-medium">Print PDF (text)</div>
                     <div class="text-xs text-muted-foreground mt-0.5">
                       Selectable text · ATS-friendly · Small file
                     </div>
@@ -175,14 +178,15 @@ import {
                 </button>
                 <div class="border-t border-border"></div>
                 <button
+                  data-testid="export-image-pdf"
                   (click)="onExportImage()"
                   class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
                 >
                   <span class="text-lg leading-none mt-0.5">📸</span>
                   <div>
-                    <div class="font-medium">Image PDF</div>
+                    <div class="font-medium">High-fidelity PDF (image snapshot)</div>
                     <div class="text-xs text-muted-foreground mt-0.5">
-                      Pixel-perfect snapshot · Larger file
+                      Pixel-perfect · Text is not selectable · Not readable by ATS
                     </div>
                   </div>
                 </button>

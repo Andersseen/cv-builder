@@ -205,13 +205,15 @@ export default class Editor implements OnInit, OnDestroy {
   }
 
   protected async printResume() {
+    const cv = this.cvStore.activeCv();
     const el = this.findResumeContentElement();
     if (!el) {
       this.toast.show("Preview not ready — show the preview first", "error");
       return;
     }
+    if (!cv) return;
     try {
-      await this.printExport.printResume(el);
+      await this.printExport.printResume(cv, el);
     } catch (err) {
       console.error("Print error:", err);
       this.toast.show("Error opening print dialog", "error");

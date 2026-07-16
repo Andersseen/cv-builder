@@ -146,22 +146,22 @@ puede cortar una línea de texto entre páginas.
 
 **Depende de**: Fase 0. Independiente de 1–3.
 
-- [ ] **Etiquetas claras** en la toolbar (`editor-toolbar.ts`): acción primaria
+- [x] **Etiquetas claras** en la toolbar (`editor-toolbar.ts`): acción primaria
       "Download PDF — recommended for job applications" (path print/texto) y en el dropdown
       "High-fidelity PDF (image — not readable by ATS systems)" con una línea explicativa.
       El texto exacto puede ajustarse, pero el usuario debe entender cuál usar sin saber qué es ATS.
-- [ ] **Nombre de archivo también en el print export**: setear `document.title` al nombre del
+- [x] **Nombre de archivo también en el print export**: setear `document.title` al nombre del
       CV durante la impresión (es el filename por defecto del "guardar como PDF" del navegador)
       y restaurarlo después.
-- [ ] **Lazy-load de las libs de export**: en `pdf-export.ts`, pasar `html-to-image` y `jspdf`
+- [x] **Lazy-load de las libs de export**: en `pdf-export.ts`, pasar `html-to-image` y `jspdf`
       a `await import(...)` dentro de `exportToPdf()` para sacarlas del chunk del editor.
       Verificar con el output del build que ya no están en el chunk.
-- [ ] **Cortes de página del PDF imagen** (`addImagePages` en `pdf-export.ts`): evitar cortar
+- [x] **Cortes de página del PDF imagen** (`addImagePages` en `pdf-export.ts`): evitar cortar
       una línea por la mitad. Enfoque sugerido sin deps: antes de capturar, medir los bloques
       hijos de `#resume-content` y añadir spacers/padding para que ningún bloque cruce un
       límite A4; alternativa mínima: documentar la limitación y añadir margen inferior de
       seguridad por página. Elegir según complejidad real de las plantillas.
-- [ ] QA: CV de 2 páginas exportado por ambos paths con las 5 plantillas.
+- [x] QA: CV de 2 páginas exportado por ambos paths con las 5 plantillas.
 
 **Hecho cuando**: los botones explican qué export usar; ambos PDFs se descargan con el nombre
 del CV; `jspdf`/`html-to-image` fuera del chunk inicial del editor; sin líneas cortadas (o

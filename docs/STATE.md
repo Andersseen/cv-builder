@@ -2,11 +2,11 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-16 · **Active branch**: `feature/plan`. Fases 0, 1, 2 y 3 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-16 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3 y 4 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
 ## In progress
 
-Nada en curso. Última sesión: Fase 3 (undo/redo y borrado seguro) cerrada.
+Nada en curso. Última sesión: Fase 4 (UX de exportación y calidad de PDF) cerrada.
 
 ## What's working (stable)
 
@@ -40,11 +40,20 @@ Nada en curso. Última sesión: Fase 3 (undo/redo y borrado seguro) cerrada.
 
 ## Next steps (in rough priority order)
 
-1. **Fase 4** — UX de exportación y calidad de PDF.
+1. **Fase 5** — Onboarding y guía de completitud (CV de ejemplo + score de completitud).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
-3. Phase 4 a11y: enable eslint template accessibility rules and fix findings.
+3. Phase 5+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-16 (tarde)** — **Fase 4 de PLAN.md.**
+  - Toolbar del editor: acción primaria renombrada a "Download PDF" con tooltip explicativo; dropdown con "Print PDF (text)" y "High-fidelity PDF (image snapshot)" + subtextos claros sobre seleccionabilidad y ATS.
+  - `PrintExport` ahora recibe el `Cv` y setea/restaura `document.title` con el nombre del CV para que el "Guardar como PDF" del navegador use un nombre descriptivo.
+  - `PdfExport` hace lazy-load de `html-to-image` y `jspdf` dentro de `exportToPdf()`; el chunk `editor.page` bajó de ~505 KB a ~135 KB (client) y `jspdf` vive ahora en su propio chunk.
+  - Añadido helper `avoidPageBreaks()` en `PdfExport` que mide `section` y `section > div` antes de capturar y empuja los bloques que cruzan un límite A4 a la siguiente página vía padding-bottom (restaurado después). Añadido `break-inside: avoid-page` para items en `print-stylesheet.ts`.
+  - Actualizados tests e2e de Fase 2 para usar `data-testid` en los botones de export (los labels cambiaron y hay undo/redo antes del dropdown).
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes (10 e2e tests).
+  - Actualizados `docs/plan/PLAN.md` y `docs/STATE.md`.
 
 - **2026-07-16** — **Fase 3 de PLAN.md + fix de build del dashboard.**
   - Corregido el error de build en `src/app/pages/dashboard.page.ts`: la expresión inline del mensaje del diálogo (`deleteCandidate()!.name`) rompía el parser de Angular. Se movió a un `computed` (`deleteMessage`) y se reemplazó el output `cancel` por `cancelled` para cumplir `@angular-eslint/no-output-native`.

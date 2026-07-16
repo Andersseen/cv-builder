@@ -66,10 +66,7 @@ test.describe("Fase 2 — Mobile preview and export", () => {
 
     const [download] = await Promise.all([
       page.waitForEvent("download", { timeout: 30000 }),
-      page
-        .getByRole("button", { name: /Image PDF/i })
-        .first()
-        .click(),
+      page.locator('[data-testid="export-image-pdf"]').first().click(),
     ]);
 
     expect(download.suggestedFilename()).toMatch(/\.pdf$/);
@@ -84,10 +81,7 @@ test.describe("Fase 2 — Mobile preview and export", () => {
     await page.waitForTimeout(300);
 
     // Print PDF primary action
-    await page
-      .getByRole("button", { name: /Print PDF/i })
-      .first()
-      .click();
+    await page.locator('[data-testid="export-print-pdf"]').first().click();
     await page.waitForTimeout(200);
 
     // No error dialog expected; print dialog is native and ignored in headless.
