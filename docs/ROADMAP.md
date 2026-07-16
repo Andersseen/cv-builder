@@ -6,7 +6,7 @@
 > análisis) + [STATE.md](STATE.md) (estado actual). Al terminar, marca los ítems hechos aquí
 > y actualiza `STATE.md`.
 >
-> **Regla de oro del roadmap**: todo respeta los *product principles* y *non-goals* de
+> **Regla de oro del roadmap**: todo respeta los _product principles_ y _non-goals_ de
 > [CONTEXT.md](CONTEXT.md) — 100% client-side, privacy-first, sin backend/cuentas/IA in-app.
 > El CV es el producto: fidelidad de preview y calidad de PDF por encima de todo.
 
@@ -40,6 +40,7 @@ esto ya está catalogado en `STATE.md` → known issues; esta fase lo cierra.
 clases Tailwind inexistentes, animaciones vivas en prod.
 
 ---
+
 ## Fase 1 — Profundidad de contenido del CV ✅ COMPLETADA (2026-07-10, variante lean sin deps)
 
 Hoy el modelo sólo tiene 4 secciones (personal, experiencia, educación, skills). Los CVs
@@ -143,5 +144,5 @@ Los ítems ⭐ son los de mayor relación impacto/esfuerzo si se quiere ir a lo 
 ## Fuera de alcance (recordatorio de CONTEXT.md § Non-goals)
 
 Backend, cuentas, auth, cloud sync, links para compartir · generación de contenido con IA
-in-app · gestión multi-idioma del *contenido* del CV · cover letters / job tracking · apps
+in-app · gestión multi-idioma del _contenido_ del CV · cover letters / job tracking · apps
 nativas móviles. Cualquiera de estos requiere decisión explícita del usuario primero.

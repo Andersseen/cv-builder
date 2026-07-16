@@ -89,11 +89,7 @@ export interface Language {
 }
 
 export type LanguageProficiency =
-  | "Basic"
-  | "Conversational"
-  | "Professional"
-  | "Fluent"
-  | "Native";
+  "Basic" | "Conversational" | "Professional" | "Fluent" | "Native";
 
 // ─── Settings ────────────────────────────────────────────────
 

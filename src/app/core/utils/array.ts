@@ -9,7 +9,12 @@ export function moveItem<T>(
   direction: "up" | "down",
 ): T[] {
   const target = direction === "up" ? index - 1 : index + 1;
-  if (index < 0 || index >= items.length || target < 0 || target >= items.length) {
+  if (
+    index < 0 ||
+    index >= items.length ||
+    target < 0 ||
+    target >= items.length
+  ) {
     return [...items];
   }
   const next = [...items];

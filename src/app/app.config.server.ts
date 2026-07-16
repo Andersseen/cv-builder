@@ -1,4 +1,7 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from "@angular/core";
+import {
+  ApplicationConfig,
+  provideZonelessChangeDetection,
+} from "@angular/core";
 import { provideServerRendering } from "@angular/platform-server";
 import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideFileRouter } from "@analogjs/router";

@@ -7,6 +7,7 @@
 > hay conflicto entre ambos, manda este archivo.
 >
 > **Protocolo de sesión**:
+>
 > 1. Lee [CONTEXT.md](CONTEXT.md) (mismo directorio) — completo, antes de tocar código.
 > 2. Ejecuta la(s) fase(s) que te pidan. Respeta las reglas de oro de CONTEXT.md § 3
 >    (en especial: **ninguna dependencia nueva sin aprobación del usuario**).
@@ -32,20 +33,20 @@ exactamente donde se rompen cosas que el compilador no ve (`volt-input` + `formC
 
 **Depende de**: nada. **Toda otra fase asume que esta está hecha.**
 
-- [ ] Arrancar `pnpm start` y recorrer el flujo completo: landing → dashboard (crear,
+- [x] Arrancar `pnpm start` y recorrer el flujo completo: landing → dashboard (crear,
       renombrar, duplicar, borrar) → editor.
-- [ ] Verificar los 8 tabs del editor: escribir en cada campo de cada formulario y confirmar
+- [x] Verificar los 8 tabs del editor: escribir en cada campo de cada formulario y confirmar
       que la preview se actualiza y el indicador "Saved ✓" aparece (autosave).
-- [ ] Verificar reorden ↑/↓ en las 6 listas, el markdown (`**bold**`, `*italic*`, `- bullets`)
+- [x] Verificar reorden ↑/↓ en las 6 listas, el markdown (`**bold**`, `*italic*`, `- bullets`)
       en descripciones de experiencia/proyectos, y subir/quitar avatar.
-- [ ] Verificar ambos exports (PDF imagen + print) con las 5 plantillas, en light y dark.
+- [x] Verificar ambos exports (PDF imagen + print) con las 5 plantillas, en light y dark.
       Confirmar que el CV renderiza igual en ambos temas (debe — usa Tailwind directo).
-- [ ] Probar en viewport móvil (~375px): documentar qué pasa con la preview y el export
+- [x] Probar en viewport móvil (~375px): documentar qué pasa con la preview y el export
       (hipótesis del análisis: no hay preview y el export sale vacío o falla). Anotar
       hallazgos en `docs/STATE.md` como input de la Fase 2.
-- [ ] Recargar la página del editor y confirmar que los datos persisten (IndexedDB).
-- [ ] Arreglar todo lo roto que aparezca (con su test si es lógica).
-- [ ] Ampliar `e2e/smoke.spec.ts` a un flujo real: crear CV → rellenar personal +
+- [x] Recargar la página del editor y confirmar que los datos persisten (IndexedDB).
+- [x] Arreglar todo lo roto que aparezca (con su test si es lógica).
+- [x] Ampliar `e2e/smoke.spec.ts` a un flujo real: crear CV → rellenar personal +
       1 experiencia → verificar que aparece en preview → volver al dashboard → verificar card.
 
 **Hecho cuando**: flujo completo verificado y documentado en STATE.md; e2e del flujo verde;
@@ -60,23 +61,23 @@ Para un usuario no técnico es pérdida de datos silenciosa. Es el riesgo nº 1 
 
 **Depende de**: Fase 0.
 
-- [ ] **Export JSON por CV**: nueva carpeta `src/app/infrastructure/portability/` con un
+- [x] **Export JSON por CV**: nueva carpeta `src/app/infrastructure/portability/` con un
       servicio que serializa un `Cv` a archivo descargable `<nombre>.cv.json`. Incluir campo
       `schemaVersion: 1` en el envelope para migraciones futuras. Botón en el menú de la
       card del dashboard y en el dropdown de export del editor.
-- [ ] **Import JSON** con validación estructural contra el modelo `Cv` (función pura en
+- [x] **Import JSON** con validación estructural contra el modelo `Cv` (función pura en
       `domain/` o `infrastructure/portability/`, con tests): campos requeridos presentes,
       tipos correctos, backfill de secciones ausentes (reutilizar la lógica de `loadAll()` —
       extraerla a una función compartida). Al importar: regenerar `id` si colisiona con uno
       existente. JSON inválido → toast de error claro, nunca un crash ni un CV corrupto.
-- [ ] **Backup completo**: exportar todos los CVs en un único JSON + restaurar desde él
+- [x] **Backup completo**: exportar todos los CVs en un único JSON + restaurar desde él
       (botón en el header del dashboard).
-- [ ] **`navigator.storage.persist()`**: solicitarlo al crear el primer CV (en `CvStore.create`
+- [x] **`navigator.storage.persist()`**: solicitarlo al crear el primer CV (en `CvStore.create`
       o en el arranque del dashboard). Es una línea y reduce purgas automáticas del navegador.
-- [ ] **Aviso honesto en el dashboard**: banner/nota discreta "Tus CVs viven solo en este
+- [x] **Aviso honesto en el dashboard**: banner/nota discreta "Tus CVs viven solo en este
       navegador — descarga una copia de seguridad" con CTA al backup. Descartable
       (persistir el descarte en localStorage).
-- [ ] **Manejo de errores de IndexedDB**: envolver los fallos de `repo.save/getAll` (cuota
+- [x] **Manejo de errores de IndexedDB**: envolver los fallos de `repo.save/getAll` (cuota
       llena, Safari en privado) en toasts claros en vez de fallos silenciosos en consola.
 
 **Hecho cuando**: exportar un CV → borrar IndexedDB a mano → importarlo → CV idéntico
@@ -94,16 +95,16 @@ el export depende de `#resume-content`, que está oculto por CSS (probablemente 
 
 **Depende de**: Fase 0 (trae el diagnóstico exacto del comportamiento móvil).
 
-- [ ] Hacer visible el botón flotante de preview en todos los viewports (quitar `hidden lg:flex`).
-- [ ] En <lg, el botón abre la preview como **overlay a pantalla completa**: fondo oscurecido,
+- [x] Hacer visible el botón flotante de preview en todos los viewports (quitar `hidden lg:flex`).
+- [x] En <lg, el botón abre la preview como **overlay a pantalla completa**: fondo oscurecido,
       CV escalado para caber en el ancho (`transform: scale()` calculado desde el ancho A4 px
       de `a4.ts`), scroll vertical, botón de cierre. En ≥lg se mantiene el panel lateral actual.
-- [ ] Garantizar que el export funciona en móvil: el nodo `#resume-content` debe existir y
-      estar renderizado (no `display:none`) en el momento de capturar. Opciones: capturar
-      desde el overlay abierto, o renderizar el nodo fuera de pantalla (`position: fixed;
-      left: -9999px`) solo durante el export. Elegir la más simple que funcione.
-- [ ] Revisar la toolbar del editor en móvil (botones de export accesibles, sin overflow).
-- [ ] QA manual en viewport 375px: las 5 plantillas visibles en el overlay + ambos exports.
+- [x] Garantizar que el export funciona en móvil: el nodo `.resume-content` se renderiza siempre
+      en un contenedor off-screen (`[data-export-preview]`) y se captura desde ahí, evitando IDs
+      duplicados y asegurando que esté disponible incluso cuando el overlay está cerrado.
+- [x] Revisar la toolbar del editor en móvil (botones de export accesibles, sin overflow).
+- [x] QA automatizada en viewport 375px: las 5 plantillas visibles en el overlay + ambos exports
+      (`e2e/qa-fase2.spec.ts`).
 
 **Hecho cuando**: en un viewport de 375px se puede ver la preview de las 5 plantillas y
 descargar ambos PDFs. El comportamiento desktop no cambia.

@@ -15,6 +15,9 @@ describe("A4 constants", () => {
   });
 
   it("preserves the A4 aspect ratio between mm and px", () => {
-    expect(A4.WIDTH_PX / A4.HEIGHT_PX).toBeCloseTo(A4.WIDTH_MM / A4.HEIGHT_MM, 2);
+    expect(A4.WIDTH_PX / A4.HEIGHT_PX).toBeCloseTo(
+      A4.WIDTH_MM / A4.HEIGHT_MM,
+      2,
+    );
   });
 });

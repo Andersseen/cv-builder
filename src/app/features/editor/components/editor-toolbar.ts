@@ -23,12 +23,14 @@ import {
             class="text-muted-foreground hover:text-foreground transition-colors shrink-0"
             title="Back to dashboard"
           >
-            &larr; Back
+            <span class="hidden sm:inline">&larr; Back</span>
+            <span class="sm:hidden">&larr;</span>
           </button>
           @if (cvName()) {
-            <span class="text-foreground font-semibold truncate">{{
-              cvName()
-            }}</span>
+            <span
+              class="text-foreground font-semibold truncate max-w-[120px] sm:max-w-md"
+              >{{ cvName() }}</span
+            >
           }
         </div>
 
@@ -36,7 +38,7 @@ import {
         <div class="flex items-center gap-3 shrink-0">
           @if (saving()) {
             <span
-              class="text-xs text-muted-foreground flex items-center gap-1.5"
+              class="hidden sm:flex text-xs text-muted-foreground items-center gap-1.5"
             >
               <span
                 class="w-2 h-2 rounded-full bg-warning animate-pulse"
@@ -44,7 +46,9 @@ import {
               Saving...
             </span>
           } @else if (lastSavedAt()) {
-            <span class="text-xs text-muted-foreground"> Saved &check; </span>
+            <span class="hidden sm:inline text-xs text-muted-foreground">
+              Saved &check;
+            </span>
           }
 
           <!-- Export dropdown -->
@@ -54,6 +58,7 @@ import {
               <button
                 (click)="printPdf.emit()"
                 [disabled]="isExporting()"
+                aria-label="Print PDF"
                 class="px-4 py-2 bg-accent hover:bg-accent/90 disabled:opacity-50
                        text-accent-foreground text-sm font-medium rounded-l-lg transition-all duration-300
                        shadow-md hover:shadow-glass hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center gap-2"
@@ -72,7 +77,9 @@ import {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                {{ isExporting() ? "Exporting..." : "Print PDF" }}
+                <span class="hidden sm:inline">{{
+                  isExporting() ? "Exporting..." : "Print PDF"
+                }}</span>
               </button>
 
               <!-- Dropdown toggle -->

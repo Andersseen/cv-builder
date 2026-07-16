@@ -9,8 +9,9 @@
 ## Qué es
 
 CV builder 100% client-side. Angular 19 (standalone, signals, zoneless) + AnalogJS 2.x + Vite 6
-+ Tailwind v4 (CSS-first) + Dexie/IndexedDB. Sin backend, sin auth, sin red tras la primera
-carga. Export a PDF por dos vías (image PDF y print/PDF nativo).
+
+- Tailwind v4 (CSS-first) + Dexie/IndexedDB. Sin backend, sin auth, sin red tras la primera
+  carga. Export a PDF por dos vías (image PDF y print/PDF nativo).
 
 Comandos: `pnpm install`, `pnpm start` (dev en `http://localhost:5173`), `pnpm build`.
 No hay tests ni linter configurados aún — la verificación hoy es `pnpm build` (TS strict +
@@ -31,6 +32,7 @@ Los patches son `DeepPartial<Cv>`; arrays se reemplazan enteros, objetos se merg
 ## Modelo de datos (estado actual)
 
 `Cv { id, name, createdAt, updatedAt, templateId, sections, settings }`
+
 - `sections`: `personal` (fullName, email, phone, location, website, linkedin, summary,
   avatarUrl), `experience[]`, `education[]`, `skills[]`. **Sólo 4 secciones** — no hay
   projects/certifications/languages/custom (oportunidad Fase 1).
@@ -44,22 +46,22 @@ Archivos clave del modelo: `domain/models/cv-model.ts`, `cv-defaults.ts`,
 
 ## Mapa rápido de archivos (los que más se tocan)
 
-| Concern | Archivo |
-|---|---|
+| Concern                                      | Archivo                                                               |
+| -------------------------------------------- | --------------------------------------------------------------------- |
 | Rutas (landing `/`, `/dashboard`, `/editor`) | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` |
-| Modelos de dominio | `src/app/domain/models/cv-model.ts` |
-| CV por defecto | `src/app/domain/models/cv-defaults.ts` |
-| Catálogo de plantillas | `src/app/domain/models/template-registry.ts` |
-| Estado central (store) | `src/app/application/state/cv.ts` |
-| Autosave | `src/app/application/services/autosave.ts` |
-| Persistencia (Dexie) | `src/app/infrastructure/persistence/` |
-| Export PDF (imagen) + print (texto) | `src/app/infrastructure/export/` |
-| Plantillas de CV | `src/app/features/editor/components/resume-templates/*-template.ts` |
-| Dispatch de plantilla | `src/app/features/editor/components/resume-preview.ts` (`@switch`) |
-| Forms del editor | `src/app/features/editor/components/*-form.ts` |
-| Tokens de diseño | `src/styles.css` (`@theme` + HSL vars) |
-| Theme (dark/light) | `src/app/core/services/theme.ts` |
-| Toasts | `src/app/core/services/toast.ts` + `shared/components/toast/` |
+| Modelos de dominio                           | `src/app/domain/models/cv-model.ts`                                   |
+| CV por defecto                               | `src/app/domain/models/cv-defaults.ts`                                |
+| Catálogo de plantillas                       | `src/app/domain/models/template-registry.ts`                          |
+| Estado central (store)                       | `src/app/application/state/cv.ts`                                     |
+| Autosave                                     | `src/app/application/services/autosave.ts`                            |
+| Persistencia (Dexie)                         | `src/app/infrastructure/persistence/`                                 |
+| Export PDF (imagen) + print (texto)          | `src/app/infrastructure/export/`                                      |
+| Plantillas de CV                             | `src/app/features/editor/components/resume-templates/*-template.ts`   |
+| Dispatch de plantilla                        | `src/app/features/editor/components/resume-preview.ts` (`@switch`)    |
+| Forms del editor                             | `src/app/features/editor/components/*-form.ts`                        |
+| Tokens de diseño                             | `src/styles.css` (`@theme` + HSL vars)                                |
+| Theme (dark/light)                           | `src/app/core/services/theme.ts`                                      |
+| Toasts                                       | `src/app/core/services/toast.ts` + `shared/components/toast/`         |
 
 ## Reglas no negociables (resumen de AGENTS.md)
 

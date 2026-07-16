@@ -19,12 +19,10 @@ export interface CvBackupEnvelope {
 }
 
 export type ImportResult =
-  | { success: true; cv: Cv }
-  | { success: false; error: string };
+  { success: true; cv: Cv } | { success: false; error: string };
 
 export type ImportAllResult =
-  | { success: true; cvs: Cv[] }
-  | { success: false; error: string };
+  { success: true; cvs: Cv[] } | { success: false; error: string };
 
 /** Build a single-CV export envelope without side effects. */
 export function createCvExportEnvelope(cv: Cv): CvExportEnvelope {
@@ -67,10 +65,7 @@ export class CvPortability {
    * Import a single-CV JSON file.
    * Regenerates the id if it collides with an existing id.
    */
-  async importCv(
-    file: File,
-    existingIds: Set<string>,
-  ): Promise<ImportResult> {
+  async importCv(file: File, existingIds: Set<string>): Promise<ImportResult> {
     try {
       const text = await file.text();
       const parsed = JSON.parse(text);
@@ -81,7 +76,8 @@ export class CvPortability {
       const imported = this.ensureUniqueId(cv, existingIds);
       return { success: true, cv: imported };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Could not read file.";
+      const message =
+        err instanceof Error ? err.message : "Could not read file.";
       return { success: false, error: message };
     }
   }
@@ -103,7 +99,10 @@ export class CvPortability {
       for (const item of parsed.cvs) {
         const cv = this.extractCv({ cv: item });
         if (!cv) {
-          return { success: false, error: "Backup contains invalid CV entries." };
+          return {
+            success: false,
+            error: "Backup contains invalid CV entries.",
+          };
         }
         const unique = this.ensureUniqueId(cv, usedIds);
         usedIds.add(unique.id);
@@ -111,7 +110,8 @@ export class CvPortability {
       }
       return { success: true, cvs: imported };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Could not read file.";
+      const message =
+        err instanceof Error ? err.message : "Could not read file.";
       return { success: false, error: message };
     }
   }

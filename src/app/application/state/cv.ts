@@ -69,7 +69,7 @@ export class CvStore {
       () => this.repo.save(cv),
       "Could not save the new resume. Storage may be full or disabled.",
     );
-    if (!saved) return null;
+    if (saved === null) return null;
 
     this._cvs.update((cvs) => [cv, ...cvs]);
     this._activeCvId.set(cv.id);
@@ -95,7 +95,7 @@ export class CvStore {
       () => this.repo.save(copy),
       "Could not duplicate the resume. Storage may be full or disabled.",
     );
-    if (!saved) return null;
+    if (saved === null) return null;
 
     this._cvs.update((cvs) => [copy, ...cvs]);
     this.toast.show("Resume duplicated", "success");
@@ -159,7 +159,7 @@ export class CvStore {
       () => this.repo.delete(id),
       "Could not delete the resume. Please try again.",
     );
-    if (!deleted) return;
+    if (deleted === null) return;
 
     this._cvs.update((cvs) => cvs.filter((cv) => cv.id !== id));
 
@@ -199,7 +199,7 @@ export class CvStore {
       () => this.repo.save(result.cv),
       "Could not save the imported resume. Storage may be full or disabled.",
     );
-    if (!saved) return null;
+    if (saved === null) return null;
 
     this._cvs.update((cvs) => [result.cv, ...cvs]);
     this.toast.show("CV imported", "success");
@@ -220,7 +220,7 @@ export class CvStore {
         () => this.repo.save(cv),
         `Could not save imported resume "${cv.name}".`,
       );
-      if (!saved) return 0;
+      if (saved === null) return 0;
     }
 
     this._cvs.update((cvs) => [...result.cvs, ...cvs]);

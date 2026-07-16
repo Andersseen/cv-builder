@@ -23,7 +23,9 @@ export function renderRichText(input: string): string {
 
   const flushBullets = () => {
     if (bulletBuffer.length > 0) {
-      const items = bulletBuffer.map((b) => `<li>${formatInline(b)}</li>`).join("");
+      const items = bulletBuffer
+        .map((b) => `<li>${formatInline(b)}</li>`)
+        .join("");
       // Inline styles (not Tailwind classes) so bullets survive Tailwind's list
       // reset AND the html-to-image PDF export path.
       htmlParts.push(

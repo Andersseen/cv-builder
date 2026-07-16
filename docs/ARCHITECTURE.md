@@ -59,12 +59,12 @@ Key consequences for any change you make:
 
 Two intentionally different strategies — keep both:
 
-| | `PdfExport` (pdf-export.ts) | `PrintExport` (print-export.ts) |
-|---|---|---|
-| Mechanism | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | hidden iframe + `print-stylesheet.ts` + browser print dialog |
-| Text selectable / ATS | ❌ | ✅ |
-| Fidelity | pixel-perfect | high |
-| File size | 2–5 MB | ~100 KB |
+|                       | `PdfExport` (pdf-export.ts)                             | `PrintExport` (print-export.ts)                              |
+| --------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
+| Mechanism             | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | hidden iframe + `print-stylesheet.ts` + browser print dialog |
+| Text selectable / ATS | ❌                                                      | ✅                                                           |
+| Fidelity              | pixel-perfect                                           | high                                                         |
+| File size             | 2–5 MB                                                  | ~100 KB                                                      |
 
 Both capture the DOM node `#resume-content` (rendered by `ResumePreview`). `a4.ts` holds A4 mm constants. If you change resume template markup, verify **both** export paths.
 
@@ -75,20 +75,21 @@ Both capture the DOM node `#resume-content` (rendered by `ResumePreview`). `a4.t
 - Dispatch: `ResumePreview` maps `cv.templateId` to a component in an `@switch` block.
 
 **To add a template (exactly 3 steps):**
+
 1. Create `features/editor/components/resume-templates/<name>-template.ts` (copy the closest existing one).
 2. Add a `TemplateInfo` entry to `TEMPLATES` in `template-registry.ts`.
 3. Add a case to the `@switch` in `resume-preview.ts`.
 
 ## State & services inventory
 
-| Class | File | Role |
-|---|---|---|
-| `CvStore` | `application/state/cv.ts` | signals store: `cvs`, `activeCvId`, `activeCv` (computed), `loading`; commands: `loadAll`, `create`, `duplicate`, `rename`, `setActive`, `updateActiveCv`, `persist`, `deleteById` |
-| `Autosave` | `application/services/autosave.ts` | debounced persist (800 ms), exposes `saving` + `lastSavedAt` signals |
-| `LocalCvRepository` | `infrastructure/persistence/cv-repository.ts` | CRUD over Dexie |
-| `LocalCvDatabase` | `infrastructure/persistence/cv-database.ts` | Dexie schema (table `cvs`, indexed by `id`, `updatedAt`) |
-| `Theme` | `core/services/theme.ts` | dark/light: toggles `.dark`/`.light` on `<html>`, persists to localStorage key `cv-builder-theme` |
-| `ToastService` | `core/services/toast.ts` | app-wide toasts, rendered by `shared/components/toast` |
+| Class               | File                                          | Role                                                                                                                                                                               |
+| ------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CvStore`           | `application/state/cv.ts`                     | signals store: `cvs`, `activeCvId`, `activeCv` (computed), `loading`; commands: `loadAll`, `create`, `duplicate`, `rename`, `setActive`, `updateActiveCv`, `persist`, `deleteById` |
+| `Autosave`          | `application/services/autosave.ts`            | debounced persist (800 ms), exposes `saving` + `lastSavedAt` signals                                                                                                               |
+| `LocalCvRepository` | `infrastructure/persistence/cv-repository.ts` | CRUD over Dexie                                                                                                                                                                    |
+| `LocalCvDatabase`   | `infrastructure/persistence/cv-database.ts`   | Dexie schema (table `cvs`, indexed by `id`, `updatedAt`)                                                                                                                           |
+| `Theme`             | `core/services/theme.ts`                      | dark/light: toggles `.dark`/`.light` on `<html>`, persists to localStorage key `cv-builder-theme`                                                                                  |
+| `ToastService`      | `core/services/toast.ts`                      | app-wide toasts, rendered by `shared/components/toast`                                                                                                                             |
 
 ## Routing
 

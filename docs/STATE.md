@@ -2,66 +2,56 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-10 · **Active branch**: `chore/angular-21-upgrade`. Roadmap Phase 0 (foundations/cleanup + tooling) and Phase 1 (content depth) landed — see [ROADMAP.md](ROADMAP.md). AnalogJS migration is committed on `main` (`6d1d7b8`). Vercel deployment settings fixed via `vercel.json`.
+**Last updated**: 2026-07-15 · **Active branch**: `feature/fase-2-mobile-preview`. Fases 0, 1 y 2 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
-## In progress: Angular 21 upgrade (prerequisite for the voltui UI migration)
+## In progress
 
-Goal: adopt the user's own UI libs — `@voltui/components`, `angular-movement`, `lumen-icons`, `quartz-headless` — for **all app chrome** (resume templates stay untouched). **All four libs require Angular `^21.2.0`** (excludes 22), so the stack had to be upgraded first. This is **Phase A only** (stack upgrade, isolated); Phase B (installing the libs + migrating chrome components) has NOT started.
-
-Phase A — **done & green** on `chore/angular-21-upgrade`:
-
-- `@angular/*` 19.2 → **21.2.18**; added **`@angular/cdk` 21.2.14** (peer of `ng-primitives`, which volt depends on).
-- `@analogjs/*` `2.6.3-beta.5` → **`2.6.3` stable**; **removed the pnpm patch** (`patches/` + `pnpm-workspace.yaml`) — it targeted the beta and doesn't apply to stable; verified `pnpm dev` now boots with **no decorator warnings and no `[ANALOG DEBUG]` lines** (the fixes the patch added are in stable 2.6.3).
-- `provideExperimentalZonelessChangeDetection` → **`provideZonelessChangeDetection`** (stable API) in `main.ts` + `app.config.server.ts`.
-- TypeScript `~5.8` → **`~5.9.3`**; `angular-eslint` `^19.8` → **`^21.4.0`**; `@angular/build` → `^21.2.19`.
-- Verified: `pnpm build` (client + SSR + prerender), `pnpm lint`, `pnpm test` (22/22), `pnpm dev` (`/` and `/dashboard` → HTTP 200, real HTML) all green.
-- Not yet done: full manual browser QA of the editor/export flows on 21 (build + dev-boot only). Phase B (voltui/lumen/movement/quartz integration + chrome migration) awaits user go-ahead.
+Nada en curso. Última sesión: Fase 2 (preview y export en móvil).
 
 ## What's working (stable)
 
-- Full flow: landing → dashboard (CRUD of CVs) → editor (5 tabbed forms) → live preview → PDF/print export.
+- Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (8 tabs) → live preview → PDF/print export.
 - 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color settings.
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
 - Multi-page image PDF export and text-based print export.
+- **Fase 0**: QA manual del flujo completo en desktop; e2e extendido con flujo real (crear → rellenar personal + experiencia → preview → dashboard).
+- **Fase 1**:
+  - Export/import JSON por CV (`src/app/infrastructure/portability/cv-portability.ts`) con envelope `schemaVersion: 1`.
+  - Backup completo del dashboard (export + import de múltiples CVs).
+  - Validación estructural pura + backfill reutilizando `migrateCv` (`src/app/domain/models/cv-migration.ts`).
+  - `navigator.storage.persist()` solicitado al crear el primer CV.
+  - Banner descartable en dashboard: "Your resumes live only in this browser".
+  - Manejo de errores de IndexedDB con toasts claros en `CvStore`.
+- **Fase 2**:
+  - Editor usable en viewports <lg: layout apilado, formulario a ancho completo, toggle de preview flotante.
+  - Overlay de preview a pantalla completa en móvil con página A4 escalada (`transform: scale(...)`) y cierre accesible.
+  - Render off-screen `[data-export-preview]` para que image PDF y print PDF funcionen también en móvil.
+  - Selector de exportación centralizado en `data-export-preview .resume-content`; se eliminaron los IDs duplicados `#resume-content` de las plantillas.
+  - Añadidos tests e2e `e2e/qa-fase2.spec.ts` para overlay móvil, export image PDF, export print PDF y panel desktop.
 - **Migrated to AnalogJS + Vite**: file-based routing under `src/app/pages/`, zoneless change detection, builds with `pnpm build`, dev server with `pnpm dev`.
-- **7 CV sections** (Phase 1): personal, experience, education, skills, **projects, certifications, languages**. List items reorder via ↑/↓ buttons (`core/utils/array.ts`). Experience/project descriptions support light markdown (`**bold**`, `*italic*`, `-` bullets) via `shared/utils/markdown.ts`, rendered in all 5 templates.
-- **Tooling (Phase 0)**: ESLint + angular-eslint + Prettier + Vitest configured. Scripts: `pnpm lint`, `pnpm format`, `pnpm test`. CI runs lint + test + build. 22 unit tests (deep-merge, cv-defaults, a4, array, markdown) — all green.
+- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. Scripts: `pnpm lint`, `pnpm format`, `pnpm test`, `pnpm e2e`. 36 unit tests green, 10 e2e tests green (6 smoke + 4 Fase 2).
 
-## Work in progress: design-system unification (`feature/style-guide`)
+## Known issues
 
-The last several commits migrate the app to a **semantic token design system** (shadcn-style HSL variables in `src/styles.css`) on Tailwind v4, and modernize components (standalone API, signal inputs/outputs, OnPush). The migration is **incomplete** — that's the main thread of current work:
-
-- App chrome should use semantic tokens (`bg-card`, `text-muted-foreground`…) — mostly done, but leftover broken/legacy classes remain (see known issues).
-- Resume templates were deliberately moved OFF semantic tokens to direct utilities (commit `9b855ba`) — that direction is final, don't revert it.
-- The local **volt-ui** component library (`~/Andersseen/Web/Projects/volt-ui`, Angular + Tailwind, shadcn-like) is being used as the style reference for this design system.
-
-## Known issues (verified 2026-07-06)
-
-0. ~~**`pnpm build` FAILS**~~ **FIXED 2026-07-07**: the failure (`src/main.server.ts` couldn't resolve `@analogjs/router/server` / `tokens`) was caused by `moduleResolution: "node"` in `tsconfig.json`, which doesn't read package `exports` subpaths. Fixed by switching to `"bundler"`. Note: `src/main.server.ts` + `src/app/app.config.server.ts` **must stay** even with `ssr: false` — Analog's `static: true` build requires the SSR bundle entry (verified: deleting them breaks the build with `Could not resolve entry module "src/main.server.ts"`).
-   0b. ~~**pnpm patch file missing**~~ **FIXED 2026-07-06/07**: `pnpm-workspace.yaml` + lockfile declared `patches/@analogjs__vite-plugin-angular@2.6.3-beta.5.patch` but the file was absent (fresh `pnpm install` would fail). Regenerated it by diffing the installed (patched) package against the pristine registry tarball, restored it to `patches/`, and refreshed the lockfile hash via `pnpm install`. The patch is **functional, not just debug logging**: adds `enforce: "pre"`, a transform lookup-id fallback, eager emit of all source files in dev, and a stricter fesm filter in router-plugin. Don't delete it — the project is on `2.6.3-beta.5` (newer than the latest stable `2.6.2`), so no upgrade absorbs it yet. ~~Its noisy `[ANALOG DEBUG]` console.logs should eventually be stripped.~~ **Stripped 2026-07-07** (see #7) — the functional parts of the patch (lookup-id fallback, eager dev emit, fesm filter) are unchanged.
-
-1. ~~**Broken Tailwind classes across ~15 files**~~ **FIXED 2026-07-10**: mechanical replace across all `src/` files — `text-muted-foreground-foreground`→`text-muted-foreground`, `bg-card-alt`→`bg-muted`, `bg-card-hover`→`bg-accent`, `text-danger`→`text-destructive`, `bg-danger`→`bg-destructive`. Unused `surface-*` `@theme` aliases removed (nothing referenced them). Also defined the previously-undefined `hide-scrollbar` utility. `pnpm lint` now guards against unknown selectors going forward.
-2. ~~**Unused `Component` import** in 6+ service files~~ **FIXED 2026-07-07**: removed the dead `Component` import from `theme.ts`, `cv.ts`, `autosave.ts`, `cv-repository.ts`, `pdf-export.ts`, `print-export.ts` (leftover from a codemod).
-3. ~~**`src/styles.css` `@utilities` block broken**~~ **FIXED 2026-07-10**: replaced the dead `@utilities{…}` block with one Tailwind v4 `@utility` rule per class (`animate-fade-in`, `animate-slide-up`, `animate-float`) — they now emit to prod CSS. Removed the self-referential `--radius: var(--radius);` from `@theme` (the `@layer base :root` value is the single source).
-4. ~~**README drift**~~ **FIXED 2026-07-10**: refreshed the intro (client-side, AnalogJS+Vite, IndexedDB) and corrected the dev-server port (4200 → 5173). No `pdf-lib` reference remained.
-5. ~~**No tests / no linter**~~ **FIXED 2026-07-10**: ESLint (+ angular-eslint) + Prettier + Vitest configured; `pnpm lint`/`format`/`test` scripts added; CI runs all three. 22 unit tests green. Note: eslint template **accessibility** rules are intentionally deferred to Phase 4 (only `templateRecommended` is on).
-6. ~~**Editor route guard is soft**~~ **FIXED 2026-07-10**: `/editor` with a missing/invalid `?cv=` now shows a toast before redirecting to `/dashboard`.
-7. ~~**AnalogJS dev warnings**~~ **FIXED 2026-07-07**: `[@analogjs/vite-plugin-angular]` was warning that pre-bundled `node_modules/.vite/deps/*.js` and `.pnpm/.../*.mjs` chunks contain Angular decorators but aren't in the TypeScript program. Fixed in the local patch (`patches/@analogjs__vite-plugin-angular@2.6.3-beta.5.patch`, edited via `pnpm patch` / `pnpm patch-commit`) by excluding any `id` containing `node_modules` from that decorator check — those files are vendor bundles, never meant to be in the TS program. Also stripped the patch's `[ANALOG DEBUG]` `console.log` calls (transform-hot-path logging and per-file eager-emit logging) that printed on every request; the underlying functional fixes (lookup-id fallback, eager dev emit, fesm filter) are untouched. Verified: `pnpm dev` now starts with no `[ANALOG DEBUG]` lines and no decorator warnings; `pnpm build` still succeeds.
-8. ~~**Docs drift from the Analog migration**~~ **FIXED 2026-07-07**: AGENTS.md now documents file-based routing (golden rule #5) and the correct dev-server port (5173); `app.ts` now has `ChangeDetectionStrategy.OnPush` like every other component.
-9. ~~**Migration work staged but uncommitted**~~ **FIXED 2026-07-07**: the AnalogJS migration, `pnpm-workspace.yaml`, `patches/`, and the audit fixes are committed on `feature/style-guide`.
+1. ~~**Mobile editor layout is broken**~~ **FIXED 2026-07-15**: Fase 2 made the editor usable at 375px (stacked layout, full-width form, floating preview toggle) and added a scaled A4 overlay for mobile preview/export.
+2. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. The build and runtime are unaffected; this is a dev-only warning from the stable 2.6.3 plugin.
+3. ~~**`create()` returned `null` on success**~~ **FIXED 2026-07-15**: `withIndexedDbError` wrapped `void` operations, so the success path returned `undefined` and was treated as failure. Fixed by comparing the result with `null` instead of falsiness.
 
 ## Next steps (in rough priority order)
 
-Phases 0 and 1 of [ROADMAP.md](ROADMAP.md) are done. Suggested next:
-
-1. **Manual QA in the browser** (not yet done this session): run `pnpm start`, verify the 3 new tabs (Projects/Certifications/Languages), reorder ↑/↓, markdown rendering, and both export paths (image PDF + print) across all 5 templates in light + dark. Build/lint/test are green but the UI wasn't visually verified.
-2. **Phase 2** — data portability: JSON export/import (backup/restore + JSON Resume compat), undo/redo, dashboard search/sort.
-3. Consider running `pnpm format` once repo-wide (Prettier) in an isolated commit to normalize formatting, then keep CI honest.
-4. Phase 4 a11y: enable eslint template **accessibility** rules and fix findings.
+1. **Fase 3** — Undo/redo y borrado seguro.
+2. **Fase 3** — Undo/redo y borrado seguro.
+3. **Fase 4** — UX de exportación y calidad de PDF.
+4. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
+5. Phase 4 a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
 
+- **2026-07-15** — **Fases 0, 1 y 2 de PLAN.md.**
+  - Fase 0: QA manual con Playwright del flujo completo (landing, dashboard, editor 8 tabs, preview, exports, persistencia, viewport 375px). Corregidos los selectores de `e2e/smoke.spec.ts` para `volt-input` (usar placeholders/inputs nativos). Extendido smoke con flujo real: crear CV → rellenar personal + experiencia → verificar preview → dashboard → verificar card. Eliminados imports no usados en `editor-toolbar.ts` que generaban warnings.
+  - Fase 1: añadida capa `src/app/infrastructure/portability/` con `CvPortability` (export/import de CV y backup completo). Extraída función pura `migrateCv` a `src/app/domain/models/cv-migration.ts` y reutilizada en `CvStore.loadAll()` e importación. Añadidos botones de export JSON en cards del dashboard y dropdown del editor; botones de backup/import en header del dashboard. Añadido banner descartable en dashboard con aviso de datos locales. Añadido `navigator.storage.persist()` al crear el primer CV. Envueltas operaciones IndexedDB en `CvStore` con try/catch + toast. Añadidos 14 tests nuevos (migration + portability). `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes.
+  - Fase 2: implementado overlay de preview a pantalla completa para viewports <lg con escalado A4, preview off-screen `[data-export-preview]` para que image/print PDF funcione en móvil, y botón flotante de preview accesible en todos los tamaños. Centralizado el selector de contenido de export en `data-export-preview .resume-content` para evitar IDs duplicados. Añadidos `aria-label` al botón primario Print PDF y `data-testid` a los contenedores de preview para tests. Añadido `e2e/qa-fase2.spec.ts` con 4 tests (mobile overlay, image PDF, print PDF, desktop panel). Actualizado `e2e/smoke.spec.ts` para referirse al panel de preview visible. `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes.
 - **2026-07-10** — **VoltUI editor form migration + OnPush import fix.** Normalized malformed `@angular/core` imports that caused Angular LS to report `ChangeDetectionStrategy.OnPush` as an unknown/static-analysis failure, then applied the canonical `ChangeDetectionStrategy`-first import shape across all affected components/pages. Added a focused spec (`docs/specs/001-voltui-editor-forms.md`) and migrated editor form chrome to `@voltui/components`: `VoltButton`, `VoltInput`, `VoltTextarea`, and `VoltNativeSelect` across Personal, Experience, Education, Skills, Projects, Certifications, Languages, plus `VoltInput` for the color hex field. Kept file upload, checkbox, color swatch, and native labels where safer. Verified `pnpm build`, `pnpm lint`, and `pnpm test` green.
 - **2026-07-10** — **Angular 21 upgrade (Phase A of the voltui UI migration).** Bumped `@angular/*` 19.2→21.2.18, added `@angular/cdk` 21.2.14, `@analogjs/*` beta.5→2.6.3 stable, TS ~5.9.3, `angular-eslint` 21.4.0. Renamed the zoneless provider to the stable `provideZonelessChangeDetection`. Removed the `@analogjs/vite-plugin-angular` pnpm patch + `pnpm-workspace.yaml` (patch targeted the beta; stable 2.6.3 already carries the fixes — dev boots clean, no decorator warnings). `pnpm build`/`lint`/`test`/`dev` all green. Reason for the upgrade: all four target libs (`@voltui/components`, `angular-movement`, `lumen-icons`, `quartz-headless`) require Angular ^21. **Stopped here for user review before starting Phase B** (installing the libs + migrating chrome to `volt-*` components, `lmn-*` icons, and `angular-movement` motion; resume templates untouched).
 - **2026-07-10** — **Roadmap Phase 0 + Phase 1.** Phase 0: fixed all broken Tailwind classes across `src/` (mechanical replace), replaced the dead `@utilities` block with Tailwind v4 `@utility` rules + fixed self-referential `--radius`, defined the missing `hide-scrollbar` utility, removed unused `surface-*` aliases, refreshed README (port 4200→5173), hardened the `/editor` guard with a toast. Installed & configured ESLint + angular-eslint + Prettier + Vitest (`pnpm lint`/`format`/`test`), wired lint+test into CI, extracted `deepMerge` to a pure module, added 22 unit tests (all green). Disabled the `component-class-suffix` eslint rule (conflicts with the repo's no-suffix convention) and fixed 3 `no-unused-expressions` ternaries. Phase 1: added **Projects / Certifications / Languages** sections (model + defaults + `loadAll` backfill), built their 3 form components, added ↑/↓ reorder to all 6 list forms via `core/utils/array.ts`, added a dependency-free markdown renderer (`shared/utils/markdown.ts`) for experience/project descriptions, and rendered the 3 new sections + rich-text in all 5 templates. Wired 3 new editor tabs. `pnpm build`, `pnpm lint`, `pnpm test` all green. **Not yet done: manual browser QA** (see Next steps #1).

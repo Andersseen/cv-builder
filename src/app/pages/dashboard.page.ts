@@ -34,7 +34,9 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
           >
             <div class="flex-1">
               <p class="text-sm text-foreground">
-                <span class="font-semibold">Your resumes live only in this browser.</span>
+                <span class="font-semibold"
+                  >Your resumes live only in this browser.</span
+                >
                 Download a backup copy to keep them safe.
               </p>
             </div>
@@ -92,7 +94,9 @@ export default class Dashboard implements OnInit {
   readonly cvStore = inject(CvStore);
   private readonly router = inject(Router);
 
-  protected showBackupBanner = signal(!localStorage.getItem(DISMISS_BANNER_KEY));
+  protected showBackupBanner = signal(
+    !localStorage.getItem(DISMISS_BANNER_KEY),
+  );
 
   async ngOnInit() {
     await this.cvStore.loadAll();
