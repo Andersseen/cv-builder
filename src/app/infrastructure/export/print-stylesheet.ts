@@ -95,12 +95,21 @@ function printTailwindOverrides(): string {
     }`;
 }
 
-/** Stretch flex children so the layout fills the full page height. */
+/**
+ * Stretch the top-level two-column layout container so a coloured sidebar
+ * fills the full page height (used by the Creative template's
+ * `.resume-content > .flex` row).
+ *
+ * IMPORTANT: only the *direct* flex child of `.resume-content` is targeted.
+ * Earlier this also matched `.resume-content > div > .flex`, which stretched
+ * the inner header rows of the Modern/Executive templates to a full A4 page
+ * each — blowing a 2-page resume up to 4 pages with two near-empty coloured
+ * pages. Nested flex rows (headers, contact lists) must never be stretched.
+ */
 function printFlexStretch(): string {
   return `
     @media print {
-      #print-wrapper .resume-content > .flex,
-      #print-wrapper .resume-content > div > .flex {
+      #print-wrapper .resume-content > .flex {
         min-height: ${A4.HEIGHT_MM}mm !important;
       }
     }`;

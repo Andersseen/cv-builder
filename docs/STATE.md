@@ -46,6 +46,13 @@ Nada en curso. Última sesión: Fase 4 (UX de exportación y calidad de PDF) cer
 
 ## Session log (newest first, keep last ~10)
 
+- **2026-07-16 (noche)** — **Fix del PDF de texto (print) que salía en 4 páginas.**
+  - Síntoma: el "Download PDF" / "Print PDF (text)" convertía un CV de 2 páginas en 4 — las páginas 1 y 2 eran casi enteramente la cabecera de color estirada, y el contenido real empezaba en la página 3. El PDF de imagen (`html-to-image`) no se veía afectado porque captura el DOM natural.
+  - Causa: `printFlexStretch()` en `src/app/infrastructure/export/print-stylesheet.ts` aplicaba `min-height: 297mm` a `.resume-content > div > .flex`, que casaba con las filas flex internas de la cabecera de las plantillas **Modern** y **Executive**, estirando cada una a una página A4 completa.
+  - Fix: se eliminó el selector `.resume-content > div > .flex`, dejando solo `.resume-content > .flex` (que sirve la barra lateral de dos columnas de la plantilla **Creative**, cuyo estirado a página completa es intencional). Verificado con `page.pdf()` real: Modern y Executive vuelven a 2 páginas con cabecera compacta; Creative mantiene la barra lateral a altura completa.
+  - Añadido test de regresión `src/app/infrastructure/export/print-stylesheet.spec.ts` (asegura que la hoja de estilos no vuelve a incluir `.resume-content > div > .flex`).
+  - Verificado: `pnpm build`, `pnpm lint` y `pnpm test` verdes (46 unit tests).
+
 - **2026-07-16 (tarde)** — **Fase 4 de PLAN.md.**
   - Toolbar del editor: acción primaria renombrada a "Download PDF" con tooltip explicativo; dropdown con "Print PDF (text)" y "High-fidelity PDF (image snapshot)" + subtextos claros sobre seleccionabilidad y ATS.
   - `PrintExport` ahora recibe el `Cv` y setea/restaura `document.title` con el nombre del CV para que el "Guardar como PDF" del navegador use un nombre descriptivo.
