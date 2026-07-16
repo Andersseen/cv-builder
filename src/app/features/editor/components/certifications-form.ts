@@ -182,6 +182,7 @@ import { moveItem } from "../../../core/utils/array";
 export class CertificationsForm {
   readonly items = input.required<Certification[]>();
   readonly itemsChange = output<Certification[]>();
+  readonly removed = output<Certification>();
 
   showForm = signal(false);
   editingId = signal<string | null>(null);
@@ -232,7 +233,10 @@ export class CertificationsForm {
     this.cancelEdit();
   }
   remove(id: string) {
+    const removed = this.items().find((c) => c.id === id);
+    if (!removed) return;
     this.itemsChange.emit(this.items().filter((c) => c.id !== id));
+    this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
   move(index: number, direction: "up" | "down") {

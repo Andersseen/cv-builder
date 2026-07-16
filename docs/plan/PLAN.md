@@ -118,20 +118,20 @@ vuelta atrás. Para un no-dev eso es "la app me borró mi trabajo".
 
 **Depende de**: Fase 0. Independiente de 1 y 2.
 
-- [ ] **Historial en el editor**: stack de snapshots del `Cv` activo en `application/`
+- [x] **Historial en el editor**: stack de snapshots del `Cv` activo en `application/`
       (nuevo servicio `application/services/history.ts` o integrado en `CvStore`). Push en
       cada `updateActiveCv` (con coalescing: agrupar ediciones de tipeo separadas por <1s
       para no guardar un snapshot por tecla), límite ~50 entradas, solo en memoria (no
       persiste entre sesiones).
-- [ ] `undo()` / `redo()` en el store + signals `canUndo` / `canRedo`.
-- [ ] Atajos de teclado en la página del editor: Ctrl/Cmd+Z y Ctrl/Cmd+Shift+Z.
-- [ ] Botones undo/redo en la toolbar del editor con estados disabled.
-- [ ] **Borrado de ítems con deshacer**: al borrar un ítem de una lista (experiencia, etc.),
+- [x] `undo()` / `redo()` en el store + signals `canUndo` / `canRedo`.
+- [x] Atajos de teclado en la página del editor: Ctrl/Cmd+Z y Ctrl/Cmd+Shift+Z.
+- [x] Botones undo/redo en la toolbar del editor con estados disabled.
+- [x] **Borrado de ítems con deshacer**: al borrar un ítem de una lista (experiencia, etc.),
       toast "Elemento borrado — Deshacer" (~5 s) que restaura vía el historial.
-- [ ] **Reemplazar el `confirm()` nativo** de borrado de CV (`dashboard.page.ts`) por un
+- [x] **Reemplazar el `confirm()` nativo** de borrado de CV (`dashboard.page.ts`) por un
       modal propio con tokens del design system (o patrón borrado + toast deshacer; elegir
       uno y ser consistente).
-- [ ] Tests unit del historial (push/undo/redo/límite/coalescing).
+- [x] Tests unit del historial (push/undo/redo/límite/coalescing).
 
 **Hecho cuando**: Ctrl+Z revierte una edición de campo y un borrado de ítem; borrar un CV
 pide confirmación en un modal propio (o es deshacible); no queda ningún `confirm()` nativo.

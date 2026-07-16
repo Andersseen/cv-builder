@@ -151,6 +151,7 @@ import { moveItem } from "../../../core/utils/array";
 export class LanguagesForm {
   readonly items = input.required<Language[]>();
   readonly itemsChange = output<Language[]>();
+  readonly removed = output<Language>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
   readonly levels: LanguageProficiency[] = [
@@ -211,7 +212,10 @@ export class LanguagesForm {
     this.cancelEdit();
   }
   remove(id: string) {
+    const removed = this.items().find((l) => l.id === id);
+    if (!removed) return;
     this.itemsChange.emit(this.items().filter((l) => l.id !== id));
+    this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
   move(index: number, direction: "up" | "down") {

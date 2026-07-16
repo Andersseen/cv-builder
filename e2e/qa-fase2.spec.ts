@@ -61,7 +61,7 @@ test.describe("Fase 2 — Mobile preview and export", () => {
     await page.waitForTimeout(300);
 
     // Open dropdown and export image PDF
-    await page.locator("app-editor-toolbar button").nth(2).click();
+    await page.locator('[data-testid="export-dropdown-toggle"]').first().click();
     await page.waitForTimeout(200);
 
     const [download] = await Promise.all([

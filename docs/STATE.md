@@ -2,11 +2,11 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-15 · **Active branch**: `feature/fase-2-mobile-preview`. Fases 0, 1 y 2 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-16 · **Active branch**: `feature/plan`. Fases 0, 1, 2 y 3 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
 ## In progress
 
-Nada en curso. Última sesión: Fase 2 (preview y export en móvil).
+Nada en curso. Última sesión: Fase 3 (undo/redo y borrado seguro) cerrada.
 
 ## What's working (stable)
 
@@ -40,13 +40,18 @@ Nada en curso. Última sesión: Fase 2 (preview y export en móvil).
 
 ## Next steps (in rough priority order)
 
-1. **Fase 3** — Undo/redo y borrado seguro.
-2. **Fase 3** — Undo/redo y borrado seguro.
-3. **Fase 4** — UX de exportación y calidad de PDF.
-4. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
-5. Phase 4 a11y: enable eslint template accessibility rules and fix findings.
+1. **Fase 4** — UX de exportación y calidad de PDF.
+2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
+3. Phase 4 a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-16** — **Fase 3 de PLAN.md + fix de build del dashboard.**
+  - Corregido el error de build en `src/app/pages/dashboard.page.ts`: la expresión inline del mensaje del diálogo (`deleteCandidate()!.name`) rompía el parser de Angular. Se movió a un `computed` (`deleteMessage`) y se reemplazó el output `cancel` por `cancelled` para cumplir `@angular-eslint/no-output-native`.
+  - Completada Fase 3: añadidos outputs `removed` a los 4 formularios de lista que faltaban (`skills-form.ts`, `projects-form.ts`, `certifications-form.ts`, `languages-form.ts`), y cableados en `editor.html` al toast de deshacer (`onListItemRemoved`).
+  - Añadido `data-testid="export-dropdown-toggle"` al botón de dropdown de export de `editor-toolbar.ts` y actualizado `e2e/qa-fase2.spec.ts` para que el selector no dependa del índice de botón (ahora hay undo/redo antes del dropdown).
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes (10 e2e tests).
+  - Actualizados `docs/plan/PLAN.md` y `docs/STATE.md`.
 
 - **2026-07-15** — **Fases 0, 1 y 2 de PLAN.md.**
   - Fase 0: QA manual con Playwright del flujo completo (landing, dashboard, editor 8 tabs, preview, exports, persistencia, viewport 375px). Corregidos los selectores de `e2e/smoke.spec.ts` para `volt-input` (usar placeholders/inputs nativos). Extendido smoke con flujo real: crear CV → rellenar personal + experiencia → verificar preview → dashboard → verificar card. Eliminados imports no usados en `editor-toolbar.ts` que generaban warnings.

@@ -5,7 +5,11 @@
     [saving]="autosave.saving()"
     [lastSavedAt]="autosave.lastSavedAt()"
     [isExporting]="isExporting()"
+    [canUndo]="cvStore.canUndo()"
+    [canRedo]="cvStore.canRedo()"
     (back)="goBack()"
+    (undo)="cvStore.undo()"
+    (redo)="cvStore.redo()"
     (exportPdf)="exportPdf()"
     (printPdf)="printResume()"
     (exportJson)="exportCvJson()"
@@ -53,31 +57,37 @@
           <app-experience-form
             [items]="cvStore.activeCv()!.sections.experience"
             (itemsChange)="updateExperience($event)"
+            (removed)="onListItemRemoved('Experience')"
           />
           } @case ("education") {
           <app-education-form
             [items]="cvStore.activeCv()!.sections.education"
             (itemsChange)="updateEducation($event)"
+            (removed)="onListItemRemoved('Education')"
           />
           } @case ("skills") {
           <app-skills-form
             [items]="cvStore.activeCv()!.sections.skills"
             (itemsChange)="updateSkills($event)"
+            (removed)="onListItemRemoved('Skill')"
           />
           } @case ("projects") {
           <app-projects-form
             [items]="cvStore.activeCv()!.sections.projects"
             (itemsChange)="updateProjects($event)"
+            (removed)="onListItemRemoved('Project')"
           />
           } @case ("certifications") {
           <app-certifications-form
             [items]="cvStore.activeCv()!.sections.certifications"
             (itemsChange)="updateCertifications($event)"
+            (removed)="onListItemRemoved('Certification')"
           />
           } @case ("languages") {
           <app-languages-form
             [items]="cvStore.activeCv()!.sections.languages"
             (itemsChange)="updateLanguages($event)"
+            (removed)="onListItemRemoved('Language')"
           />
           } @case ("template") {
           <app-template-selector

@@ -199,6 +199,7 @@ import { moveItem } from "../../../core/utils/array";
 export class EducationForm {
   readonly items = input.required<Education[]>();
   readonly itemsChange = output<Education[]>();
+  readonly removed = output<Education>();
   showForm = signal(false);
   editingId = signal<string | null>(null);
 
@@ -258,10 +259,11 @@ export class EducationForm {
     this.cancelEdit();
   }
   remove(id: string) {
-    if (confirm("Delete this education entry?")) {
-      this.itemsChange.emit(this.items().filter((e) => e.id !== id));
-      if (this.editingId() === id) this.cancelEdit();
-    }
+    const removed = this.items().find((e) => e.id === id);
+    if (!removed) return;
+    this.itemsChange.emit(this.items().filter((e) => e.id !== id));
+    this.removed.emit(removed);
+    if (this.editingId() === id) this.cancelEdit();
   }
   formatDate(dateString: string): string {
     if (!dateString) return "";

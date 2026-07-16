@@ -57,6 +57,9 @@ import { A4 } from "../infrastructure/export/a4";
     EditorTabs,
   ],
   templateUrl: "./editor.html",
+  host: {
+    "(window:keydown)": "onKeydown($event)",
+  },
 })
 export default class Editor implements OnInit, OnDestroy {
   readonly cvStore = inject(CvStore);
@@ -219,6 +222,28 @@ export default class Editor implements OnInit, OnDestroy {
     const cv = this.cvStore.activeCv();
     if (!cv) return;
     this.cvStore.exportCv(cv);
+  }
+
+  protected onKeydown(event: KeyboardEvent) {
+    const isMod = event.ctrlKey || event.metaKey;
+    if (!isMod || event.key.toLowerCase() !== "z") return;
+
+    event.preventDefault();
+    if (event.shiftKey) {
+      this.cvStore.redo();
+    } else {
+      this.cvStore.undo();
+    }
+  }
+
+  /** Show an undo toast when a list item is deleted. */
+  protected onListItemRemoved(label: string) {
+    this.toast.show(
+      `${label} deleted`,
+      "info",
+      5000,
+      { label: "Undo", handler: () => this.cvStore.undo() },
+    );
   }
 
   private findResumeContentElement(): HTMLElement | null {

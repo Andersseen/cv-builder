@@ -51,6 +51,54 @@ import {
             </span>
           }
 
+          <!-- Undo / Redo -->
+          <div class="flex items-center gap-1">
+            <button
+              (click)="undo.emit()"
+              [disabled]="!canUndo()"
+              aria-label="Undo"
+              title="Undo"
+              class="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                />
+              </svg>
+            </button>
+            <button
+              (click)="redo.emit()"
+              [disabled]="!canRedo()"
+              aria-label="Redo"
+              title="Redo"
+              class="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"
+                />
+              </svg>
+            </button>
+          </div>
+
           <!-- Export dropdown -->
           <div class="relative">
             <div class="flex items-center">
@@ -84,6 +132,7 @@ import {
 
               <!-- Dropdown toggle -->
               <button
+                data-testid="export-dropdown-toggle"
                 (click)="dropdownOpen.set(!dropdownOpen())"
                 [disabled]="isExporting()"
                 class="px-2 py-2 bg-accent hover:bg-accent/80 disabled:opacity-50
@@ -168,8 +217,12 @@ export class EditorToolbar {
   readonly saving = input(false);
   readonly lastSavedAt = input<Date | null>(null);
   readonly isExporting = input(false);
+  readonly canUndo = input(false);
+  readonly canRedo = input(false);
 
   readonly back = output<void>();
+  readonly undo = output<void>();
+  readonly redo = output<void>();
   readonly exportPdf = output<void>();
   readonly printPdf = output<void>();
   readonly exportJson = output<void>();

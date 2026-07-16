@@ -6,6 +6,7 @@ import { LocalCvRepository } from "../../infrastructure/persistence/cv-repositor
 import { CvPortability } from "../../infrastructure/portability/cv-portability";
 import { ToastService } from "../../core/services/toast";
 import { deepMerge } from "./deep-merge";
+import { History } from "../services/history";
 
 /**
  * Central application state for CVs.
@@ -23,6 +24,9 @@ export class CvStore {
   private readonly repo = inject(LocalCvRepository);
   private readonly toast = inject(ToastService);
   private readonly portability = inject(CvPortability);
+  private readonly history = inject(History);
+
+  private _applyingHistory = false;
 
   // ─── Private state ────────────────────────────────────────
   private readonly _cvs = signal<Cv[]>([]);
@@ -39,6 +43,9 @@ export class CvStore {
     if (!id) return null;
     return this._cvs().find((cv) => cv.id === id) ?? null;
   });
+
+  readonly canUndo = this.history.canUndo;
+  readonly canRedo = this.history.canRedo;
 
   // ─── Initialization ───────────────────────────────────────
 
@@ -73,6 +80,7 @@ export class CvStore {
 
     this._cvs.update((cvs) => [cv, ...cvs]);
     this._activeCvId.set(cv.id);
+    this.history.reset(cv);
     this.toast.show("Resume created", "success");
     this.requestStoragePersistence();
     return cv;
@@ -105,6 +113,7 @@ export class CvStore {
   /** Set the active CV by ID. */
   setActive(id: string): void {
     this._activeCvId.set(id);
+    this.history.reset(this.activeCv() ?? undefined);
   }
 
   /** Rename a CV. */
@@ -134,6 +143,11 @@ export class CvStore {
     const id = this._activeCvId();
     if (!id) return;
 
+    const current = this.activeCv();
+    if (current && !this._applyingHistory) {
+      this.history.push(current);
+    }
+
     this._cvs.update((cvs) =>
       cvs.map((cv) => {
         if (cv.id !== id) return cv;
@@ -143,6 +157,26 @@ export class CvStore {
         } as DeepPartial<Cv>);
       }),
     );
+  }
+
+  /** Restore the previous snapshot from the in-memory history. */
+  undo(): void {
+    const snapshot = this.history.undo();
+    if (snapshot) this.applySnapshot(snapshot);
+  }
+
+  /** Restore the next snapshot from the in-memory history. */
+  redo(): void {
+    const snapshot = this.history.redo();
+    if (snapshot) this.applySnapshot(snapshot);
+  }
+
+  private applySnapshot(cv: Cv): void {
+    this._applyingHistory = true;
+    this._cvs.update((cvs) =>
+      cvs.map((c) => (c.id === cv.id ? structuredClone(cv) : c)),
+    );
+    this._applyingHistory = false;
   }
 
   /** Persist a specific CV to IndexedDB. Called by Autosave. */
