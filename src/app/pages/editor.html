@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-background">
   <!-- Top Bar -->
   <app-editor-toolbar
+    [cv]="cvStore.activeCv()"
     [cvName]="cvStore.activeCv()?.name"
     [saving]="autosave.saving()"
     [lastSavedAt]="autosave.lastSavedAt()"
@@ -13,6 +14,7 @@
     (exportPdf)="exportPdf()"
     (printPdf)="printResume()"
     (exportJson)="exportCvJson()"
+    (tabSelected)="selectTab($event)"
   />
 
   @if (cvStore.loading()) {

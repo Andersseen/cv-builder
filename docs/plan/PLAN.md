@@ -177,19 +177,19 @@ sin IA (respeta los non-goals).
 
 **Depende de**: Fase 0. Independiente de 1–4.
 
-- [ ] **CV de ejemplo**: `createExampleCv()` en `domain/models/` (junto a `cv-defaults.ts`)
+- [x] **CV de ejemplo**: `createExampleCv()` en `domain/models/` (junto a `cv-defaults.ts`)
       con datos realistas y completos (experiencia con bullets markdown, proyectos, idiomas…).
       Botón "Start with an example" en el empty state del dashboard y como acción secundaria
       en el header del dashboard. Nota: esto es una excepción deliberada a la regla "no
       placeholder content" — es una feature pedida, no relleno.
-- [ ] **Chequeo de completitud**: función pura en `domain/` (con tests) que puntúa un `Cv`:
+- [x] **Chequeo de completitud**: función pura en `domain/` (con tests) que puntúa un `Cv`:
       campos personales vacíos, sin summary, summary muy corto, sin experiencia, descripciones
       de <X caracteres, sin skills, fechas faltantes… Devuelve score 0–100 + lista de
       sugerencias accionables (`{ severity, message, tabId }`).
-- [ ] **UI del chequeo**: badge/anillo con el score en el editor (p. ej. junto a los tabs o
+- [x] **UI del chequeo**: badge/anillo con el score en el editor (p. ej. junto a los tabs o
       en la toolbar) que despliega la lista de sugerencias; cada sugerencia navega a su tab.
       Actualización en vivo (computed sobre `activeCv`).
-- [ ] QA: crear ejemplo en 1 click → score alto; CV vacío → score bajo con sugerencias útiles.
+- [x] QA: crear ejemplo en 1 click → score alto; CV vacío → score bajo con sugerencias útiles.
 
 **Hecho cuando**: un usuario nuevo llega a un CV completo de ejemplo en 1 click; el score y
 las sugerencias reaccionan en vivo a la edición; heurística cubierta por tests.

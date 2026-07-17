@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from "@angular/core";
 import { Cv, DeepPartial } from "../../domain/models/cv-model";
 import { createDefaultCv } from "../../domain/models/cv-defaults";
+import { createExampleCv } from "../../domain/models/cv-example";
 import { migrateCv } from "../../domain/models/cv-migration";
 import { LocalCvRepository } from "../../infrastructure/persistence/cv-repository";
 import { CvPortability } from "../../infrastructure/portability/cv-portability";
@@ -82,6 +83,23 @@ export class CvStore {
     this._activeCvId.set(cv.id);
     this.history.reset(cv);
     this.toast.show("Resume created", "success");
+    this.requestStoragePersistence();
+    return cv;
+  }
+
+  /** Create a new CV pre-filled with example data and persist it. */
+  async createExample(): Promise<Cv | null> {
+    const cv = createExampleCv();
+    const saved = await this.withIndexedDbError(
+      () => this.repo.save(cv),
+      "Could not save the example resume. Storage may be full or disabled.",
+    );
+    if (saved === null) return null;
+
+    this._cvs.update((cvs) => [cv, ...cvs]);
+    this._activeCvId.set(cv.id);
+    this.history.reset(cv);
+    this.toast.show("Example resume created", "success");
     this.requestStoragePersistence();
     return cv;
   }

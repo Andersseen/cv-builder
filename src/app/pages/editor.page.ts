@@ -180,6 +180,12 @@ export default class Editor implements OnInit, OnDestroy {
     this.cvStore.updateActiveCv({ settings: { backgroundColor } });
   }
 
+  protected selectTab(tabId: string) {
+    // The tab IDs emitted by the completeness score are constrained to the
+    // same union used by the editor tabs.
+    this.activeTab.set(tabId as EditorTab);
+  }
+
   protected changePrimaryColor(primaryColor: string) {
     this.cvStore.updateActiveCv({ settings: { primaryColor } });
   }

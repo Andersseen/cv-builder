@@ -25,6 +25,7 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
       <div class="max-w-6xl mx-auto px-4 py-12">
         <app-dashboard-header
           (create)="createNew()"
+          (startExample)="createExample()"
           (importBackup)="importBackup($event)"
           (exportBackup)="exportBackup()"
         />
@@ -70,7 +71,7 @@ const DISMISS_BANNER_KEY = "cv-builder:backup-banner-dismissed";
 
         <!-- Empty state -->
         @if (!cvStore.loading() && cvStore.cvs().length === 0) {
-          <app-empty-state (create)="createNew()" />
+          <app-empty-state (create)="createNew()" (startExample)="createExample()" />
         }
 
         <!-- CV Grid -->
@@ -124,6 +125,11 @@ export default class Dashboard implements OnInit {
 
   protected async createNew() {
     const cv = await this.cvStore.create();
+    if (cv) this.openEditor(cv.id);
+  }
+
+  protected async createExample() {
+    const cv = await this.cvStore.createExample();
     if (cv) this.openEditor(cv.id);
   }
 

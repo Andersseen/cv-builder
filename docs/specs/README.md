@@ -27,6 +27,7 @@ Specs force the design decisions to happen in prose, where they are cheap, inste
 
 ## Index
 
-| #   | Spec                                              | Status |
-| --- | ------------------------------------------------- | ------ |
-| 001 | [VoltUI editor forms](001-voltui-editor-forms.md) | Done   |
+| #   | Spec                                              | Status    |
+| --- | ------------------------------------------------- | --------- |
+| 001 | [VoltUI editor forms](001-voltui-editor-forms.md) | Done      |
+| 002 | [Fase 5: onboarding & completeness](002-fase5-onboarding-completeness.md) | Done     |
