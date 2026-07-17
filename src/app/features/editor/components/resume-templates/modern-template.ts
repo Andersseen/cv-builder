@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from "@angular/core";
-import { Cv } from "../../../../domain/models/cv-model";
+import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
+import { Cv, CustomSection } from "../../../../domain/models/cv-model";
+import { getOrderedSections } from "../../../../domain/models/section-helpers";
 import { renderRichText } from "../../../../shared/utils/markdown";
 
 @Component({
@@ -10,7 +11,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
       class="max-w-4xl mx-auto"
       class="resume-content"
       [style.background-color]="backgroundColor()"
-      [style.font-family]="'Inter, system-ui, sans-serif'"
+      [style.font-family]="fontFamily()"
     >
       <!-- Header — bold gradient -->
       <div
@@ -90,234 +91,275 @@ import { renderRichText } from "../../../../shared/utils/markdown";
           </section>
         }
 
-        <!-- Experience -->
-        @if (cv().sections.experience.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Experience
-            </h2>
-            @for (exp of cv().sections.experience; track exp.id) {
-              <div
-                class="mb-5 pl-4 border-l-2"
-                [style.border-left-color]="accentColor() + '33'"
-              >
-                <div class="flex justify-between items-start mb-1">
-                  <div>
-                    <h3 class="text-base font-semibold text-gray-900">
-                      {{ exp.jobTitle }}
-                    </h3>
-                    <p
-                      class="font-medium text-sm"
-                      [style.color]="accentColor()"
-                    >
-                      {{ exp.company }}
-                    </p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
-                    <p>
-                      {{ formatDate(exp.startDate) }} –
-                      {{ exp.current ? "Present" : formatDate(exp.endDate) }}
-                    </p>
-                    @if (exp.location) {
-                      <p>{{ exp.location }}</p>
-                    }
-                  </div>
-                </div>
-                @if (exp.description) {
-                  <div
-                    class="text-gray-500 text-sm leading-relaxed mt-2"
-                    [innerHTML]="renderRichText(exp.description)"
-                  ></div>
-                }
-              </div>
-            }
-          </section>
-        }
-
-        <!-- Education -->
-        @if (cv().sections.education.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Education
-            </h2>
-            @for (edu of cv().sections.education; track edu.id) {
-              <div class="mb-3 p-3 bg-white rounded-lg">
-                <div class="flex justify-between items-start">
-                  <div>
-                    <h3 class="font-semibold text-gray-900 text-sm">
-                      {{ edu.degree }}
-                    </h3>
-                    <p class="text-sm" [style.color]="accentColor()">
-                      {{ edu.institution }}
-                    </p>
-                    @if (edu.gpa) {
-                      <p class="text-xs text-gray-500 mt-0.5">
-                        GPA: {{ edu.gpa }}
-                      </p>
-                    }
-                  </div>
-                  <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
-                    <p>{{ formatDate(edu.graduationDate) }}</p>
-                    @if (edu.location) {
-                      <p>{{ edu.location }}</p>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
-          </section>
-        }
-
-        <!-- Skills -->
-        @if (cv().sections.skills.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Skills
-            </h2>
-            <div class="flex flex-wrap gap-2">
-              @for (skill of cv().sections.skills; track skill.id) {
-                <span
-                  class="px-3 py-1.5 rounded-full text-xs font-medium border"
-                  [style.background-color]="accentColor() + '10'"
-                  [style.color]="accentColor()"
-                  [style.border-color]="accentColor() + '25'"
-                >
-                  {{ skill.name }}
-                  <span [style.color]="accentColor() + '80'" class="ml-1"
-                    >· {{ skill.level }}</span
+        @for (sectionId of orderedSections(); track sectionId) {
+          @switch (sectionId) {
+            @case ("experience") {
+              @if (cv().sections.experience.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
                   >
-                </span>
-              }
-            </div>
-          </section>
-        }
-
-        <!-- Projects -->
-        @if (cv().sections.projects.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Projects
-            </h2>
-            @for (proj of cv().sections.projects; track proj.id) {
-              <div
-                class="mb-4 pl-4 border-l-2"
-                [style.border-left-color]="accentColor() + '33'"
-              >
-                <div class="flex justify-between items-start">
-                  <h3 class="text-base font-semibold text-gray-900">
-                    {{ proj.name }}
-                  </h3>
-                  @if (proj.url) {
                     <span
-                      class="text-xs shrink-0 ml-4"
-                      [style.color]="accentColor()"
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Experience
+                  </h2>
+                  @for (exp of cv().sections.experience; track exp.id) {
+                    <div
+                      class="mb-5 pl-4 border-l-2"
+                      [style.border-left-color]="accentColor() + '33'"
                     >
-                      {{ proj.url }}
-                    </span>
+                      <div class="flex justify-between items-start mb-1">
+                        <div>
+                          <h3 class="text-base font-semibold text-gray-900">
+                            {{ exp.jobTitle }}
+                          </h3>
+                          <p
+                            class="font-medium text-sm"
+                            [style.color]="accentColor()"
+                          >
+                            {{ exp.company }}
+                          </p>
+                        </div>
+                        <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
+                          <p>
+                            {{ formatDate(exp.startDate) }} –
+                            {{ exp.current ? "Present" : formatDate(exp.endDate) }}
+                          </p>
+                          @if (exp.location) {
+                            <p>{{ exp.location }}</p>
+                          }
+                        </div>
+                      </div>
+                      @if (exp.description) {
+                        <div
+                          class="text-gray-500 text-sm leading-relaxed mt-2"
+                          [innerHTML]="renderRichText(exp.description)"
+                        ></div>
+                      }
+                    </div>
                   }
-                </div>
-                @if (proj.technologies) {
-                  <p class="text-xs text-gray-500 mt-0.5">
-                    {{ proj.technologies }}
-                  </p>
-                }
-                @if (proj.description) {
-                  <div
-                    class="text-gray-500 text-sm leading-relaxed mt-1"
-                    [innerHTML]="renderRichText(proj.description)"
-                  ></div>
-                }
-              </div>
-            }
-          </section>
-        }
-
-        <!-- Certifications -->
-        @if (cv().sections.certifications.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Certifications
-            </h2>
-            @for (cert of cv().sections.certifications; track cert.id) {
-              <div class="mb-2 flex justify-between items-baseline">
-                <div>
-                  <h3 class="font-semibold text-gray-900 text-sm">
-                    {{ cert.name }}
-                  </h3>
-                  @if (cert.issuer) {
-                    <p class="text-sm" [style.color]="accentColor()">
-                      {{ cert.issuer }}
-                    </p>
-                  }
-                </div>
-                @if (cert.date) {
-                  <p class="text-xs text-gray-500 shrink-0 ml-4">
-                    {{ formatDate(cert.date) }}
-                  </p>
-                }
-              </div>
-            }
-          </section>
-        }
-
-        <!-- Languages -->
-        @if (cv().sections.languages.length > 0) {
-          <section>
-            <h2
-              class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
-            >
-              <span
-                class="w-8 h-0.5 rounded-full"
-                [style.background-color]="accentColor()"
-              ></span>
-              Languages
-            </h2>
-            <div class="flex flex-wrap gap-2">
-              @for (lang of cv().sections.languages; track lang.id) {
-                <span
-                  class="px-3 py-1.5 rounded-full text-xs font-medium border"
-                  [style.background-color]="accentColor() + '10'"
-                  [style.color]="accentColor()"
-                  [style.border-color]="accentColor() + '25'"
-                >
-                  {{ lang.name }}
-                  <span [style.color]="accentColor() + '80'" class="ml-1"
-                    >· {{ lang.proficiency }}</span
-                  >
-                </span>
+                </section>
               }
-            </div>
-          </section>
+            }
+            @case ("education") {
+              @if (cv().sections.education.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Education
+                  </h2>
+                  @for (edu of cv().sections.education; track edu.id) {
+                    <div class="mb-3 p-3 bg-white rounded-lg">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <h3 class="font-semibold text-gray-900 text-sm">
+                            {{ edu.degree }}
+                          </h3>
+                          <p class="text-sm" [style.color]="accentColor()">
+                            {{ edu.institution }}
+                          </p>
+                          @if (edu.gpa) {
+                            <p class="text-xs text-gray-500 mt-0.5">
+                              GPA: {{ edu.gpa }}
+                            </p>
+                          }
+                        </div>
+                        <div class="text-right text-xs text-gray-500 shrink-0 ml-4">
+                          <p>{{ formatDate(edu.graduationDate) }}</p>
+                          @if (edu.location) {
+                            <p>{{ edu.location }}</p>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </section>
+              }
+            }
+            @case ("skills") {
+              @if (cv().sections.skills.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Skills
+                  </h2>
+                  <div class="flex flex-wrap gap-2">
+                    @for (skill of cv().sections.skills; track skill.id) {
+                      <span
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border"
+                        [style.background-color]="accentColor() + '10'"
+                        [style.color]="accentColor()"
+                        [style.border-color]="accentColor() + '25'"
+                      >
+                        {{ skill.name }}
+                        <span [style.color]="accentColor() + '80'" class="ml-1"
+                          >· {{ skill.level }}</span
+                        >
+                      </span>
+                    }
+                  </div>
+                </section>
+              }
+            }
+            @case ("projects") {
+              @if (cv().sections.projects.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Projects
+                  </h2>
+                  @for (proj of cv().sections.projects; track proj.id) {
+                    <div
+                      class="mb-4 pl-4 border-l-2"
+                      [style.border-left-color]="accentColor() + '33'"
+                    >
+                      <div class="flex justify-between items-start">
+                        <h3 class="text-base font-semibold text-gray-900">
+                          {{ proj.name }}
+                        </h3>
+                        @if (proj.url) {
+                          <span
+                            class="text-xs shrink-0 ml-4"
+                            [style.color]="accentColor()"
+                          >
+                            {{ proj.url }}
+                          </span>
+                        }
+                      </div>
+                      @if (proj.technologies) {
+                        <p class="text-xs text-gray-500 mt-0.5">
+                          {{ proj.technologies }}
+                        </p>
+                      }
+                      @if (proj.description) {
+                        <div
+                          class="text-gray-500 text-sm leading-relaxed mt-1"
+                          [innerHTML]="renderRichText(proj.description)"
+                        ></div>
+                      }
+                    </div>
+                  }
+                </section>
+              }
+            }
+            @case ("certifications") {
+              @if (cv().sections.certifications.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Certifications
+                  </h2>
+                  @for (cert of cv().sections.certifications; track cert.id) {
+                    <div class="mb-2 flex justify-between items-baseline">
+                      <div>
+                        <h3 class="font-semibold text-gray-900 text-sm">
+                          {{ cert.name }}
+                        </h3>
+                        @if (cert.issuer) {
+                          <p class="text-sm" [style.color]="accentColor()">
+                            {{ cert.issuer }}
+                          </p>
+                        }
+                      </div>
+                      @if (cert.date) {
+                        <p class="text-xs text-gray-500 shrink-0 ml-4">
+                          {{ formatDate(cert.date) }}
+                        </p>
+                      }
+                    </div>
+                  }
+                </section>
+              }
+            }
+            @case ("languages") {
+              @if (cv().sections.languages.length > 0) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    Languages
+                  </h2>
+                  <div class="flex flex-wrap gap-2">
+                    @for (lang of cv().sections.languages; track lang.id) {
+                      <span
+                        class="px-3 py-1.5 rounded-full text-xs font-medium border"
+                        [style.background-color]="accentColor() + '10'"
+                        [style.color]="accentColor()"
+                        [style.border-color]="accentColor() + '25'"
+                      >
+                        {{ lang.name }}
+                        <span [style.color]="accentColor() + '80'" class="ml-1"
+                          >· {{ lang.proficiency }}</span
+                        >
+                      </span>
+                    }
+                  </div>
+                </section>
+              }
+            }
+            @default {
+              @if (getCustomSection(sectionId); as custom) {
+                <section>
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
+                  >
+                    <span
+                      class="w-8 h-0.5 rounded-full"
+                      [style.background-color]="accentColor()"
+                    ></span>
+                    {{ custom.title }}
+                  </h2>
+                  @for (item of custom.items; track item.id) {
+                    <div
+                      class="mb-4 pl-4 border-l-2"
+                      [style.border-left-color]="accentColor() + '33'"
+                    >
+                      <h3 class="text-base font-semibold text-gray-900">
+                        {{ item.title }}
+                      </h3>
+                      @if (item.subtitle) {
+                        <p class="text-xs text-gray-500 mt-0.5">
+                          {{ item.subtitle }}
+                        </p>
+                      }
+                      @if (item.description) {
+                        <div
+                          class="text-gray-500 text-sm leading-relaxed mt-1"
+                          [innerHTML]="renderRichText(item.description)"
+                        ></div>
+                      }
+                    </div>
+                  }
+                </section>
+              }
+            }
+          }
         }
       </div>
     </div>
@@ -328,6 +370,12 @@ export class ModernTemplate {
   readonly accentColor = input("#4f46e5");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
+
+  protected readonly orderedSections = computed(() => getOrderedSections(this.cv()));
+  protected getCustomSection(id: string): CustomSection | undefined {
+    return this.cv().sections.customSections.find((s) => s.id === id);
+  }
 
   protected get accentColorDark(): string {
     return this.adjustBrightness(this.accentColor(), -30);

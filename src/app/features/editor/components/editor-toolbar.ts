@@ -5,10 +5,13 @@ import {
   output,
   signal,
 } from "@angular/core";
+import { Cv } from "../../../domain/models/cv-model";
+import { CompletenessScore } from "./completeness-score";
+
 @Component({
   selector: "app-editor-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [CompletenessScore],
   template: `
     <div
       class="bg-card/75 backdrop-blur-xl border-b border-border sticky top-0 z-30 shadow-glass transition-colors duration-300"
@@ -98,6 +101,14 @@ import {
               </svg>
             </button>
           </div>
+
+          <!-- Completeness score -->
+          @if (cv()) {
+            <app-completeness-score
+              [cv]="cv()!"
+              (tabSelected)="tabSelected.emit($event)"
+            />
+          }
 
           <!-- Export dropdown -->
           <div class="relative">
@@ -217,6 +228,7 @@ import {
   `,
 })
 export class EditorToolbar {
+  readonly cv = input<Cv | null>(null);
   readonly cvName = input<string>();
   readonly saving = input(false);
   readonly lastSavedAt = input<Date | null>(null);
@@ -230,6 +242,7 @@ export class EditorToolbar {
   readonly exportPdf = output<void>();
   readonly printPdf = output<void>();
   readonly exportJson = output<void>();
+  readonly tabSelected = output<string>();
 
   dropdownOpen = signal(false);
 

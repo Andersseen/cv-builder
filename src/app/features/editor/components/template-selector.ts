@@ -569,6 +569,29 @@ import { ColorPicker, ColorPreset } from "./color-picker";
           (colorChanged)="primaryColorChanged.emit($event)"
         />
       </div>
+
+      <!-- Font Family -->
+      <div class="mt-6 pt-5 border-t border-border">
+        <label
+          for="fontFamily"
+          class="block text-sm font-medium text-foreground/80 mb-1.5"
+        >
+          Font Family
+        </label>
+        <p class="text-xs text-muted-foreground mb-3">
+          Choose a typeface for your resume preview and exports
+        </p>
+        <select
+          id="fontFamily"
+          [value]="fontFamily()"
+          (change)="onFontFamilyChange($event)"
+          class="w-full md:w-1/2 lg:w-1/3 input-field"
+        >
+          @for (font of fontOptions; track font.value) {
+            <option [value]="font.value">{{ font.name }}</option>
+          }
+        </select>
+      </div>
     </div>
   `,
 })
@@ -577,11 +600,13 @@ export class TemplateSelector {
   readonly accentColor = input.required<string>();
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
 
   readonly templateSelected = output<string>();
   readonly colorChanged = output<string>();
   readonly backgroundColorChanged = output<string>();
   readonly primaryColorChanged = output<string>();
+  readonly fontFamilyChanged = output<string>();
 
   readonly templates = TEMPLATES;
 
@@ -617,6 +642,18 @@ export class TemplateSelector {
     { name: "Light", value: "#f1f5f9" },
     { name: "Muted", value: "#94a3b8" },
   ];
+
+  readonly fontOptions = [
+    { name: "Modern Sans", value: "Inter, system-ui, sans-serif" },
+    { name: "Classic Serif", value: "Georgia, Times New Roman, serif" },
+    { name: "Clean Sans", value: "Arial, Helvetica, sans-serif" },
+    { name: "Monospace", value: "Courier New, monospace" },
+  ];
+
+  onFontFamilyChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.fontFamilyChanged.emit(select.value);
+  }
 
   selectTemplate(id: string) {
     this.templateSelected.emit(id);

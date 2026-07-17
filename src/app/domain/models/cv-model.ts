@@ -25,6 +25,20 @@ export interface CvSections {
   projects: Project[];
   certifications: Certification[];
   languages: Language[];
+  customSections: CustomSection[];
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  items: CustomItem[];
+}
+
+export interface CustomItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
 }
 
 export interface PersonalInfo {
@@ -98,6 +112,8 @@ export interface CvSettings {
   backgroundColor: string;
   primaryColor: string;
   fontFamily: string;
+  sectionVisibility: Record<string, boolean>;
+  sectionOrder: string[];
 }
 
 // ─── Template metadata (pure data, no component refs) ────────

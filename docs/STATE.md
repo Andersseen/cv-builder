@@ -2,55 +2,86 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-16 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3 y 4 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4, 5, 6 y 7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
 ## In progress
 
-Nada en curso. Última sesión: Fase 4 (UX de exportación y calidad de PDF) cerrada.
+_Nothing currently in progress. Ready for next phase planning._
 
 ## What's working (stable)
 
 - Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (8 tabs) → live preview → PDF/print export.
-- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color settings.
+- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings. **Templates now support ordered, visible, and custom sections via `getOrderedSections()` and render custom sections dynamically.**
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
 - Multi-page image PDF export and text-based print export.
-- **Fase 0**: QA manual del flujo completo en desktop; e2e extendido con flujo real (crear → rellenar personal + experiencia → preview → dashboard).
-- **Fase 1**:
-  - Export/import JSON por CV (`src/app/infrastructure/portability/cv-portability.ts`) con envelope `schemaVersion: 1`.
-  - Backup completo del dashboard (export + import de múltiples CVs).
-  - Validación estructural pura + backfill reutilizando `migrateCv` (`src/app/domain/models/cv-migration.ts`).
-  - `navigator.storage.persist()` solicitado al crear el primer CV.
-  - Banner descartable en dashboard: "Your resumes live only in this browser".
-  - Manejo de errores de IndexedDB con toasts claros en `CvStore`.
-- **Fase 2**:
-  - Editor usable en viewports <lg: layout apilado, formulario a ancho completo, toggle de preview flotante.
-  - Overlay de preview a pantalla completa en móvil con página A4 escalada (`transform: scale(...)`) y cierre accesible.
-  - Render off-screen `[data-export-preview]` para que image PDF y print PDF funcionen también en móvil.
-  - Selector de exportación centralizado en `data-export-preview .resume-content`; se eliminaron los IDs duplicados `#resume-content` de las plantillas.
-  - Añadidos tests e2e `e2e/qa-fase2.spec.ts` para overlay móvil, export image PDF, export print PDF y panel desktop.
-- **Migrated to AnalogJS + Vite**: file-based routing under `src/app/pages/`, zoneless change detection, builds with `pnpm build`, dev server with `pnpm dev`.
-- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. Scripts: `pnpm lint`, `pnpm format`, `pnpm test`, `pnpm e2e`. 36 unit tests green, 10 e2e tests green (6 smoke + 4 Fase 2).
+- **Fase 0**: QA manual del flujo completo en desktop; e2e extendido con flujo real.
+- **Fase 1**: Export/import JSON por CV + backup completo + validación estructural + `navigator.storage.persist()` + banner de datos locales.
+- **Fase 2**: Editor usable en viewports <lg con overlay de preview y render off-screen para export.
+- **Fase 3**: Undo/redo en memoria, atajos de teclado, botones en toolbar, y modal de confirmación para borrar CV.
+- **Fase 4**: Etiquetas claras de export, filename en print, lazy-load de libs PDF, y mitigación de cortes de página.
+- **Fase 5**: CV de ejemplo, score de completitud y sugerencias accionables en vivo.
+- **Fase 6**:
+  - Solo `fullName` es obligatorio en `personal-info-form.ts`; `email` se valida solo si no está vacío; Phone/Location ya no tienen `*` ni error de required.
+  - Downscale de avatar a máx 400 px lado + JPEG calidad 0.85 vía `resizeImageToDataUrl()` en `personal-info-form.ts`.
+  - `@utility input-field` y `input-field-resize-none` en `src/styles.css`; aplicadas a todos los `volt-input`/`volt-textarea`/`volt-native-select` de los 7 formularios.
+  - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
+- **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
+- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 70 unit tests green, 12 e2e tests green.
 
 ## Known issues
 
-1. ~~**Mobile editor layout is broken**~~ **FIXED 2026-07-15**: Fase 2 made the editor usable at 375px (stacked layout, full-width form, floating preview toggle) and added a scaled A4 overlay for mobile preview/export.
-2. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. The build and runtime are unaffected; this is a dev-only warning from the stable 2.6.3 plugin.
-3. ~~**`create()` returned `null` on success**~~ **FIXED 2026-07-15**: `withIndexedDbError` wrapped `void` operations, so the success path returned `undefined` and was treated as failure. Fixed by comparing the result with `null` instead of falsiness.
+1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
 
 ## Next steps (in rough priority order)
 
-1. **Fase 5** — Onboarding y guía de completitud (CV de ejemplo + score de completitud).
+1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
-3. Phase 5+ a11y: enable eslint template accessibility rules and fix findings.
+3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-17** — **Fase 7 finalizada: cableado del tab "Sections" y verificación completa.**
+  - Añadido `sections` al union type `EditorTab` en `src/app/features/editor/components/editor-tabs.ts`.
+  - Creados `src/app/features/editor/components/sections-manager.ts` y `src/app/features/editor/components/custom-section-form.ts` para gestionar visibilidad, orden y CRUD de secciones personalizadas.
+  - Cableado el tab "Sections" en `src/app/pages/editor.page.ts` (imports, lista de tabs, handlers) y `src/app/pages/editor.html` (`@case ("sections")`).
+  - Añadidos métodos `updateSectionVisibility`, `updateSectionOrder`, `addCustomSection`, `updateCustomSection` y `removeCustomSection` en `editor.page.ts`.
+  - Corregido error de build en `custom-section-form.ts`: `(click)="remove.emit()"` → `(click)="removed.emit()"`.
+  - Eliminados imports no usados en `section-helpers.spec.ts` y `sections-manager.ts` para pasar lint.
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` (70 tests) y `pnpm e2e` (12 tests) verdes.
+  - Actualizados `docs/plan/PLAN.md`, `docs/STATE.md` y `docs/specs/004-fase7-flexible-sections.md` a Done.
+
+- **2026-07-17** — **Fase 7 (inicio): refactor de plantillas para secciones ordenadas, visibles y personalizadas.**
+  - Añadidos `getOrderedSections()`, `CustomSection` y `CustomItem` a las 5 plantillas (`modern-template.ts`, `classic-template.ts`, `minimal-template.ts`, `creative-template.ts`, `executive-template.ts`).
+  - Reemplazados los bloques estáticos de `experience`, `education`, `skills`, `projects`, `certifications` y `languages` por un `@for` + `@switch` sobre `orderedSections()`.
+  - Creative renderiza `skills`, `education` y `languages` en la sidebar y el resto (incluidas secciones personalizadas) en la columna principal.
+  - Añadido renderizado de secciones personalizadas con título, subtítulo y descripción markdown en estilo de projects/experience de cada plantilla.
+  - Correcciones de compilación relacionadas: añadido `customSections: []` en `cv-example.ts` y acceso por clave `BUILT_IN_SECTION_LABELS["personal"]` en `section-helpers.ts`.
+  - Verificado: `pnpm build` y `pnpm test` (70 tests) verdes. UI del tab de secciones pendiente para siguiente sesión.
+
+- **2026-07-17** — **Fase 6 de PLAN.md: pulido de formularios y datos.**
+  - Relajados requireds en `personal-info-form.ts`: solo `fullName` es obligatorio; `email` valida solo si no está vacío; Phone/Location ya no marcan `*` ni error required.
+  - Añadido `resizeImageToDataUrl()` en `personal-info-form.ts` para redimensionar avatares a 400 px de lado y exportar JPEG 0.85 antes de guardar en IndexedDB/PDF.
+  - Creadas `@utility input-field` e `input-field-resize-none` en `src/styles.css`; reemplazadas las clases duplicadas en los 7 formularios.
+  - Añadido selector de fuente en `template-selector.ts` con 4 stacks seguros para print; cableado `fontFamily` a las 5 plantillas vía `resume-preview.ts` y `editor.page.ts`.
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` (58 tests) y `pnpm e2e` (12 tests) verdes.
+  - Actualizados `docs/plan/PLAN.md`, `docs/STATE.md` y `docs/specs/003-fase6-form-polish.md` a Done.
+
+- **2026-07-17** — **Fase 5 de PLAN.md: onboarding y guía de completitud.**
+  - Añadida factory `createExampleCv()` en `src/app/domain/models/cv-example.ts` con datos realistas y completos; tests en `cv-example.spec.ts`.
+  - Añadida función pura `scoreCompleteness()` en `src/app/domain/models/cv-completeness.ts` con heurística 0–100 y sugerencias accionables; tests en `cv-completeness.spec.ts`.
+  - Añadido `CvStore.createExample()` para persistir y activar el CV de ejemplo.
+  - Añadidos botones "Start with an Example" en `empty-state.ts` y `dashboard-header.ts`; cableado en `dashboard.page.ts` para crear el ejemplo y abrir el editor.
+  - Creado componente `CompletenessScore` con anillo de score colorido, popover de sugerencias y navegación a tabs; integrado en `editor-toolbar.ts` y cableado en `editor.page.ts`.
+  - Añadidos 2 tests e2e en `e2e/smoke.spec.ts` para el flujo de ejemplo y el score de CV vacío.
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` (58 tests) y `pnpm e2e` (12 tests) verdes.
+  - Actualizados `docs/plan/PLAN.md`, `docs/STATE.md` y `docs/specs/002-fase5-onboarding-completeness.md` a Done.
 
 - **2026-07-16 (noche)** — **Fix del PDF de texto (print) que salía en 4 páginas.**
   - Síntoma: el "Download PDF" / "Print PDF (text)" convertía un CV de 2 páginas en 4 — las páginas 1 y 2 eran casi enteramente la cabecera de color estirada, y el contenido real empezaba en la página 3. El PDF de imagen (`html-to-image`) no se veía afectado porque captura el DOM natural.
   - Causa: `printFlexStretch()` en `src/app/infrastructure/export/print-stylesheet.ts` aplicaba `min-height: 297mm` a `.resume-content > div > .flex`, que casaba con las filas flex internas de la cabecera de las plantillas **Modern** y **Executive**, estirando cada una a una página A4 completa.
   - Fix: se eliminó el selector `.resume-content > div > .flex`, dejando solo `.resume-content > .flex` (que sirve la barra lateral de dos columnas de la plantilla **Creative**, cuyo estirado a página completa es intencional). Verificado con `page.pdf()` real: Modern y Executive vuelven a 2 páginas con cabecera compacta; Creative mantiene la barra lateral a altura completa.
-  - Añadido test de regresión `src/app/infrastructure/export/print-stylesheet.spec.ts` (asegura que la hoja de estilos no vuelve a incluir `.resume-content > div > .flex`).
+  - Añadido test de regresión `src/app/infrastructure/export/print-stylesheet.spec.ts` (asegura que la hoja de estilos no vuelva a incluir `.resume-content > div > .flex`).
   - Verificado: `pnpm build`, `pnpm lint` y `pnpm test` verdes (46 unit tests).
 
 - **2026-07-16 (tarde)** — **Fase 4 de PLAN.md.**
@@ -72,12 +103,8 @@ Nada en curso. Última sesión: Fase 4 (UX de exportación y calidad de PDF) cer
 - **2026-07-15** — **Fases 0, 1 y 2 de PLAN.md.**
   - Fase 0: QA manual con Playwright del flujo completo (landing, dashboard, editor 8 tabs, preview, exports, persistencia, viewport 375px). Corregidos los selectores de `e2e/smoke.spec.ts` para `volt-input` (usar placeholders/inputs nativos). Extendido smoke con flujo real: crear CV → rellenar personal + experiencia → verificar preview → dashboard → verificar card. Eliminados imports no usados en `editor-toolbar.ts` que generaban warnings.
   - Fase 1: añadida capa `src/app/infrastructure/portability/` con `CvPortability` (export/import de CV y backup completo). Extraída función pura `migrateCv` a `src/app/domain/models/cv-migration.ts` y reutilizada en `CvStore.loadAll()` e importación. Añadidos botones de export JSON en cards del dashboard y dropdown del editor; botones de backup/import en header del dashboard. Añadido banner descartable en dashboard con aviso de datos locales. Añadido `navigator.storage.persist()` al crear el primer CV. Envueltas operaciones IndexedDB en `CvStore` con try/catch + toast. Añadidos 14 tests nuevos (migration + portability). `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes.
-  - Fase 2: implementado overlay de preview a pantalla completa para viewports <lg con escalado A4, preview off-screen `[data-export-preview]` para que image/print PDF funcione en móvil, y botón flotante de preview accesible en todos los tamaños. Centralizado el selector de contenido de export en `data-export-preview .resume-content` para evitar IDs duplicados. Añadidos `aria-label` al botón primario Print PDF y `data-testid` a los contenedores de preview para tests. Añadido `e2e/qa-fase2.spec.ts` con 4 tests (mobile overlay, image PDF, print PDF, desktop panel). Actualizado `e2e/smoke.spec.ts` para referirse al panel de preview visible. `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes.
+  - Fase 2: implementado overlay de preview a pantalla completa para viewports <lg con escalado A4, preview off-screen `[data-export-preview]` para que image PDF y print PDF funcione en móvil, y botón flotante de preview accesible en todos los tamaños. Centralizado el selector de contenido de export en `data-export-preview .resume-content` para evitar IDs duplicados. Añadidos `aria-label` al botón primario Print PDF y `data-testid` a los contenedores de preview para tests. Añadido `e2e/qa-fase2.spec.ts` con 4 tests (mobile overlay, image PDF, print PDF, desktop panel). Actualizado `e2e/smoke.spec.ts` para referirse al panel de preview visible. `pnpm build`, `pnpm lint`, `pnpm test` y `pnpm e2e` verdes.
+
 - **2026-07-10** — **VoltUI editor form migration + OnPush import fix.** Normalized malformed `@angular/core` imports that caused Angular LS to report `ChangeDetectionStrategy.OnPush` as an unknown/static-analysis failure, then applied the canonical `ChangeDetectionStrategy`-first import shape across all affected components/pages. Added a focused spec (`docs/specs/001-voltui-editor-forms.md`) and migrated editor form chrome to `@voltui/components`: `VoltButton`, `VoltInput`, `VoltTextarea`, and `VoltNativeSelect` across Personal, Experience, Education, Skills, Projects, Certifications, Languages, plus `VoltInput` for the color hex field. Kept file upload, checkbox, color swatch, and native labels where safer. Verified `pnpm build`, `pnpm lint`, and `pnpm test` green.
+
 - **2026-07-10** — **Angular 21 upgrade (Phase A of the voltui UI migration).** Bumped `@angular/*` 19.2→21.2.18, added `@angular/cdk` 21.2.14, `@analogjs/*` beta.5→2.6.3 stable, TS ~5.9.3, `angular-eslint` 21.4.0. Renamed the zoneless provider to the stable `provideZonelessChangeDetection`. Removed the `@analogjs/vite-plugin-angular` pnpm patch + `pnpm-workspace.yaml` (patch targeted the beta; stable 2.6.3 already carries the fixes — dev boots clean, no decorator warnings). `pnpm build`/`lint`/`test`/`dev` all green. Reason for the upgrade: all four target libs (`@voltui/components`, `angular-movement`, `lumen-icons`, `quartz-headless`) require Angular ^21. **Stopped here for user review before starting Phase B** (installing the libs + migrating chrome to `volt-*` components, `lmn-*` icons, and `angular-movement` motion; resume templates untouched).
-- **2026-07-10** — **Roadmap Phase 0 + Phase 1.** Phase 0: fixed all broken Tailwind classes across `src/` (mechanical replace), replaced the dead `@utilities` block with Tailwind v4 `@utility` rules + fixed self-referential `--radius`, defined the missing `hide-scrollbar` utility, removed unused `surface-*` aliases, refreshed README (port 4200→5173), hardened the `/editor` guard with a toast. Installed & configured ESLint + angular-eslint + Prettier + Vitest (`pnpm lint`/`format`/`test`), wired lint+test into CI, extracted `deepMerge` to a pure module, added 22 unit tests (all green). Disabled the `component-class-suffix` eslint rule (conflicts with the repo's no-suffix convention) and fixed 3 `no-unused-expressions` ternaries. Phase 1: added **Projects / Certifications / Languages** sections (model + defaults + `loadAll` backfill), built their 3 form components, added ↑/↓ reorder to all 6 list forms via `core/utils/array.ts`, added a dependency-free markdown renderer (`shared/utils/markdown.ts`) for experience/project descriptions, and rendered the 3 new sections + rich-text in all 5 templates. Wired 3 new editor tabs. `pnpm build`, `pnpm lint`, `pnpm test` all green. **Not yet done: manual browser QA** (see Next steps #1).
-- **2026-07-07** — Fixed Vercel deployment CI after the AnalogJS migration. Added `vercel.json` that disables framework auto-detection (`framework: null`), uses `pnpm install` + `pnpm build`, outputs `dist/analog/public` (AnalogJS static build output), and adds a catch-all rewrite to `index.html` so client-side routes (`/dashboard`, `/editor?cv=...`) work on refresh. Added `.github/workflows/ci.yml` to run `pnpm install --frozen-lockfile` and `pnpm build` on every push/PR to `main`. Verified `pnpm build` still passes locally. Updated known issue #5 to reflect the new CI workflow.: edited the `@analogjs/vite-plugin-angular` pnpm patch (via `pnpm patch` / `pnpm patch-commit`, so it's re-appliable on fresh installs) to (a) skip the "contains Angular decorators but not in TypeScript program" warning for any `node_modules` id — it was a false positive on pre-bundled vendor chunks (`@angular_router.js`, `analogjs-router.mjs`, etc.), and (b) remove the `[ANALOG DEBUG]` `console.log` calls left over from debugging the transform lookup-id fallback; the functional logic (lookup-id fallback, eager dev emit, fesm filter) is unchanged. Also removed the unused `Component` import from 6 service files (known issue #2). Verified `pnpm dev` starts clean (no debug lines, no decorator warnings) and `pnpm build` still succeeds. Closed known issues #2 and #7; updated #0b to reflect the log stripping.
-- **2026-07-07** — Closed out the AnalogJS migration from the audit findings: `moduleResolution` → `"bundler"` in `tsconfig.json` (fixes the build), verified the SSR entry points must stay (`static: true` needs `src/main.server.ts` — removing them breaks the build), refreshed the patch hash in `pnpm-lock.yaml`, added `OnPush` to `app.ts`, fixed AGENTS.md drift (file-based routing in golden rule #5, dev port 5173). `pnpm build` verified green. Committed the whole migration on `feature/style-guide`. Issues #0/#0b/#8/#9 closed; remaining work is the style-guide thread (issues #1–#6).
-- **2026-07-06 (evening)** — Full audit of the AnalogJS + zoneless migration. Found `pnpm build` broken (`moduleResolution: "node"` can't resolve `@analogjs/router/server|tokens` from `main.server.ts`; verified that `"bundler"` fixes it, change not applied). Found the pnpm patch file for `@analogjs/vite-plugin-angular` missing while still declared in `pnpm-workspace.yaml`/lockfile — regenerated it from the installed package and restored `patches/@analogjs__vite-plugin-angular@2.6.3-beta.5.patch` (the patch is functional: enforce pre, transform lookup fallback, eager dev emit, fesm filter guard). Confirmed the `@utilities` block ships broken to prod CSS (animate-* classes dead). Verified dev server works at `localhost:5173` and zoneless-safety of the codebase (no NgZone/zone.js references, signals everywhere, 26/27 components OnPush — only `app.ts` missing it, both `valueChanges` subscriptions use `takeUntilDestroyed` and feed signals/outputs). Counted 78 broken Tailwind class usages across 17 files (issue #1). Updated known issues #0/0b/3/7/8/9. No app code changed.
-- **2026-07-06** — Migrated the project from Angular CLI to AnalogJS + Vite. Enabled zoneless change detection (`provideExperimentalZonelessChangeDetection`). Adopted AnalogJS file-based routing (`src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts`). Removed `zone.js`, `@angular/cli`, and `angular.json`. Added `@analogjs/platform`, `@analogjs/router`, `@angular/platform-server`, and `vite`. Fixed unsubscribed RxJS `valueChanges` subscriptions in `personal-info-form.ts` and `experience-form.ts` using `takeUntilDestroyed()`. Verified `pnpm build` succeeds.
-- **2026-07-06** — Added agent documentation suite: `AGENTS.md`, `CLAUDE.md`, `docs/` (CONTEXT, ARCHITECTURE, CONVENTIONS, STATE, specs workflow). Audited codebase; catalogued known issues above. No app code changed.

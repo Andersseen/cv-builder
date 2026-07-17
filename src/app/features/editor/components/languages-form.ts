@@ -52,8 +52,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Spanish, English, German..."
               />
             </div>
@@ -63,8 +62,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-native-select
                 formControlName="proficiency"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
               >
                 @for (level of levels; track level) {
                   <option [value]="level">{{ level }}</option>

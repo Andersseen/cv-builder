@@ -177,19 +177,19 @@ sin IA (respeta los non-goals).
 
 **Depende de**: Fase 0. Independiente de 1–4.
 
-- [ ] **CV de ejemplo**: `createExampleCv()` en `domain/models/` (junto a `cv-defaults.ts`)
+- [x] **CV de ejemplo**: `createExampleCv()` en `domain/models/` (junto a `cv-defaults.ts`)
       con datos realistas y completos (experiencia con bullets markdown, proyectos, idiomas…).
       Botón "Start with an example" en el empty state del dashboard y como acción secundaria
       en el header del dashboard. Nota: esto es una excepción deliberada a la regla "no
       placeholder content" — es una feature pedida, no relleno.
-- [ ] **Chequeo de completitud**: función pura en `domain/` (con tests) que puntúa un `Cv`:
+- [x] **Chequeo de completitud**: función pura en `domain/` (con tests) que puntúa un `Cv`:
       campos personales vacíos, sin summary, summary muy corto, sin experiencia, descripciones
       de <X caracteres, sin skills, fechas faltantes… Devuelve score 0–100 + lista de
       sugerencias accionables (`{ severity, message, tabId }`).
-- [ ] **UI del chequeo**: badge/anillo con el score en el editor (p. ej. junto a los tabs o
+- [x] **UI del chequeo**: badge/anillo con el score en el editor (p. ej. junto a los tabs o
       en la toolbar) que despliega la lista de sugerencias; cada sugerencia navega a su tab.
       Actualización en vivo (computed sobre `activeCv`).
-- [ ] QA: crear ejemplo en 1 click → score alto; CV vacío → score bajo con sugerencias útiles.
+- [x] QA: crear ejemplo en 1 click → score alto; CV vacío → score bajo con sugerencias útiles.
 
 **Hecho cuando**: un usuario nuevo llega a un CV completo de ejemplo en 1 click; el score y
 las sugerencias reaccionan en vivo a la edición; heurística cubierta por tests.
@@ -202,22 +202,22 @@ las sugerencias reaccionan en vivo a la edición; heurística cubierta por tests
 
 **Depende de**: Fase 0. Independiente de 1–5.
 
-- [ ] **Relajar requireds** en `personal-info-form.ts`: solo `fullName` requerido; `email`
+- [x] **Relajar requireds** en `personal-info-form.ts`: solo `fullName` requerido; `email`
       se valida solo si no está vacío (mucha gente no quiere teléfono en el CV; en varios
       países se desaconseja). Quitar los asteriscos de Phone/Location.
-- [ ] **Downscale del avatar al subirlo**: en `onAvatarSelected`, redimensionar con canvas a
+- [x] **Downscale del avatar al subirlo**: en `onAvatarSelected`, redimensionar con canvas a
       máx ~400px de lado y exportar JPEG calidad ~0.85 antes de guardar el data URL. Una foto
       de móvil de 8 MB no debe entrar cruda en IndexedDB ni en el PDF.
-- [ ] **Deduplicar las clases de inputs**: la misma cadena de ~40 utilidades Tailwind se
+- [x] **Deduplicar las clases de inputs**: la misma cadena de ~40 utilidades Tailwind se
       repite en cada `volt-input`/`volt-textarea` de los 7 formularios. Extraer a una
       `@utility` en `src/styles.css` (p. ej. `input-field`) o a un componente wrapper con
       label + error integrados. Aplicar en todos los formularios.
-- [ ] **Cablear `settings.fontFamily`**: selector de fuente en el tab Template
+- [x] **Cablear `settings.fontFamily`**: selector de fuente en el tab Template
       (`template-selector.ts`) con 3–4 fuentes seguras para print (p. ej. system sans, serif,
       humanist), aplicado a las 5 plantillas y verificado en ambos exports. (Si el usuario
       prefiere quitarlo del modelo en vez de cablearlo, preguntar antes — pero cablearlo es
       lo recomendado.)
-- [ ] QA visual de los 7 formularios tras la deduplicación (no debe cambiar nada visualmente).
+- [x] QA visual de los 7 formularios tras la deduplicación (no debe cambiar nada visualmente).
 
 **Hecho cuando**: solo el nombre es obligatorio; una foto de 8 MB queda en <100 KB
 almacenados; una sola fuente de verdad para el estilo de inputs; la fuente elegida se ve en
@@ -233,17 +233,17 @@ preview y en ambos PDFs.
 **Depende de**: Fase 0. Recomendado después de la 4 (para no rehacer trabajo de page-breaks
 al tocar las plantillas). Toca el modelo → exige backfill en `loadAll()` + tests.
 
-- [ ] **Secciones personalizadas**: `customSections: CustomSection[]` en el modelo
+- [x] **Secciones personalizadas**: `customSections: CustomSection[]` en el modelo
       (`{ id, title, items: { id, title, subtitle, description }[] }`, description con
       markdown ligero). Backfill `?? []`. Form genérico (nuevo tab "More" o similar) para
       crear/renombrar/borrar secciones y sus ítems, con reorden ↑/↓.
-- [ ] **Visibilidad por sección**: `sectionVisibility` en settings (o campo `hidden` por
+- [x] **Visibilidad por sección**: `sectionVisibility` en settings (o campo `hidden` por
       sección) + toggles en la UI. Sección oculta no renderiza en preview ni exports.
-- [ ] **Orden de secciones**: `sectionOrder: string[]` en settings + UI de reorden (↑/↓,
+- [x] **Orden de secciones**: `sectionOrder: string[]` en settings + UI de reorden (↑/↓,
       consistente con las listas). Las 5 plantillas respetan el orden donde su layout lo
       permita (documentar excepciones: p. ej. un sidebar fijo puede limitar qué se mueve).
-- [ ] Render de todo lo anterior en las 5 plantillas + ambos exports.
-- [ ] Tests: backfill, y helpers de visibilidad/orden como funciones puras.
+- [x] Render de todo lo anterior en las 5 plantillas + ambos exports.
+- [x] Tests: backfill, y helpers de visibilidad/orden como funciones puras.
 
 **Hecho cuando**: crear una sección "Volunteering", ocultar Skills y reordenar secciones se
 refleja en preview y en ambos PDFs con las 5 plantillas; CVs antiguos cargan sin romperse.

@@ -47,6 +47,8 @@ export function migrateCv(cv: unknown): Cv | null {
       certifications:
         source.sections.certifications ?? defaults.sections.certifications,
       languages: source.sections.languages ?? defaults.sections.languages,
+      customSections:
+        source.sections.customSections ?? defaults.sections.customSections,
     },
     settings: {
       ...defaults.settings,
@@ -55,6 +57,11 @@ export function migrateCv(cv: unknown): Cv | null {
         source.settings?.backgroundColor ?? defaults.settings.backgroundColor,
       primaryColor:
         source.settings?.primaryColor ?? defaults.settings.primaryColor,
+      sectionVisibility:
+        source.settings?.sectionVisibility ??
+        defaults.settings.sectionVisibility,
+      sectionOrder:
+        source.settings?.sectionOrder ?? defaults.settings.sectionOrder,
     },
   };
 }

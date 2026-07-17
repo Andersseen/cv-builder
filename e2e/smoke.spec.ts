@@ -95,6 +95,40 @@ test.describe("Persistence", () => {
   });
 });
 
+test.describe("Fase 5 — Onboarding and completeness", () => {
+  test("starting with an example creates a high-scoring CV", async ({ page }) => {
+    await page.goto("/dashboard");
+
+    await page.getByRole("button", { name: /Start with an Example/i }).click();
+    await page.waitForURL(/\/editor\?cv=/, { waitUntil: "load" });
+
+    // The preview should show the example data.
+    await expect(
+      page
+        .locator('[data-testid="desktop-preview-panel"] .resume-content')
+        .getByText("Alex Rivera"),
+    ).toBeVisible();
+
+    // The completeness score should be high.
+    const scoreButton = page.locator('[aria-label^="Completeness score:"]').first();
+    await expect(scoreButton).toBeVisible();
+    const scoreText = await scoreButton.locator('[data-testid="completeness-score"]').textContent();
+    expect(Number(scoreText)).toBeGreaterThanOrEqual(80);
+  });
+
+  test("a blank CV shows a low score with suggestions", async ({ page }) => {
+    await createResume(page);
+
+    const scoreButton = page.locator('[aria-label^="Completeness score:"]').first();
+    await expect(scoreButton).toBeVisible();
+    const scoreText = await scoreButton.locator('[data-testid="completeness-score"]').textContent();
+    expect(Number(scoreText)).toBeLessThan(50);
+
+    // Opening the popover reveals at least one suggestion.
+    await scoreButton.click();
+    await expect(page.getByRole("button", { name: /Add your full name/i })).toBeVisible();
+  });
+});
 test.describe("Full editor flow", () => {
   test("create, fill, preview and return to dashboard", async ({ page }) => {
     await createResume(page);

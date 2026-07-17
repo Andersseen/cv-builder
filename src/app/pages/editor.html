@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-background">
   <!-- Top Bar -->
   <app-editor-toolbar
+    [cv]="cvStore.activeCv()"
     [cvName]="cvStore.activeCv()?.name"
     [saving]="autosave.saving()"
     [lastSavedAt]="autosave.lastSavedAt()"
@@ -13,6 +14,7 @@
     (exportPdf)="exportPdf()"
     (printPdf)="printResume()"
     (exportJson)="exportCvJson()"
+    (tabSelected)="selectTab($event)"
   />
 
   @if (cvStore.loading()) {
@@ -89,6 +91,15 @@
             (itemsChange)="updateLanguages($event)"
             (removed)="onListItemRemoved('Language')"
           />
+          } @case ("sections") {
+          <app-sections-manager
+            [cv]="cvStore.activeCv()!"
+            (visibilityChanged)="updateSectionVisibility($event)"
+            (orderChanged)="updateSectionOrder($event)"
+            (addCustomSection)="addCustomSection()"
+            (updateCustomSection)="updateCustomSection($event.id, $event.section)"
+            (removeCustomSection)="removeCustomSection($event)"
+          />
           } @case ("template") {
           <app-template-selector
             [selectedTemplateId]="cvStore.activeCv()!.templateId"
@@ -97,10 +108,12 @@
                         cvStore.activeCv()!.settings.backgroundColor
                       "
             [primaryColor]="cvStore.activeCv()!.settings.primaryColor"
+            [fontFamily]="cvStore.activeCv()!.settings.fontFamily"
             (templateSelected)="changeTemplate($event)"
             (colorChanged)="changeAccentColor($event)"
             (backgroundColorChanged)="changeBackgroundColor($event)"
             (primaryColorChanged)="changePrimaryColor($event)"
+            (fontFamilyChanged)="changeFontFamily($event)"
           />
           } }
         </div>

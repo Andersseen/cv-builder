@@ -9,6 +9,8 @@ import {
   Project,
   Certification,
   Language,
+  CustomSection,
+  CustomItem,
 } from "./cv-model";
 
 // ─── Factory functions ───────────────────────────────────────
@@ -36,6 +38,7 @@ export function createDefaultSections(): CvSections {
     projects: [],
     certifications: [],
     languages: [],
+    customSections: [],
   };
 }
 
@@ -118,5 +121,24 @@ export function createDefaultSettings(): CvSettings {
     backgroundColor: "#ffffff",
     primaryColor: "#111827",
     fontFamily: "Inter",
+    sectionVisibility: {},
+    sectionOrder: [],
+  };
+}
+
+export function createDefaultCustomSection(title = "Custom Section"): CustomSection {
+  return {
+    id: crypto.randomUUID(),
+    title,
+    items: [],
+  };
+}
+
+export function createDefaultCustomItem(): CustomItem {
+  return {
+    id: crypto.randomUUID(),
+    title: "",
+    subtitle: "",
+    description: "",
   };
 }
