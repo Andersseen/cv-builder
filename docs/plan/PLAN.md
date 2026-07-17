@@ -202,22 +202,22 @@ las sugerencias reaccionan en vivo a la edición; heurística cubierta por tests
 
 **Depende de**: Fase 0. Independiente de 1–5.
 
-- [ ] **Relajar requireds** en `personal-info-form.ts`: solo `fullName` requerido; `email`
+- [x] **Relajar requireds** en `personal-info-form.ts`: solo `fullName` requerido; `email`
       se valida solo si no está vacío (mucha gente no quiere teléfono en el CV; en varios
       países se desaconseja). Quitar los asteriscos de Phone/Location.
-- [ ] **Downscale del avatar al subirlo**: en `onAvatarSelected`, redimensionar con canvas a
+- [x] **Downscale del avatar al subirlo**: en `onAvatarSelected`, redimensionar con canvas a
       máx ~400px de lado y exportar JPEG calidad ~0.85 antes de guardar el data URL. Una foto
       de móvil de 8 MB no debe entrar cruda en IndexedDB ni en el PDF.
-- [ ] **Deduplicar las clases de inputs**: la misma cadena de ~40 utilidades Tailwind se
+- [x] **Deduplicar las clases de inputs**: la misma cadena de ~40 utilidades Tailwind se
       repite en cada `volt-input`/`volt-textarea` de los 7 formularios. Extraer a una
       `@utility` en `src/styles.css` (p. ej. `input-field`) o a un componente wrapper con
       label + error integrados. Aplicar en todos los formularios.
-- [ ] **Cablear `settings.fontFamily`**: selector de fuente en el tab Template
+- [x] **Cablear `settings.fontFamily`**: selector de fuente en el tab Template
       (`template-selector.ts`) con 3–4 fuentes seguras para print (p. ej. system sans, serif,
       humanist), aplicado a las 5 plantillas y verificado en ambos exports. (Si el usuario
       prefiere quitarlo del modelo en vez de cablearlo, preguntar antes — pero cablearlo es
       lo recomendado.)
-- [ ] QA visual de los 7 formularios tras la deduplicación (no debe cambiar nada visualmente).
+- [x] QA visual de los 7 formularios tras la deduplicación (no debe cambiar nada visualmente).
 
 **Hecho cuando**: solo el nombre es obligatorio; una foto de 8 MB queda en <100 KB
 almacenados; una sola fuente de verdad para el estilo de inputs; la fuente elegida se ve en

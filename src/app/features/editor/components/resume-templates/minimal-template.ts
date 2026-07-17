@@ -10,7 +10,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
       class="max-w-4xl mx-auto"
       class="resume-content"
       [style.background-color]="backgroundColor()"
-      [style.font-family]="'Inter, system-ui, sans-serif'"
+      [style.font-family]="fontFamily()"
     >
       <div class="p-10">
         <!-- Header — ultra-minimal -->
@@ -227,6 +227,7 @@ export class MinimalTemplate {
   readonly accentColor = input("#171717");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
 
   protected renderRichText = renderRichText;
 

@@ -10,7 +10,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
       class="max-w-4xl mx-auto"
       class="resume-content"
       [style.background-color]="backgroundColor()"
-      [style.font-family]="'Inter, system-ui, sans-serif'"
+      [style.font-family]="fontFamily()"
     >
       <!-- Header — bold gradient -->
       <div
@@ -328,6 +328,7 @@ export class ModernTemplate {
   readonly accentColor = input("#4f46e5");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
 
   protected get accentColorDark(): string {
     return this.adjustBrightness(this.accentColor(), -30);

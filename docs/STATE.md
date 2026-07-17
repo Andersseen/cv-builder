@@ -2,16 +2,16 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4 y 5 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4, 5 y 6 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
 ## In progress
 
-Nada en curso. Última sesión: Fase 5 (onboarding y guía de completitud) cerrada.
+Nada en curso. Última sesión: Fase 6 (pulido de formularios y datos) cerrada.
 
 ## What's working (stable)
 
 - Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (8 tabs) → live preview → PDF/print export.
-- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color settings.
+- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings.
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
 - Multi-page image PDF export and text-based print export.
@@ -20,12 +20,12 @@ Nada en curso. Última sesión: Fase 5 (onboarding y guía de completitud) cerra
 - **Fase 2**: Editor usable en viewports <lg con overlay de preview y render off-screen para export.
 - **Fase 3**: Undo/redo en memoria, atajos de teclado, botones en toolbar, y modal de confirmación para borrar CV.
 - **Fase 4**: Etiquetas claras de export, filename en print, lazy-load de libs PDF, y mitigación de cortes de página.
-- **Fase 5**:
-  - `createExampleCv()` en `src/app/domain/models/cv-example.ts` con CV realista y completo (personal, summary, 2 experiencias con bullets markdown, educación, 6 skills, 2 proyectos, 2 certificaciones, 3 idiomas).
-  - Botones "Start with an Example" en empty state y header del dashboard; `CvStore.createExample()` persiste y activa el CV.
-  - `scoreCompleteness()` en `src/app/domain/models/cv-completeness.ts` (pura, con tests): score 0–100 + sugerencias `{ severity, message, tabId }`.
-  - Componente `CompletenessScore` en `src/app/features/editor/components/completeness-score.ts`: anillo de score en la toolbar, popover con sugerencias, navegación directa al tab correspondiente. Actualización en vivo vía `computed` sobre `activeCv`.
-  - E2E añadidos en `e2e/smoke.spec.ts` para verificar ejemplo de alto score y CV vacío con sugerencias.
+- **Fase 5**: CV de ejemplo, score de completitud y sugerencias accionables en vivo.
+- **Fase 6**:
+  - Solo `fullName` es obligatorio en `personal-info-form.ts`; `email` se valida solo si no está vacío; Phone/Location ya no tienen `*` ni error de required.
+  - Downscale de avatar a máx 400 px lado + JPEG calidad 0.85 vía `resizeImageToDataUrl()` en `personal-info-form.ts`.
+  - `@utility input-field` y `input-field-resize-none` en `src/styles.css`; aplicadas a todos los `volt-input`/`volt-textarea`/`volt-native-select` de los 7 formularios.
+  - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 58 unit tests green, 12 e2e tests green.
 
 ## Known issues
@@ -34,11 +34,19 @@ Nada en curso. Última sesión: Fase 5 (onboarding y guía de completitud) cerra
 
 ## Next steps (in rough priority order)
 
-1. **Fase 6** — Pulido de formularios y datos (relajar requireds, downscale avatar, deduplicar clases de inputs, cablear `fontFamily`).
+1. **Fase 7** — Secciones flexibles (secciones personalizadas, visibilidad por sección, orden de secciones).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
-3. Phase 6+ a11y: enable eslint template accessibility rules and fix findings.
+3. Phase 7+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-17** — **Fase 6 de PLAN.md: pulido de formularios y datos.**
+  - Relajados requireds en `personal-info-form.ts`: solo `fullName` es obligatorio; `email` valida solo si no está vacío; Phone/Location ya no marcan `*` ni error required.
+  - Añadido `resizeImageToDataUrl()` en `personal-info-form.ts` para redimensionar avatares a 400 px de lado y exportar JPEG 0.85 antes de guardar en IndexedDB/PDF.
+  - Creadas `@utility input-field` e `input-field-resize-none` en `src/styles.css`; reemplazadas las clases duplicadas en los 7 formularios.
+  - Añadido selector de fuente en `template-selector.ts` con 4 stacks seguros para print; cableado `fontFamily` a las 5 plantillas vía `resume-preview.ts` y `editor.page.ts`.
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` (58 tests) y `pnpm e2e` (12 tests) verdes.
+  - Actualizados `docs/plan/PLAN.md`, `docs/STATE.md` y `docs/specs/003-fase6-form-polish.md` a Done.
 
 - **2026-07-17** — **Fase 5 de PLAN.md: onboarding y guía de completitud.**
   - Añadida factory `createExampleCv()` en `src/app/domain/models/cv-example.ts` con datos realistas y completos; tests en `cv-example.spec.ts`.

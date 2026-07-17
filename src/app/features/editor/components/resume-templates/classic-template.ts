@@ -10,7 +10,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
       class="max-w-4xl mx-auto"
       class="resume-content"
       [style.background-color]="backgroundColor()"
-      [style.font-family]="'Georgia, Times New Roman, serif'"
+      [style.font-family]="fontFamily()"
     >
       <div class="p-8">
         <!-- Header — centered, traditional -->
@@ -260,6 +260,7 @@ export class ClassicTemplate {
   readonly accentColor = input("#475569");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
 
   protected renderRichText = renderRichText;
 

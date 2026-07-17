@@ -36,6 +36,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
               [accentColor]="cv().settings.accentColor"
               [backgroundColor]="cv().settings.backgroundColor"
               [primaryColor]="cv().settings.primaryColor"
+              [fontFamily]="cv().settings.fontFamily"
             />
           }
           @case ("classic") {
@@ -44,6 +45,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
               [accentColor]="cv().settings.accentColor"
               [backgroundColor]="cv().settings.backgroundColor"
               [primaryColor]="cv().settings.primaryColor"
+              [fontFamily]="cv().settings.fontFamily"
             />
           }
           @case ("minimal") {
@@ -52,6 +54,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
               [accentColor]="cv().settings.accentColor"
               [backgroundColor]="cv().settings.backgroundColor"
               [primaryColor]="cv().settings.primaryColor"
+              [fontFamily]="cv().settings.fontFamily"
             />
           }
           @case ("creative") {
@@ -60,6 +63,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
               [accentColor]="cv().settings.accentColor"
               [backgroundColor]="cv().settings.backgroundColor"
               [primaryColor]="cv().settings.primaryColor"
+              [fontFamily]="cv().settings.fontFamily"
             />
           }
           @case ("executive") {
@@ -68,6 +72,7 @@ import { ExecutiveTemplate } from "./resume-templates/executive-template";
               [accentColor]="cv().settings.accentColor"
               [backgroundColor]="cv().settings.backgroundColor"
               [primaryColor]="cv().settings.primaryColor"
+              [fontFamily]="cv().settings.fontFamily"
             />
           }
         }

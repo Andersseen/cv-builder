@@ -190,6 +190,10 @@ export default class Editor implements OnInit, OnDestroy {
     this.cvStore.updateActiveCv({ settings: { primaryColor } });
   }
 
+  protected changeFontFamily(fontFamily: string) {
+    this.cvStore.updateActiveCv({ settings: { fontFamily } });
+  }
+
   protected async exportPdf() {
     const cv = this.cvStore.activeCv();
     if (!cv) return;

@@ -55,8 +55,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="degree"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Bachelor of Science"
               />
             </div>
@@ -67,8 +66,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="institution"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="MIT"
               />
             </div>
@@ -79,8 +77,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="location"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Cambridge, MA"
               />
             </div>
@@ -91,8 +88,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="month"
                 formControlName="graduationDate"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
               />
             </div>
             <div>
@@ -102,8 +98,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="gpa"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="3.8 / 4.0"
               />
             </div>

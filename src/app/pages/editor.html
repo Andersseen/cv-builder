@@ -99,10 +99,12 @@
                         cvStore.activeCv()!.settings.backgroundColor
                       "
             [primaryColor]="cvStore.activeCv()!.settings.primaryColor"
+            [fontFamily]="cvStore.activeCv()!.settings.fontFamily"
             (templateSelected)="changeTemplate($event)"
             (colorChanged)="changeAccentColor($event)"
             (backgroundColorChanged)="changeBackgroundColor($event)"
             (primaryColorChanged)="changePrimaryColor($event)"
+            (fontFamilyChanged)="changeFontFamily($event)"
           />
           } }
         </div>

@@ -52,8 +52,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="AWS Certified Solutions Architect"
               />
             </div>
@@ -64,8 +63,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="issuer"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Amazon Web Services"
               />
             </div>
@@ -76,8 +74,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="month"
                 formControlName="date"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
               />
             </div>
             <div>
@@ -87,8 +84,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="url"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="https://..."
               />
             </div>

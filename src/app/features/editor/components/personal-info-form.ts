@@ -17,6 +17,50 @@ import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { PersonalInfo } from "../../../domain/models/cv-model";
 
+const AVATAR_MAX_SIDE = 400;
+const AVATAR_JPEG_QUALITY = 0.85;
+
+/** Resize an image to fit within maxSide × maxSide and return a JPEG data URL. */
+export function resizeImageToDataUrl(
+  file: File,
+  maxSide: number = AVATAR_MAX_SIDE,
+  quality: number = AVATAR_JPEG_QUALITY,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      let { width, height } = img;
+      if (width > maxSide || height > maxSide) {
+        const scale = maxSide / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Could not get canvas context"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+
+    img.src = url;
+  });
+}
+
 @Component({
   selector: "app-personal-info-form",
   imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
@@ -97,7 +141,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <volt-input
               type="text"
               formControlName="fullName"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="John Doe"
             />
             @if (
@@ -114,7 +158,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <volt-input
               type="email"
               formControlName="email"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="john&#64;example.com"
             />
             @if (form.controls.email.touched && form.controls.email.invalid) {
@@ -126,34 +170,26 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
 
           <div>
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
-              >Phone *</label
+              >Phone</label
             >
             <volt-input
               type="tel"
               formControlName="phone"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="+1 (555) 123-4567"
             />
-            @if (form.controls.phone.touched && form.controls.phone.invalid) {
-              <p class="text-destructive text-xs mt-1">Phone is required</p>
-            }
           </div>
 
           <div>
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
-              >Location *</label
+              >Location</label
             >
             <volt-input
               type="text"
               formControlName="location"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="New York, NY"
             />
-            @if (
-              form.controls.location.touched && form.controls.location.invalid
-            ) {
-              <p class="text-destructive text-xs mt-1">Location is required</p>
-            }
           </div>
 
           <div>
@@ -163,7 +199,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <volt-input
               type="url"
               formControlName="website"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="https://johndoe.com"
             />
           </div>
@@ -175,7 +211,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
             <volt-input
               type="url"
               formControlName="linkedin"
-              class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50"
+              class="input-field"
               placeholder="https://linkedin.com/in/johndoe"
             />
           </div>
@@ -188,7 +224,7 @@ import { PersonalInfo } from "../../../domain/models/cv-model";
           <volt-textarea
             formControlName="summary"
             [rows]="4"
-            class="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 shadow-sm hover:border-primary/50 resize-none"
+            class="input-field-resize-none"
             placeholder="Brief overview of your professional background and key achievements..."
           ></volt-textarea>
         </div>
@@ -209,16 +245,10 @@ export class PersonalInfoForm {
     }),
     email: new FormControl("", {
       nonNullable: true,
-      validators: [Validators.required, Validators.email],
+      validators: [Validators.email],
     }),
-    phone: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    location: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+    phone: new FormControl("", { nonNullable: true }),
+    location: new FormControl("", { nonNullable: true }),
     website: new FormControl("", { nonNullable: true }),
     linkedin: new FormControl("", { nonNullable: true }),
     summary: new FormControl("", { nonNullable: true }),
@@ -244,13 +274,20 @@ export class PersonalInfoForm {
     const file = input?.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      this.avatarPreview.set(dataUrl);
-      this.emitCurrentState();
-    };
-    reader.readAsDataURL(file);
+    resizeImageToDataUrl(file)
+      .then((dataUrl) => {
+        this.avatarPreview.set(dataUrl);
+        this.emitCurrentState();
+      })
+      .catch(() => {
+        // Fallback: store the original data URL if resizing fails.
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.avatarPreview.set(reader.result as string);
+          this.emitCurrentState();
+        };
+        reader.readAsDataURL(file);
+      });
   }
 
   removeAvatar(): void {

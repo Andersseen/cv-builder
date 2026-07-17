@@ -52,8 +52,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Portfolio Website"
               />
             </div>
@@ -64,8 +63,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="url"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="https://github.com/you/project"
               />
             </div>
@@ -78,8 +76,7 @@ import { moveItem } from "../../../core/utils/array";
             <volt-input
               type="text"
               formControlName="technologies"
-              class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              class="input-field"
               placeholder="Angular, TypeScript, Tailwind"
             />
           </div>
@@ -91,8 +88,7 @@ import { moveItem } from "../../../core/utils/array";
             <volt-textarea
               formControlName="description"
               [rows]="3"
-              class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
+              class="input-field-resize-none"
               placeholder="What the project does and your role..."
             ></volt-textarea>
             <p class="text-xs text-muted-foreground mt-1.5">

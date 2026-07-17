@@ -10,7 +10,7 @@ import { renderRichText } from "../../../../shared/utils/markdown";
       class="max-w-4xl mx-auto"
       class="resume-content"
       [style.background-color]="backgroundColor()"
-      [style.font-family]="'Inter, system-ui, sans-serif'"
+      [style.font-family]="fontFamily()"
     >
       <div class="flex min-h-[600px]">
         <!-- Sidebar — dark with accent color accents -->
@@ -318,6 +318,7 @@ export class CreativeTemplate {
   readonly accentColor = input("#f59e0b");
   readonly backgroundColor = input("#ffffff");
   readonly primaryColor = input("#111827");
+  readonly fontFamily = input("Inter, system-ui, sans-serif");
 
   protected renderRichText = renderRichText;
 

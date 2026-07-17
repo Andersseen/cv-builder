@@ -58,8 +58,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="jobTitle"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Software Engineer"
               />
             </div>
@@ -70,8 +69,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="company"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="Tech Corp"
               />
             </div>
@@ -82,8 +80,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="text"
                 formControlName="location"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
                 placeholder="San Francisco, CA"
               />
             </div>
@@ -94,8 +91,7 @@ import { moveItem } from "../../../core/utils/array";
               <volt-input
                 type="month"
                 formControlName="startDate"
-                class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                class="input-field"
               />
             </div>
             <div>
@@ -107,8 +103,7 @@ import { moveItem } from "../../../core/utils/array";
                 <volt-input
                   type="month"
                   formControlName="endDate"
-                  class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                  class="input-field"
                 />
               }
               <label class="flex items-center gap-2 mt-2 cursor-pointer">
@@ -131,8 +126,7 @@ import { moveItem } from "../../../core/utils/array";
             <volt-textarea
               formControlName="description"
               [rows]="3"
-              class="w-full px-3 py-2.5 bg-card border border-border rounded-lg text-foreground
-                     placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
+              class="input-field-resize-none"
               placeholder="Key responsibilities and achievements..."
             ></volt-textarea>
           </div>
