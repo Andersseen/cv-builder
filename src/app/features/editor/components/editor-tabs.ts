@@ -13,6 +13,7 @@ export type EditorTab =
   | "projects"
   | "certifications"
   | "languages"
+  | "sections"
   | "template";
 
 export interface TabConfig {

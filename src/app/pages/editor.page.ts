@@ -21,6 +21,7 @@ import { ProjectsForm } from "../features/editor/components/projects-form";
 import { CertificationsForm } from "../features/editor/components/certifications-form";
 import { LanguagesForm } from "../features/editor/components/languages-form";
 import { TemplateSelector } from "../features/editor/components/template-selector";
+import { SectionsManager } from "../features/editor/components/sections-manager";
 import { ResumePreview } from "../features/editor/components/resume-preview";
 import {
   EditorTabs,
@@ -35,10 +36,12 @@ import {
   Project,
   Certification,
   Language,
+  CustomSection,
 } from "../domain/models/cv-model";
 import { ToastService } from "../core/services/toast";
 import { Viewport } from "../core/services/viewport";
 import { A4 } from "../infrastructure/export/a4";
+import { createCustomSection } from "../domain/models/section-helpers";
 
 @Component({
   selector: "app-editor",
@@ -55,6 +58,7 @@ import { A4 } from "../infrastructure/export/a4";
     TemplateSelector,
     ResumePreview,
     EditorTabs,
+    SectionsManager,
   ],
   templateUrl: "./editor.html",
   host: {
@@ -85,6 +89,7 @@ export default class Editor implements OnInit, OnDestroy {
     { id: "projects", label: "Projects", icon: "🛠️" },
     { id: "certifications", label: "Certifications", icon: "📜" },
     { id: "languages", label: "Languages", icon: "🌐" },
+    { id: "sections", label: "Sections", icon: "📋" },
     { id: "template", label: "Template", icon: "🎨" },
   ];
 
@@ -166,6 +171,47 @@ export default class Editor implements OnInit, OnDestroy {
 
   protected updateLanguages(languages: Language[]) {
     this.cvStore.updateActiveCv({ sections: { languages } });
+  }
+
+  protected updateSectionVisibility(sectionVisibility: Record<string, boolean>) {
+    this.cvStore.updateActiveCv({ settings: { sectionVisibility } });
+  }
+
+  protected updateSectionOrder(sectionOrder: string[]) {
+    this.cvStore.updateActiveCv({ settings: { sectionOrder } });
+  }
+
+  protected addCustomSection() {
+    const section = createCustomSection("Custom Section");
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    const customSections = [...cv.sections.customSections, section];
+    this.cvStore.updateActiveCv({
+      sections: { customSections },
+      settings: {
+        sectionOrder: [...(cv.settings.sectionOrder ?? []), section.id],
+      },
+    });
+  }
+
+  protected updateCustomSection(id: string, section: CustomSection) {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    const customSections = cv.sections.customSections.map((s) =>
+      s.id === id ? section : s,
+    );
+    this.cvStore.updateActiveCv({ sections: { customSections } });
+  }
+
+  protected removeCustomSection(id: string) {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    const customSections = cv.sections.customSections.filter((s) => s.id !== id);
+    const sectionOrder = (cv.settings.sectionOrder ?? []).filter((sId) => sId !== id);
+    this.cvStore.updateActiveCv({
+      sections: { customSections },
+      settings: { sectionOrder },
+    });
   }
 
   protected changeTemplate(templateId: string) {

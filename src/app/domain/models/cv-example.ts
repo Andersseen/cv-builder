@@ -33,6 +33,7 @@ export function createExampleCv(overrides?: Partial<Cv>): Cv {
       projects: createExampleProjects(),
       certifications: createExampleCertifications(),
       languages: createExampleLanguages(),
+      customSections: [],
     },
     ...overrides,
   };

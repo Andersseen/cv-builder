@@ -54,6 +54,8 @@ describe("migrateCv", () => {
         backgroundColor: "#eeeeee",
         primaryColor: "#333333",
         fontFamily: "Roboto",
+        sectionVisibility: {},
+        sectionOrder: [],
       },
     });
 

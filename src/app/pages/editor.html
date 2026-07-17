@@ -91,6 +91,15 @@
             (itemsChange)="updateLanguages($event)"
             (removed)="onListItemRemoved('Language')"
           />
+          } @case ("sections") {
+          <app-sections-manager
+            [cv]="cvStore.activeCv()!"
+            (visibilityChanged)="updateSectionVisibility($event)"
+            (orderChanged)="updateSectionOrder($event)"
+            (addCustomSection)="addCustomSection()"
+            (updateCustomSection)="updateCustomSection($event.id, $event.section)"
+            (removeCustomSection)="removeCustomSection($event)"
+          />
           } @case ("template") {
           <app-template-selector
             [selectedTemplateId]="cvStore.activeCv()!.templateId"

@@ -2,16 +2,16 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4, 5 y 6 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4, 5, 6 y 7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
 
 ## In progress
 
-Nada en curso. Última sesión: Fase 6 (pulido de formularios y datos) cerrada.
+_Nothing currently in progress. Ready for next phase planning._
 
 ## What's working (stable)
 
 - Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (8 tabs) → live preview → PDF/print export.
-- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings.
+- 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings. **Templates now support ordered, visible, and custom sections via `getOrderedSections()` and render custom sections dynamically.**
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
 - Multi-page image PDF export and text-based print export.
@@ -26,7 +26,8 @@ Nada en curso. Última sesión: Fase 6 (pulido de formularios y datos) cerrada.
   - Downscale de avatar a máx 400 px lado + JPEG calidad 0.85 vía `resizeImageToDataUrl()` en `personal-info-form.ts`.
   - `@utility input-field` y `input-field-resize-none` en `src/styles.css`; aplicadas a todos los `volt-input`/`volt-textarea`/`volt-native-select` de los 7 formularios.
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
-- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 58 unit tests green, 12 e2e tests green.
+- **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
+- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 70 unit tests green, 12 e2e tests green.
 
 ## Known issues
 
@@ -34,11 +35,29 @@ Nada en curso. Última sesión: Fase 6 (pulido de formularios y datos) cerrada.
 
 ## Next steps (in rough priority order)
 
-1. **Fase 7** — Secciones flexibles (secciones personalizadas, visibilidad por sección, orden de secciones).
+1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
-3. Phase 7+ a11y: enable eslint template accessibility rules and fix findings.
+3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-17** — **Fase 7 finalizada: cableado del tab "Sections" y verificación completa.**
+  - Añadido `sections` al union type `EditorTab` en `src/app/features/editor/components/editor-tabs.ts`.
+  - Creados `src/app/features/editor/components/sections-manager.ts` y `src/app/features/editor/components/custom-section-form.ts` para gestionar visibilidad, orden y CRUD de secciones personalizadas.
+  - Cableado el tab "Sections" en `src/app/pages/editor.page.ts` (imports, lista de tabs, handlers) y `src/app/pages/editor.html` (`@case ("sections")`).
+  - Añadidos métodos `updateSectionVisibility`, `updateSectionOrder`, `addCustomSection`, `updateCustomSection` y `removeCustomSection` en `editor.page.ts`.
+  - Corregido error de build en `custom-section-form.ts`: `(click)="remove.emit()"` → `(click)="removed.emit()"`.
+  - Eliminados imports no usados en `section-helpers.spec.ts` y `sections-manager.ts` para pasar lint.
+  - Verificado: `pnpm build`, `pnpm lint`, `pnpm test` (70 tests) y `pnpm e2e` (12 tests) verdes.
+  - Actualizados `docs/plan/PLAN.md`, `docs/STATE.md` y `docs/specs/004-fase7-flexible-sections.md` a Done.
+
+- **2026-07-17** — **Fase 7 (inicio): refactor de plantillas para secciones ordenadas, visibles y personalizadas.**
+  - Añadidos `getOrderedSections()`, `CustomSection` y `CustomItem` a las 5 plantillas (`modern-template.ts`, `classic-template.ts`, `minimal-template.ts`, `creative-template.ts`, `executive-template.ts`).
+  - Reemplazados los bloques estáticos de `experience`, `education`, `skills`, `projects`, `certifications` y `languages` por un `@for` + `@switch` sobre `orderedSections()`.
+  - Creative renderiza `skills`, `education` y `languages` en la sidebar y el resto (incluidas secciones personalizadas) en la columna principal.
+  - Añadido renderizado de secciones personalizadas con título, subtítulo y descripción markdown en estilo de projects/experience de cada plantilla.
+  - Correcciones de compilación relacionadas: añadido `customSections: []` en `cv-example.ts` y acceso por clave `BUILT_IN_SECTION_LABELS["personal"]` en `section-helpers.ts`.
+  - Verificado: `pnpm build` y `pnpm test` (70 tests) verdes. UI del tab de secciones pendiente para siguiente sesión.
 
 - **2026-07-17** — **Fase 6 de PLAN.md: pulido de formularios y datos.**
   - Relajados requireds en `personal-info-form.ts`: solo `fullName` es obligatorio; `email` valida solo si no está vacío; Phone/Location ya no marcan `*` ni error required.

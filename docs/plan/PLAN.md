@@ -233,17 +233,17 @@ preview y en ambos PDFs.
 **Depende de**: Fase 0. Recomendado después de la 4 (para no rehacer trabajo de page-breaks
 al tocar las plantillas). Toca el modelo → exige backfill en `loadAll()` + tests.
 
-- [ ] **Secciones personalizadas**: `customSections: CustomSection[]` en el modelo
+- [x] **Secciones personalizadas**: `customSections: CustomSection[]` en el modelo
       (`{ id, title, items: { id, title, subtitle, description }[] }`, description con
       markdown ligero). Backfill `?? []`. Form genérico (nuevo tab "More" o similar) para
       crear/renombrar/borrar secciones y sus ítems, con reorden ↑/↓.
-- [ ] **Visibilidad por sección**: `sectionVisibility` en settings (o campo `hidden` por
+- [x] **Visibilidad por sección**: `sectionVisibility` en settings (o campo `hidden` por
       sección) + toggles en la UI. Sección oculta no renderiza en preview ni exports.
-- [ ] **Orden de secciones**: `sectionOrder: string[]` en settings + UI de reorden (↑/↓,
+- [x] **Orden de secciones**: `sectionOrder: string[]` en settings + UI de reorden (↑/↓,
       consistente con las listas). Las 5 plantillas respetan el orden donde su layout lo
       permita (documentar excepciones: p. ej. un sidebar fijo puede limitar qué se mueve).
-- [ ] Render de todo lo anterior en las 5 plantillas + ambos exports.
-- [ ] Tests: backfill, y helpers de visibilidad/orden como funciones puras.
+- [x] Render de todo lo anterior en las 5 plantillas + ambos exports.
+- [x] Tests: backfill, y helpers de visibilidad/orden como funciones puras.
 
 **Hecho cuando**: crear una sección "Volunteering", ocultar Skills y reordenar secciones se
 refleja en preview y en ambos PDFs con las 5 plantillas; CVs antiguos cargan sin romperse.
