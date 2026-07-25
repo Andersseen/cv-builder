@@ -104,7 +104,7 @@ pnpm start          # → http://localhost:5173
 
 That's it. No `.env`, no database to provision, no API keys — there is no backend to point at.
 
-> **Requires** Node.js 20+ and [pnpm](https://pnpm.io/) 10+ (pnpm is the package manager here, not npm).
+> **Requires** Node.js 22+ and [pnpm](https://pnpm.io/) 10+ (pnpm is the package manager here, not npm).
 
 ---
 
