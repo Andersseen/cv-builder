@@ -34,11 +34,11 @@ _Nothing currently in progress. Ready for next phase planning._
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
 2. **`cv-builder.andersseen.dev` no resuelve todavía** (bloqueado, requiere acción manual): el dominio está añadido al proyecto de Pages pero la zona `andersseen.dev` tiene un registro wildcard `*`, así que el subdominio resuelve al proxy de Cloudflare sin llegar al proyecto y devuelve 404. Falta crear un CNAME específico `cv-builder` → `cv-builder-8on.pages.dev` (proxied) en el dashboard de DNS. El token OAuth de wrangler no tiene scope de DNS. Mientras tanto la URL viva es <https://cv-builder-8on.pages.dev>.
-3. **Secrets de CI pendientes**: `deploy.yml` fallará hasta que se añadan `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a los secrets del repo.
+3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` llega hasta `wrangler pages deploy` y falla ahí con "necessary to set a CLOUDFLARE_API_TOKEN". `CLOUDFLARE_ACCOUNT_ID` ya está configurado como secret del repo. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy` en local sí funciona (wrangler usa el login OAuth).
 
 ## Next steps (in rough priority order)
 
-0. **Desbloquear el dominio y el CI** (ver Known issues 2 y 3): crear el CNAME `cv-builder` en la zona `andersseen.dev` y añadir los dos secrets de Cloudflare al repo.
+0. **Desbloquear el dominio y el CI** (ver Known issues 2 y 3): crear el CNAME `cv-builder` en la zona `andersseen.dev` y añadir el secret `CLOUDFLARE_API_TOKEN` al repo. Son las dos únicas cosas que no se pueden hacer sin acceso al dashboard.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
@@ -55,7 +55,9 @@ _Nothing currently in progress. Ready for next phase planning._
   - **GitHub About** actualizado: descripción nueva, homepage y 20 topics (angular, angular21, analogjs, signals, zoneless, resume-builder, local-first, cloudflare-pages…).
   - Añadido `LICENSE` (MIT) — el README ya declaraba MIT pero el fichero no existía.
   - Corregidas versiones obsoletas en docs: Angular 19 → 21 en `AGENTS.md` y `docs/CONTEXT.md`, `docs/CONVENTIONS.md`; "8 tabs" → 9 en este fichero. Reescrita la sección de comandos de `AGENTS.md` (decía "no tests and no linter configured yet", que era falso) y añadida sección de Deployment.
-  - Verificado: `pnpm build`, `pnpm test` (70) y `pnpm e2e` (12) verdes.
+  - **GitHub Pages deshabilitado** (`DELETE /repos/.../pages`): estaba activo construyendo desde la raíz de `main` y sirviendo el repo crudo en `andersseen.github.io/cv-builder`, o sea un segundo camino de deploy. Ahora Cloudflare Pages es literalmente el único.
+  - **Fix de CI**: el primer run de `deploy.yml` falló porque wrangler 4.x exige Node ≥ 22 y los workflows pinneaban Node 20. Subidos `ci.yml` y `deploy.yml` a Node 22 y corregido el prerequisito del README (20+ → 22+). Tras el fix, `deploy.yml` llega hasta `wrangler pages deploy` y solo falta el token (Known issue 3).
+  - Verificado: `pnpm lint`, `pnpm build`, `pnpm test` (70) y `pnpm e2e` (12) verdes en local; CI verde en GitHub Actions.
 
 - **2026-07-17** — **Fase 7 finalizada: cableado del tab "Sections" y verificación completa.**
   - Añadido `sections` al union type `EditorTab` en `src/app/features/editor/components/editor-tabs.ts`.
