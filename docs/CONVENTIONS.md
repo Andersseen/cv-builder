@@ -2,7 +2,7 @@
 
 Follow existing code style exactly. When in doubt, open a similar existing file and imitate it.
 
-## Angular (v19, signals-first)
+## Angular (v21, signals-first)
 
 **Components**
 

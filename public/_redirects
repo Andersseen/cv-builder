@@ -1,0 +1,3 @@
+# SPA fallback: the app ships a single index.html and routes client-side
+# (AnalogJS with ssr: false), so every unmatched path must serve the shell.
+/*  /index.html  200

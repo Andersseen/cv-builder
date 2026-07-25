@@ -1,6 +1,6 @@
 # Agent Guide — Modern CV Builder
 
-You are working on **Modern CV Builder**: a 100% client-side Angular 19 app for creating resumes with live preview and PDF export. No backend, no auth — everything is stored locally in IndexedDB.
+You are working on **Modern CV Builder**: a 100% client-side Angular 21 app for creating resumes with live preview and PDF export. No backend, no auth — everything is stored locally in IndexedDB.
 
 ## Session protocol (do this every session)
 
@@ -13,10 +13,23 @@ You are working on **Modern CV Builder**: a 100% client-side Angular 19 app for 
 ```bash
 pnpm install     # install deps (pnpm is the package manager, not npm)
 pnpm start       # dev server at http://localhost:5173 (Vite default)
-pnpm build       # production build
+pnpm build       # production build → dist/analog/public
+pnpm lint        # ESLint + angular-eslint
+pnpm test        # unit tests (Vitest)
+pnpm e2e         # end-to-end tests (Playwright)
+pnpm deploy      # build + deploy to Cloudflare Pages (production)
 ```
 
-There are **no tests and no linter configured yet**. Verify changes by building (`pnpm build`) — TypeScript is fully strict and `strictTemplates` is on, so the compiler catches most mistakes.
+**Before declaring work done, run `pnpm lint`, `pnpm test`, `pnpm e2e` and `pnpm build`** — all four must be green (CI runs the first three plus the build). TypeScript is fully strict and `strictTemplates` is on, so the compiler catches most mistakes.
+
+## Deployment
+
+**Cloudflare Pages is the only deployment target.** Do not add config for other hosts.
+
+- Project: `cv-builder` · production URL: <https://cv-builder.andersseen.dev> (fallback: `cv-builder-8on.pages.dev`)
+- Config: [wrangler.jsonc](wrangler.jsonc) (`pages_build_output_dir: dist/analog/public`)
+- SPA fallback lives in `public/_redirects`; cache + security headers in `public/_headers`. Both are copied verbatim into the build output by Vite — edit them there, not in `dist/`.
+- Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) then [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
 
 ## Stack
 

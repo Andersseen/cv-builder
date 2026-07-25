@@ -10,7 +10,7 @@ Most online resume builders require sign-up, lock export behind a paywall, or st
 
 - **Local-first**: every CV lives in the user's browser (IndexedDB). Closing the tab loses nothing; no network needed after first load.
 - **Zero friction**: land on the page → create a resume → export PDF. No account, no payment, no cookies-consent maze.
-- **Portfolio-quality engineering**: the project also serves as a showcase of modern Angular (v19, signals, standalone, Tailwind v4) with a clean layered architecture. Code quality is a goal in itself, not just a means.
+- **Portfolio-quality engineering**: the project also serves as a showcase of modern Angular (v21, signals, standalone, zoneless, Tailwind v4) with a clean layered architecture. Code quality is a goal in itself, not just a means.
 
 ## Target user
 

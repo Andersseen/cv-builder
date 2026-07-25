@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-17 · **Active branch**: `feature/plan`. Fases 0, 1, 2, 3, 4, 5, 6 y 7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas.
+**Last updated**: 2026-07-25 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a Cloudflare Pages y presentación pública del repo renovada.
 
 ## In progress
 
@@ -10,7 +10,7 @@ _Nothing currently in progress. Ready for next phase planning._
 
 ## What's working (stable)
 
-- Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (8 tabs) → live preview → PDF/print export.
+- Full flow: landing → dashboard (CRUD of CVs + JSON export/import per CV + backup/restore) → editor (9 tabs) → live preview → PDF/print export.
 - 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings. **Templates now support ordered, visible, and custom sections via `getOrderedSections()` and render custom sections dynamically.**
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
@@ -28,18 +28,34 @@ _Nothing currently in progress. Ready for next phase planning._
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 70 unit tests green, 12 e2e tests green.
+- **Deployment**: Cloudflare Pages es el único target. Proyecto `cv-builder`, config en `wrangler.jsonc`, SPA fallback en `public/_redirects`, cache/seguridad en `public/_headers`. `pnpm deploy` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
 
 ## Known issues
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
+2. **`cv-builder.andersseen.dev` no resuelve todavía** (bloqueado, requiere acción manual): el dominio está añadido al proyecto de Pages pero la zona `andersseen.dev` tiene un registro wildcard `*`, así que el subdominio resuelve al proxy de Cloudflare sin llegar al proyecto y devuelve 404. Falta crear un CNAME específico `cv-builder` → `cv-builder-8on.pages.dev` (proxied) en el dashboard de DNS. El token OAuth de wrangler no tiene scope de DNS. Mientras tanto la URL viva es <https://cv-builder-8on.pages.dev>.
+3. **Secrets de CI pendientes**: `deploy.yml` fallará hasta que se añadan `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a los secrets del repo.
 
 ## Next steps (in rough priority order)
 
+0. **Desbloquear el dominio y el CI** (ver Known issues 2 y 3): crear el CNAME `cv-builder` en la zona `andersseen.dev` y añadir los dos secrets de Cloudflare al repo.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-25** — **Deployment unificado en Cloudflare Pages + presentación pública del repo.**
+  - **Deployment**: eliminado `vercel.json`. Añadidos `wrangler.jsonc` (`pages_build_output_dir: dist/analog/public`), `public/_redirects` (SPA fallback) y `public/_headers` (cache inmutable para `/assets/*`, revalidación de `index.html`, cabeceras de seguridad). Vite copia `public/` al output, verificado en el build.
+  - Añadidos scripts `deploy` y `deploy:preview` usando `pnpm dlx wrangler` (sin añadir dependencia, respetando la regla 11 de AGENTS.md).
+  - Nuevo `.github/workflows/deploy.yml` (push a `main` + `workflow_dispatch`) con `cloudflare/wrangler-action@v4`, concurrency group y GitHub Environment `production`.
+  - Creado el proyecto de Pages `cv-builder` y desplegado a producción. Verificado en vivo: root 200, ruta profunda `/dashboard` 200 (confirma `_redirects`), y las cabeceras de `_headers` presentes en la respuesta.
+  - **README** reescrito de cero, orientado a visual: header centrado con hero, badges de estado/tech, tabla comparativa, tabla de features, galería de plantillas, 2 diagramas mermaid (capas + secuencia de keystroke→preview→autosave), tabla de stack, scripts, deployment, estructura y docs.
+  - **Screenshots reales** capturados con Playwright contra el deploy en vivo y guardados en `docs/screenshots/` (landing, editor, template picker, dashboard, editor en dark mode) + `templates.png`, un strip compuesto de las 5 plantillas renderizadas en A4 con el CV de ejemplo (~1,2 MB en total).
+  - **GitHub About** actualizado: descripción nueva, homepage y 20 topics (angular, angular21, analogjs, signals, zoneless, resume-builder, local-first, cloudflare-pages…).
+  - Añadido `LICENSE` (MIT) — el README ya declaraba MIT pero el fichero no existía.
+  - Corregidas versiones obsoletas en docs: Angular 19 → 21 en `AGENTS.md` y `docs/CONTEXT.md`, `docs/CONVENTIONS.md`; "8 tabs" → 9 en este fichero. Reescrita la sección de comandos de `AGENTS.md` (decía "no tests and no linter configured yet", que era falso) y añadida sección de Deployment.
+  - Verificado: `pnpm build`, `pnpm test` (70) y `pnpm e2e` (12) verdes.
 
 - **2026-07-17** — **Fase 7 finalizada: cableado del tab "Sections" y verificación completa.**
   - Añadido `sections` al union type `EditorTab` en `src/app/features/editor/components/editor-tabs.ts`.

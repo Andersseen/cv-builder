@@ -1,47 +1,336 @@
-# Modern CV Builder
+<div align="center">
 
-Modern CV Builder is a 100% client-side Angular 19 application (AnalogJS + Vite, zoneless, signals) that helps users create professional resumes in the browser. It provides structured forms, real-time previews, and PDF export. Everything is stored locally in IndexedDB — no backend, no account.
+<img src="docs/screenshots/02-editor.png" width="840" alt="Modern CV Builder — structured forms on the left, live A4 preview on the right">
 
-## Features
+# 📄 Modern CV Builder
 
-- Forms for personal info, experience, education, skills, projects, certifications, and languages
-- Reorder list items (↑/↓) and light markdown (`**bold**`, `*italic*`, `-` bullets) in descriptions
-- Template selection and live resume preview (5 distinct templates)
-- Responsive layout with optional mobile preview
-- One-click PDF export using `html-to-image` and `jspdf`, plus ATS-friendly print/PDF
+### Build a professional résumé in your browser. No account, no server, no tracking.
 
-## Prerequisites
+Fill structured forms, watch an A4 preview update as you type, pick one of five distinct
+templates, and export a print-ready PDF. Every résumé lives in **your** browser's IndexedDB —
+nothing is ever uploaded.
 
-- [Node.js](https://nodejs.org/) (version 20 or later)
-- [pnpm](https://pnpm.io/) or npm
+<br/>
 
-## Getting Started
+[![Live Demo](https://img.shields.io/badge/Live_Demo-cv--builder.andersseen.dev-3B82F6?style=for-the-badge&logo=cloudflare&logoColor=white)](https://cv-builder.andersseen.dev)
+[![CI](https://img.shields.io/github/actions/workflow/status/Andersseen/cv-builder/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white)](https://github.com/Andersseen/cv-builder/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/Andersseen/cv-builder/deploy.yml?branch=main&style=for-the-badge&label=Deploy&logo=cloudflarepages&logoColor=white)](https://github.com/Andersseen/cv-builder/actions/workflows/deploy.yml)
+[![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
-Install dependencies:
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)
+![AnalogJS](https://img.shields.io/badge/AnalogJS-2.6-A855F7?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9_strict-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Dexie](https://img.shields.io/badge/IndexedDB-Dexie_4-F59E0B?style=flat-square)
+![Zoneless](https://img.shields.io/badge/change_detection-zoneless-0EA5E9?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-70_unit_·_12_e2e-22C55E?style=flat-square&logo=vitest&logoColor=white)
+
+**[Live demo](https://cv-builder.andersseen.dev)** ·
+[Features](#-features) ·
+[Quick start](#-quick-start) ·
+[Templates](#-five-genuinely-different-templates) ·
+[Architecture](#-architecture) ·
+[Docs](#-documentation)
+
+</div>
+
+---
+
+## 🤔 Why another résumé builder?
+
+Most online builders ask you to sign up, keep your employment history on their servers, and put
+the PDF export behind a paywall. This one inverts all three.
+
+|                    | Typical online builder      | Modern CV Builder                  |
+| ------------------ | --------------------------- | ---------------------------------- |
+| **Account**        | Required                    | None — open the page and start     |
+| **Your data**      | On their servers            | IndexedDB in your browser only     |
+| **PDF export**     | Often paywalled/watermarked | Free, unlimited, two export modes  |
+| **Works offline**  | No                          | Yes, after the first load          |
+| **Backend to run** | Theirs                      | None at all — it's a static bundle |
+| **Cost to host**   | —                           | $0 on Cloudflare Pages' free tier  |
+
+> **Design principle:** the résumé is the product. Preview fidelity and PDF quality beat every
+> app-UI concern — which is why the preview always renders on white, even in dark mode.
+
+---
+
+## ✨ Features
+
+|     | Feature                     | What it does                                                                                        |
+| :-: | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| 📝  | **Nine content tabs**       | Personal, Experience, Education, Skills, Projects, Certifications, Languages, Sections and Template |
+| ⚡  | **Instant live preview**    | Zoneless signals push every keystroke straight to the A4 preview — no debounce, no lag              |
+| 🎨  | **Five distinct templates** | Different _layouts_ (sidebar, header-accent, single-column), not recolours of one design            |
+| 🌈  | **Per-résumé theming**      | Accent, background and text colours plus four print-safe font stacks                                |
+| 🧩  | **Flexible sections**       | Reorder sections, hide the ones you don't need, add your own custom sections                        |
+| 📊  | **Completeness score**      | A live 0–100 score with actionable suggestions that jump straight to the right tab                  |
+| 💾  | **Autosave**                | Debounced 800 ms writes to IndexedDB — edits survive a reload or a crashed tab                      |
+| ↩️  | **Undo / redo**             | In-memory history with keyboard shortcuts                                                           |
+| 📤  | **Two PDF modes**           | Pixel-perfect image PDF, or a text-selectable ATS-friendly print PDF                                |
+| 🔁  | **JSON portability**        | Export/import a single résumé, or back up and restore everything                                    |
+| 🌗  | **Dark mode**               | System-preference aware, persisted — the résumé itself stays print-white                            |
+| 🔒  | **Zero network calls**      | No analytics, no fonts CDN, no telemetry. Read the Network tab and see                              |
+
+---
+
+## 🎨 Five genuinely different templates
+
+<div align="center">
+<img src="docs/screenshots/templates.png" width="100%" alt="The five résumé templates side by side: Modern, Classic, Minimal, Creative, Executive">
+</div>
+
+| Template      | Layout                                       |
+| ------------- | -------------------------------------------- |
+| **Modern**    | Gradient header with card-based sections     |
+| **Classic**   | Traditional centred layout with a serif feel |
+| **Minimal**   | Maximum whitespace, clean typography         |
+| **Creative**  | Dark sidebar with timeline and progress bars |
+| **Executive** | Bold dark header with pill badges            |
+
+Adding a sixth is a two-file change — see [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
+
+---
+
+## 🚀 Quick start
 
 ```bash
+git clone https://github.com/Andersseen/cv-builder.git
+cd cv-builder
 pnpm install
+pnpm start          # → http://localhost:5173
 ```
 
-Start a development server at `http://localhost:5173/`:
+That's it. No `.env`, no database to provision, no API keys — there is no backend to point at.
+
+> **Requires** Node.js 20+ and [pnpm](https://pnpm.io/) 10+ (pnpm is the package manager here, not npm).
+
+---
+
+## 📸 Screenshots
+
+|                                                    Landing                                                    |                                      Dashboard                                      |
+| :-----------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+|                        <img src="docs/screenshots/01-landing.png" alt="Landing page">                         | <img src="docs/screenshots/04-dashboard.png" alt="Dashboard listing saved résumés"> |
+|                                         **Template picker & theming**                                         |                                    **Dark mode**                                    |
+| <img src="docs/screenshots/03-templates.png" alt="Template picker with accent, background and font controls"> |      <img src="docs/screenshots/05-editor-dark.png" alt="Editor in dark mode">      |
+
+---
+
+## 🧩 Architecture
+
+Four layers, dependencies pointing **downward only**. `domain/` is pure TypeScript — no Angular,
+no RxJS, no side effects, ever.
+
+```mermaid
+flowchart TD
+    subgraph F["features/ · UI"]
+        F1["landing"]
+        F2["dashboard"]
+        F3["editor + live preview"]
+    end
+    subgraph A["application/ · state and orchestration"]
+        A1["CvStore (signals)"]
+        A2["Autosave (800 ms)"]
+        A3["History (undo/redo)"]
+    end
+    subgraph I["infrastructure/ · adapters"]
+        I1["Dexie repository"]
+        I2["PDF and print export"]
+        I3["JSON portability"]
+    end
+    subgraph D["domain/ · pure TypeScript"]
+        D1["Cv models"]
+        D2["section and completeness helpers"]
+    end
+
+    F --> A
+    A --> I
+    A --> D
+    I --> D
+    F --> D
+```
+
+| Layer             | Owns                                   | May depend on                             |
+| ----------------- | -------------------------------------- | ----------------------------------------- |
+| `features/`       | Pages and components                   | `application`, `core`, `shared`, `domain` |
+| `application/`    | `CvStore`, `Autosave`, `History`       | `infrastructure`, `domain`                |
+| `infrastructure/` | Dexie persistence, PDF/print, JSON I/O | `domain`                                  |
+| `domain/`         | Models and pure helpers                | **nothing**                               |
+
+<details>
+<summary><b>How a keystroke reaches the screen and the disk</b></summary>
+
+<br/>
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant Form as Form component
+    participant Store as CvStore (signal)
+    participant Preview as Resume preview
+    participant Save as Autosave
+    participant DB as IndexedDB
+
+    U->>Form: types a character
+    Form->>Store: patch(partial Cv)
+    Store-->>Preview: signal change → re-render (same tick)
+    Store-->>Save: effect() marks dirty
+    Note over Save: debounce 800 ms
+    Save->>DB: put(cv) via Dexie
+    DB-->>Save: ok
+    Save-->>U: "Saved ✓" indicator
+```
+
+Every CV mutation goes through `CvStore`. Components never touch Dexie and never call
+`persist()` — `Autosave` owns that. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+</details>
+
+<details>
+<summary><b>Why the initial bundle stays small</b></summary>
+
+<br/>
+
+The two heavy PDF dependencies are dynamically imported the first time you export, so they
+never touch the initial load:
+
+| Chunk            | Gzipped | Loaded              |
+| ---------------- | ------- | ------------------- |
+| `jspdf`          | ~118 kB | on first PDF export |
+| `html2canvas`    | ~48 kB  | on first PDF export |
+| `editor.page`    | ~30 kB  | on route entry      |
+| `dashboard.page` | ~4 kB   | on route entry      |
+
+All three routes are lazy — landing visitors never download the editor.
+
+</details>
+
+---
+
+## 🛠️ Tech stack
+
+| Layer          | Choice                                       | Why                                               |
+| -------------- | -------------------------------------------- | ------------------------------------------------- |
+| Framework      | **Angular 21**, standalone + signals         | Zoneless change detection, no NgModules anywhere  |
+| Meta-framework | **AnalogJS 2.6** + **Vite 6**                | File-based routing, fast dev server, static build |
+| Styling        | **Tailwind CSS v4**                          | CSS-first `@theme` config, semantic HSL tokens    |
+| Persistence    | **Dexie 4** over IndexedDB                   | The only storage — no backend exists              |
+| PDF export     | `html-to-image` + `jspdf`, plus native print | Pixel-perfect _and_ ATS-friendly paths            |
+| Language       | **TypeScript 5.9**, all strict flags         | Plus `strictTemplates` for Angular templates      |
+| Tests          | **Vitest** (70) + **Playwright** (12)        | Unit for pure logic, e2e for the real flow        |
+| Lint / format  | ESLint + angular-eslint, Prettier            | Enforced in CI                                    |
+| Hosting        | **Cloudflare Pages**                         | Static bundle on the edge, free tier, $0          |
+
+---
+
+## 📜 Scripts
+
+| Command               | What it does                                    |
+| --------------------- | ----------------------------------------------- |
+| `pnpm start`          | Dev server on `http://localhost:5173`           |
+| `pnpm build`          | Production build → `dist/analog/public`         |
+| `pnpm preview`        | Serve the production build locally              |
+| `pnpm test`           | Unit tests (Vitest, single run)                 |
+| `pnpm test:watch`     | Unit tests in watch mode                        |
+| `pnpm e2e`            | End-to-end tests (Playwright)                   |
+| `pnpm e2e:ui`         | Playwright in UI mode                           |
+| `pnpm lint`           | ESLint over the repo                            |
+| `pnpm format`         | Prettier write                                  |
+| `pnpm deploy`         | Build and deploy to Cloudflare Pages production |
+| `pnpm deploy:preview` | Build and deploy to a Cloudflare preview branch |
+
+---
+
+## ☁️ Deployment
+
+One target, one command. The app is a static bundle, so hosting is
+[Cloudflare Pages](https://developers.cloudflare.com/pages/) and nothing else.
 
 ```bash
-pnpm start
+pnpm deploy     # build + wrangler pages deploy
 ```
 
-Build the application for production:
+Configuration lives in [wrangler.jsonc](wrangler.jsonc); `public/_redirects` handles the SPA
+fallback and `public/_headers` sets cache and security headers.
 
-```bash
-pnpm build
+**Continuous deployment** — every push to `main` runs
+[`ci.yml`](.github/workflows/ci.yml) (lint → test → build) and
+[`deploy.yml`](.github/workflows/deploy.yml) (build → deploy). The deploy workflow needs two
+repository secrets:
+
+| Secret                  | Where to get it                                                            |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare dashboard → My Profile → API Tokens → _Edit Cloudflare Workers_ |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID                        |
+
+---
+
+## 🗂️ Project structure
+
+```
+src/
+├── app/
+│   ├── pages/                   # file-based routes: (home), dashboard, editor
+│   ├── features/
+│   │   ├── landing/             # hero, features, CTA
+│   │   ├── dashboard/           # résumé cards, empty state, backup/restore
+│   │   └── editor/
+│   │       ├── components/      # one form per tab, toolbar, preview
+│   │       └── resume-templates/# the five templates
+│   ├── application/
+│   │   ├── state/cv.ts          # CvStore — every mutation goes through here
+│   │   └── services/            # autosave, history
+│   ├── infrastructure/
+│   │   ├── persistence/         # Dexie schema + repository
+│   │   ├── export/              # image PDF + print PDF
+│   │   └── portability/         # JSON export / import / backup
+│   ├── domain/models/           # pure TS: Cv, defaults, template registry, helpers
+│   ├── core/services/           # theme, toast
+│   └── shared/                  # header, footer, toast UI, utils
+├── styles.css                   # Tailwind v4 @theme + design tokens
+└── main.ts                      # zoneless bootstrap
 ```
 
-## Project Structure
+---
 
-- `src/app/pages` – file-based routed pages (landing, dashboard, editor)
-- `src/app/features/editor` – resume editor with form components and preview
-- `src/app/features/landing` – landing page components
-- `src/app/shared` and `src/app/core` – reusable utilities and services
+## 📚 Documentation
 
-## License
+This repo is spec-driven: non-trivial features get a spec in `docs/specs/` before any code.
 
-This project is licensed under the MIT License.
+| Document                                     | Read it when you want to know…                      |
+| -------------------------------------------- | --------------------------------------------------- |
+| [AGENTS.md](AGENTS.md)                       | The house rules — start here before contributing    |
+| [docs/CONTEXT.md](docs/CONTEXT.md)           | What the product is, and what it deliberately isn't |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layers, data flow, and where state lives            |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md)   | Code style and recipes (e.g. adding a template)     |
+| [docs/STATE.md](docs/STATE.md)               | Current status, known issues, next steps            |
+| [docs/ROADMAP.md](docs/ROADMAP.md)           | Where this is going                                 |
+| [docs/specs/](docs/specs/)                   | The spec behind each shipped feature                |
+
+---
+
+## 🤝 Contributing
+
+Issues and pull requests are welcome. Before you open a PR:
+
+1. Read [AGENTS.md](AGENTS.md) — it documents the non-negotiables (standalone components,
+   `OnPush` everywhere, signals over decorators, strict layer boundaries).
+2. Keep `pnpm lint`, `pnpm test`, `pnpm e2e` and `pnpm build` green. CI runs all four.
+3. For anything non-trivial, add a spec in `docs/specs/` first.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) © [Andersseen](https://github.com/Andersseen)
+
+<div align="center">
+<br/>
+
+**[cv-builder.andersseen.dev](https://cv-builder.andersseen.dev)**
+
+<sub>Built with Angular 21, signals and zero servers.</sub>
+
+</div>
