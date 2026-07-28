@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-25 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a Cloudflare Pages y presentación pública del repo renovada.
+**Last updated**: 2026-07-28 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a Cloudflare Pages y presentación pública del repo renovada. Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
 
 ## In progress
 
@@ -44,6 +44,13 @@ _Nothing currently in progress. Ready for next phase planning._
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-28** — **Automatización de Claude Code: hooks, skills, subagentes y MCP.**
+  - `.mcp.json`: añadidos `angular-cli` (`pnpm exec ng mcp`, el servidor MCP que trae el CLI de Angular 21 — best practices, docs y `modernize`) y `cloudflare-docs` (HTTP remoto, para no inventar sintaxis de `_headers`/`_redirects`/wrangler). Los tres servidores verificados con `claude mcp list`.
+  - `.claude/settings.json` + `.claude/hooks/`: hook `PreToolUse` que bloquea escrituras a `dist/**`, `pnpm-lock.yaml` y `.env` (regla 11 y el footgun de editar el `_headers` copiado en `dist/`), y hook `PostToolUse` que pasa Prettier + `eslint --fix` al fichero recién escrito. Ambos probados con payloads reales.
+  - `.claude/skills/`: `end-session` (actualiza este fichero desde el diff real, no de memoria) y `new-template` (los 3 pasos de añadir plantilla + la excepción de estilos de `resume-templates/`).
+  - `.claude/agents/`: `conventions-reviewer` (reglas doradas que ni ESLint ni `tsc` cazan: fronteras de capas, `domain/` sin Angular/RxJS, estado solo vía `CvStore`, tokens semánticos) y `a11y-reviewer` (cubre el hueco de las reglas a11y de plantilla desactivadas a propósito en `eslint.config.mjs`).
+  - `.gitignore`: añadido `.claude/settings.local.json` (la config compartida se commitea, los overrides personales no).
 
 - **2026-07-25** — **Deployment unificado en Cloudflare Pages + presentación pública del repo.**
   - **Deployment**: eliminado `vercel.json`. Añadidos `wrangler.jsonc` (`pages_build_output_dir: dist/analog/public`), `public/_redirects` (SPA fallback) y `public/_headers` (cache inmutable para `/assets/*`, revalidación de `index.html`, cabeceras de seguridad). Vite copia `public/` al output, verificado en el build.
