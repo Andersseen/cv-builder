@@ -243,7 +243,7 @@ All three routes are lazy — landing visitors never download the editor.
 | `pnpm e2e:ui`         | Playwright in UI mode                                           |
 | `pnpm lint`           | ESLint over the repo                                            |
 | `pnpm format`         | Prettier write                                                  |
-| `pnpm deploy`         | Build and deploy to Cloudflare Workers production               |
+| `pnpm deploy:prod`    | Build and deploy to Cloudflare Workers production               |
 | `pnpm deploy:preview` | Build and upload a preview version to Cloudflare                |
 
 ---
@@ -256,7 +256,7 @@ Worker serves the SPA and renders PDFs server-side via
 [Browser Run](https://developers.cloudflare.com/browser-run/how-to/pdf-generation/).
 
 ```bash
-pnpm deploy     # build + wrangler deploy
+pnpm deploy:prod     # build + wrangler deploy
 ```
 
 Configuration lives in [wrangler.jsonc](wrangler.jsonc): static assets from

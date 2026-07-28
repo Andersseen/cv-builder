@@ -28,23 +28,29 @@ _Nothing currently in progress. Ready for next phase planning._
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
-- **Deployment**: Cloudflare Workers es el único target. Worker `cv-builder` definido en `wrangler.jsonc` (`main: worker/index.ts`, assets desde `dist/analog/public`, SPA fallback nativo con `not_found_handling`, `/api/*` al Worker con `run_worker_first`, binding `BROWSER` de Browser Run). `pnpm deploy` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
+- **Deployment**: Cloudflare Workers es el único target. Worker `cv-builder` definido en `wrangler.jsonc` (`main: worker/index.ts`, assets desde `dist/analog/public`, SPA fallback nativo con `not_found_handling`, `/api/*` al Worker con `run_worker_first`, binding `BROWSER` de Browser Run). `pnpm deploy:prod` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
 
 ## Known issues
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
-2. **`cv-builder.andersseen.dev` pendiente de re-adjuntar al Worker** (bloqueado, requiere acción manual): el dominio sigue asignado al proyecto **Pages** viejo. Tras el primer `wrangler deploy` a producción: quitar el dominio del proyecto Pages y añadirlo en Workers → `cv-builder` → Settings → Domains & Routes → Add Custom Domain. Como la zona `andersseen.dev` está en Cloudflare, el dashboard crea el registro automáticamente (el problema del wildcard `*` de la era Pages ya no aplica). Mientras tanto la URL viva será `cv-builder.<subdomain>.workers.dev` tras el deploy.
-3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita el secret para `wrangler deploy`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy` en local sí funciona (wrangler usa el login OAuth).
+2. **`cv-builder.andersseen.dev` pendiente de re-adjuntar al Worker** (bloqueado, requiere acción manual): el dominio sigue asignado al proyecto **Pages** viejo. Pasos: quitar el dominio del proyecto Pages y añadirlo en Workers → `cv-builder` → Settings → Domains & Routes → Add Custom Domain. Como la zona `andersseen.dev` está en Cloudflare, el dashboard crea el registro automáticamente (el problema del wildcard `*` de la era Pages ya no aplica). La URL viva en producción es <https://cv-builder.andriipap01.workers.dev>.
+3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita el secret para `wrangler deploy`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy:prod` en local sí funciona (wrangler usa el login OAuth).
 4. **Proyecto Pages viejo `cv-builder` sin borrar** (manual): sigue existiendo en el dashboard tras la migración a Workers. Borrarlo cuando el Worker esté verificado en producción para evitar confusiones (el `pages.dev` subdomain seguirá sirviendo el build viejo hasta entonces).
 
 ## Next steps (in rough priority order)
 
-0. **Primer deploy del Worker + dominio** (ver Known issues 2–4): `pnpm deploy` en local, adjuntar `cv-builder.andersseen.dev` como Custom Domain del Worker, borrar el proyecto Pages viejo, añadir el secret `CLOUDFLARE_API_TOKEN` al repo, y revisar el usage de Browser Run en el dashboard.
+0. ~~Primer deploy del Worker~~ **hecho** (2026-07-28, <https://cv-builder.andriipap01.workers.dev>). Queda (ver Known issues 2–4): adjuntar `cv-builder.andersseen.dev` como Custom Domain del Worker, borrar el proyecto Pages viejo, añadir el secret `CLOUDFLARE_API_TOKEN` al repo, y revisar el usage de Browser Run en el dashboard.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-28 (noche)** — **Deploy a producción + fix de scripts y workflows.**
+  - El fallo de CI en `deploy.yml` era el known issue #3 (`CLOUDFLARE_API_TOKEN` ausente; verificado con `gh run view` y `gh secret list`). Sin arreglo posible desde código: requiere crear el token en el dashboard.
+  - Bump de actions en `ci.yml` y `deploy.yml` (`checkout@v7`, `setup-node@v7`, `pnpm/action-setup@v6`) para silenciar la deprecación de Node 20.
+  - Renombrado el script `deploy` → `deploy:prod`: `pnpm deploy` choca con el built-in `deploy` de pnpm 10 (`ERR_PNPM_CANNOT_DEPLOY`). Docs actualizados (AGENTS.md, README, STATE).
+  - **Primer deploy del Worker a producción** con `pnpm deploy:prod`: <https://cv-builder.andriipap01.workers.dev>. Verificado en vivo: `/` 200, `/dashboard` 200 (SPA fallback), `_headers` aplicados (cache immutable en `/assets/*`, revalidate en index, seguridad), y `POST /api/pdf` → PDF válido vía Browser Run.
 
 - **2026-07-28 (tarde)** — **Migración Pages → Workers + tercera vía de PDF con Browser Run (spec 005).**
   - `wrangler.jsonc` migrado al formato Workers: `main: worker/index.ts`, `assets` con `not_found_handling: "single-page-application"` y `run_worker_first: ["/api/*"]`, binding `BROWSER` de Browser Run, `compatibility_flags: ["nodejs_compat"]` (lo pide `@cloudflare/puppeteer`). Eliminado `public/_redirects` (el SPA fallback ahora es nativo); `public/_headers` se mantiene (soportado en Workers assets).
@@ -55,7 +61,7 @@ _Nothing currently in progress. Ready for next phase planning._
   - Deps (regla 11, aprobadas en el plan): `wrangler@^4`, `@cloudflare/puppeteer`, `@cloudflare/workers-types` — todas devDeps. Scripts: `deploy` → `wrangler deploy`, `deploy:preview` → `wrangler versions upload`, nuevo `dev:worker`. `deploy.yml` ahora usa `command: deploy`.
   - e2e: `e2e/cloud-pdf.spec.ts` con `/api/pdf` mockeado (la suite corre contra Vite dev, sin Worker) — verifica el POST con el documento y la descarga, y el toast de error. Helper `createResume` endurecido contra la carrera de carga inicial (espera a `app-cv-card, app-empty-state`).
   - Verificado: `pnpm lint`, `pnpm test` (75), `pnpm build`, `pnpm e2e` (14) verdes; `wrangler deploy --dry-run` OK; prueba real con `wrangler dev` + `curl` → PDF A4 válido a sangre completa con fondos (verificado visualmente), y 405/404/400 correctos.
-  - **Pendiente (manual)**: `pnpm deploy` a producción, Custom Domain al Worker, borrar el proyecto Pages viejo, revisar límites de Browser Run (free tier: 10 min/día).
+  - **Pendiente (manual)**: `pnpm deploy:prod` a producción, Custom Domain al Worker, borrar el proyecto Pages viejo, revisar límites de Browser Run (free tier: 10 min/día).
   - Docs actualizados: AGENTS.md, README.md, ARCHITECTURE.md, CONTEXT.md (excepción de privacidad documentada), specs 005 + índice.
 
 - **2026-07-28** — **Automatización de Claude Code: hooks, skills, subagentes y MCP.**

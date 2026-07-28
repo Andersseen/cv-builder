@@ -18,7 +18,7 @@ pnpm build       # production build → dist/analog/public
 pnpm lint        # ESLint + angular-eslint
 pnpm test        # unit tests (Vitest)
 pnpm e2e         # end-to-end tests (Playwright)
-pnpm deploy      # build + deploy to Cloudflare Workers (production)
+pnpm deploy:prod # build + deploy to Cloudflare Workers (production)
 ```
 
 **Before declaring work done, run `pnpm lint`, `pnpm test`, `pnpm e2e` and `pnpm build`** — all four must be green (CI runs the first three plus the build). TypeScript is fully strict and `strictTemplates` is on, so the compiler catches most mistakes.
