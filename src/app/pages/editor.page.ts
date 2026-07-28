@@ -12,6 +12,7 @@ import { CvStore } from "../application/state/cv";
 import { Autosave } from "../application/services/autosave";
 import { PdfExport } from "../infrastructure/export/pdf-export";
 import { PrintExport } from "../infrastructure/export/print-export";
+import { CloudPdfExport } from "../infrastructure/export/cloud-pdf-export";
 import { EditorToolbar } from "../features/editor/components/editor-toolbar";
 import { PersonalInfoForm } from "../features/editor/components/personal-info-form";
 import { ExperienceForm } from "../features/editor/components/experience-form";
@@ -71,6 +72,7 @@ export default class Editor implements OnInit, OnDestroy {
   readonly viewport = inject(Viewport);
   private readonly pdfExport = inject(PdfExport);
   private readonly printExport = inject(PrintExport);
+  private readonly cloudPdfExport = inject(CloudPdfExport);
   private readonly toast = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -273,6 +275,26 @@ export default class Editor implements OnInit, OnDestroy {
     } catch (err) {
       console.error("Print error:", err);
       this.toast.show("Error opening print dialog", "error");
+    }
+  }
+
+  protected async exportCloudPdf() {
+    const cv = this.cvStore.activeCv();
+    if (!cv) return;
+    const el = this.findResumeContentElement();
+    if (!el) {
+      this.toast.show("Preview not ready", "error");
+      return;
+    }
+    this.isExporting.set(true);
+    try {
+      await this.cloudPdfExport.exportToPdf(cv, el);
+      this.toast.show("Cloud PDF exported successfully", "success");
+    } catch (err) {
+      console.error("Cloud PDF export error:", err);
+      this.toast.show("Error exporting cloud PDF", "error");
+    } finally {
+      this.isExporting.set(false);
     }
   }
 

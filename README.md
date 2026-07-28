@@ -4,17 +4,18 @@
 
 # 📄 Modern CV Builder
 
-### Build a professional résumé in your browser. No account, no server, no tracking.
+### Build a professional résumé in your browser. No account, no tracking.
 
 Fill structured forms, watch an A4 preview update as you type, pick one of five distinct
 templates, and export a print-ready PDF. Every résumé lives in **your** browser's IndexedDB —
-nothing is ever uploaded.
+the only thing that ever touches a server is the optional Cloud PDF export, rendered on the
+project's own Cloudflare Worker when you explicitly choose it.
 
 <br/>
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-cv--builder.andersseen.dev-3B82F6?style=for-the-badge&logo=cloudflare&logoColor=white)](https://cv-builder.andersseen.dev)
 [![CI](https://img.shields.io/github/actions/workflow/status/Andersseen/cv-builder/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white)](https://github.com/Andersseen/cv-builder/actions/workflows/ci.yml)
-[![Deploy](https://img.shields.io/github/actions/workflow/status/Andersseen/cv-builder/deploy.yml?branch=main&style=for-the-badge&label=Deploy&logo=cloudflarepages&logoColor=white)](https://github.com/Andersseen/cv-builder/actions/workflows/deploy.yml)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/Andersseen/cv-builder/deploy.yml?branch=main&style=for-the-badge&label=Deploy&logo=cloudflareworkers&logoColor=white)](https://github.com/Andersseen/cv-builder/actions/workflows/deploy.yml)
 [![License](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)
@@ -24,7 +25,7 @@ nothing is ever uploaded.
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Dexie](https://img.shields.io/badge/IndexedDB-Dexie_4-F59E0B?style=flat-square)
 ![Zoneless](https://img.shields.io/badge/change_detection-zoneless-0EA5E9?style=flat-square)
-![Tests](https://img.shields.io/badge/tests-70_unit_·_12_e2e-22C55E?style=flat-square&logo=vitest&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-75_unit_·_14_e2e-22C55E?style=flat-square&logo=vitest&logoColor=white)
 
 **[Live demo](https://cv-builder.andersseen.dev)** ·
 [Features](#-features) ·
@@ -42,14 +43,17 @@ nothing is ever uploaded.
 Most online builders ask you to sign up, keep your employment history on their servers, and put
 the PDF export behind a paywall. This one inverts all three.
 
-|                    | Typical online builder      | Modern CV Builder                  |
-| ------------------ | --------------------------- | ---------------------------------- |
-| **Account**        | Required                    | None — open the page and start     |
-| **Your data**      | On their servers            | IndexedDB in your browser only     |
-| **PDF export**     | Often paywalled/watermarked | Free, unlimited, two export modes  |
-| **Works offline**  | No                          | Yes, after the first load          |
-| **Backend to run** | Theirs                      | None at all — it's a static bundle |
-| **Cost to host**   | —                           | $0 on Cloudflare Pages' free tier  |
+|                   | Typical online builder      | Modern CV Builder                   |
+| ----------------- | --------------------------- | ----------------------------------- |
+| **Account**       | Required                    | None — open the page and start      |
+| **Your data**     | On their servers            | IndexedDB in your browser only¹     |
+| **PDF export**    | Often paywalled/watermarked | Free, unlimited, three export modes |
+| **Works offline** | No                          | Yes, after the first load²          |
+| **Cost to host**  | —                           | $0 on Cloudflare Workers' free tier |
+
+> ¹ The one exception: the opt-in **Cloud PDF** export sends the résumé HTML to the project's
+> own Cloudflare Worker for server-side rendering — nowhere else, only when you pick it.
+> ² The two client-side exports work offline; Cloud PDF needs the network.
 
 > **Design principle:** the résumé is the product. Preview fidelity and PDF quality beat every
 > app-UI concern — which is why the preview always renders on white, even in dark mode.
@@ -68,10 +72,10 @@ the PDF export behind a paywall. This one inverts all three.
 | 📊  | **Completeness score**      | A live 0–100 score with actionable suggestions that jump straight to the right tab                  |
 | 💾  | **Autosave**                | Debounced 800 ms writes to IndexedDB — edits survive a reload or a crashed tab                      |
 | ↩️  | **Undo / redo**             | In-memory history with keyboard shortcuts                                                           |
-| 📤  | **Two PDF modes**           | Pixel-perfect image PDF, or a text-selectable ATS-friendly print PDF                                |
+| 📤  | **Three PDF modes**         | Image PDF (pixel-perfect), print PDF (ATS-friendly text), Cloud PDF (both, server-rendered)         |
 | 🔁  | **JSON portability**        | Export/import a single résumé, or back up and restore everything                                    |
 | 🌗  | **Dark mode**               | System-preference aware, persisted — the résumé itself stays print-white                            |
-| 🔒  | **Zero network calls**      | No analytics, no fonts CDN, no telemetry. Read the Network tab and see                              |
+| 🔒  | **No third-party calls**    | No analytics, no fonts CDN, no telemetry. The only API is our own Worker's `/api/pdf`               |
 
 ---
 
@@ -211,49 +215,54 @@ All three routes are lazy — landing visitors never download the editor.
 
 ## 🛠️ Tech stack
 
-| Layer          | Choice                                       | Why                                               |
-| -------------- | -------------------------------------------- | ------------------------------------------------- |
-| Framework      | **Angular 21**, standalone + signals         | Zoneless change detection, no NgModules anywhere  |
-| Meta-framework | **AnalogJS 2.6** + **Vite 6**                | File-based routing, fast dev server, static build |
-| Styling        | **Tailwind CSS v4**                          | CSS-first `@theme` config, semantic HSL tokens    |
-| Persistence    | **Dexie 4** over IndexedDB                   | The only storage — no backend exists              |
-| PDF export     | `html-to-image` + `jspdf`, plus native print | Pixel-perfect _and_ ATS-friendly paths            |
-| Language       | **TypeScript 5.9**, all strict flags         | Plus `strictTemplates` for Angular templates      |
-| Tests          | **Vitest** (70) + **Playwright** (12)        | Unit for pure logic, e2e for the real flow        |
-| Lint / format  | ESLint + angular-eslint, Prettier            | Enforced in CI                                    |
-| Hosting        | **Cloudflare Pages**                         | Static bundle on the edge, free tier, $0          |
+| Layer          | Choice                                                     | Why                                               |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| Framework      | **Angular 21**, standalone + signals                       | Zoneless change detection, no NgModules anywhere  |
+| Meta-framework | **AnalogJS 2.6** + **Vite 6**                              | File-based routing, fast dev server, static build |
+| Styling        | **Tailwind CSS v4**                                        | CSS-first `@theme` config, semantic HSL tokens    |
+| Persistence    | **Dexie 4** over IndexedDB                                 | The only storage — CVs never leave the browser    |
+| PDF export     | `html-to-image` + `jspdf`, native print, **Browser Run**   | Pixel-perfect _and_ ATS-friendly paths            |
+| Language       | **TypeScript 5.9**, all strict flags                       | Plus `strictTemplates` for Angular templates      |
+| Tests          | **Vitest** (75) + **Playwright** (14)                      | Unit for pure logic, e2e for the real flow        |
+| Lint / format  | ESLint + angular-eslint, Prettier                          | Enforced in CI                                    |
+| Hosting        | **Cloudflare Workers** (static assets + `/api/pdf` Worker) | App and PDF API on one edge deployment, free tier |
 
 ---
 
 ## 📜 Scripts
 
-| Command               | What it does                                    |
-| --------------------- | ----------------------------------------------- |
-| `pnpm start`          | Dev server on `http://localhost:5173`           |
-| `pnpm build`          | Production build → `dist/analog/public`         |
-| `pnpm preview`        | Serve the production build locally              |
-| `pnpm test`           | Unit tests (Vitest, single run)                 |
-| `pnpm test:watch`     | Unit tests in watch mode                        |
-| `pnpm e2e`            | End-to-end tests (Playwright)                   |
-| `pnpm e2e:ui`         | Playwright in UI mode                           |
-| `pnpm lint`           | ESLint over the repo                            |
-| `pnpm format`         | Prettier write                                  |
-| `pnpm deploy`         | Build and deploy to Cloudflare Pages production |
-| `pnpm deploy:preview` | Build and deploy to a Cloudflare preview branch |
+| Command               | What it does                                                    |
+| --------------------- | --------------------------------------------------------------- |
+| `pnpm start`          | Dev server on `http://localhost:5173`                           |
+| `pnpm dev:worker`     | Build + `wrangler dev`: full stack on `:8787` (with `/api/pdf`) |
+| `pnpm build`          | Production build → `dist/analog/public`                         |
+| `pnpm preview`        | Serve the production build locally                              |
+| `pnpm test`           | Unit tests (Vitest, single run)                                 |
+| `pnpm test:watch`     | Unit tests in watch mode                                        |
+| `pnpm e2e`            | End-to-end tests (Playwright)                                   |
+| `pnpm e2e:ui`         | Playwright in UI mode                                           |
+| `pnpm lint`           | ESLint over the repo                                            |
+| `pnpm format`         | Prettier write                                                  |
+| `pnpm deploy`         | Build and deploy to Cloudflare Workers production               |
+| `pnpm deploy:preview` | Build and upload a preview version to Cloudflare                |
 
 ---
 
 ## ☁️ Deployment
 
-One target, one command. The app is a static bundle, so hosting is
-[Cloudflare Pages](https://developers.cloudflare.com/pages/) and nothing else.
+One target, one command. The app deploys as a single
+[Cloudflare Worker](https://developers.cloudflare.com/workers/) with static assets — the same
+Worker serves the SPA and renders PDFs server-side via
+[Browser Run](https://developers.cloudflare.com/browser-run/how-to/pdf-generation/).
 
 ```bash
-pnpm deploy     # build + wrangler pages deploy
+pnpm deploy     # build + wrangler deploy
 ```
 
-Configuration lives in [wrangler.jsonc](wrangler.jsonc); `public/_redirects` handles the SPA
-fallback and `public/_headers` sets cache and security headers.
+Configuration lives in [wrangler.jsonc](wrangler.jsonc): static assets from
+`dist/analog/public`, SPA fallback via `not_found_handling`, `/api/*` routed to the Worker
+(`worker/index.ts`), and the Browser Run binding. `public/_headers` sets cache and security
+headers.
 
 **Continuous deployment** — every push to `main` runs
 [`ci.yml`](.github/workflows/ci.yml) (lint → test → build) and
@@ -264,6 +273,9 @@ repository secrets:
 | ----------------------- | -------------------------------------------------------------------------- |
 | `CLOUDFLARE_API_TOKEN`  | Cloudflare dashboard → My Profile → API Tokens → _Edit Cloudflare Workers_ |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID                        |
+
+> **Browser Run free tier:** 10 minutes of browser time per day at $0 (a PDF takes ~2–4 s).
+> Usage is visible in the Cloudflare dashboard under Compute → Browser Run.
 
 ---
 
@@ -284,13 +296,15 @@ src/
 │   │   └── services/            # autosave, history
 │   ├── infrastructure/
 │   │   ├── persistence/         # Dexie schema + repository
-│   │   ├── export/              # image PDF + print PDF
+│   │   ├── export/              # image PDF + print PDF + cloud PDF client
 │   │   └── portability/         # JSON export / import / backup
 │   ├── domain/models/           # pure TS: Cv, defaults, template registry, helpers
 │   ├── core/services/           # theme, toast
 │   └── shared/                  # header, footer, toast UI, utils
 ├── styles.css                   # Tailwind v4 @theme + design tokens
 └── main.ts                      # zoneless bootstrap
+worker/
+└── index.ts                     # Cloudflare Worker: static assets + POST /api/pdf (Browser Run)
 ```
 
 ---
@@ -331,6 +345,6 @@ Issues and pull requests are welcome. Before you open a PR:
 
 **[cv-builder.andersseen.dev](https://cv-builder.andersseen.dev)**
 
-<sub>Built with Angular 21, signals and zero servers.</sub>
+<sub>Built with Angular 21, signals and a single Cloudflare Worker.</sub>
 
 </div>

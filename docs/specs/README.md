@@ -33,3 +33,4 @@ Specs force the design decisions to happen in prose, where they are cheap, inste
 | 002 | [Fase 5: onboarding & completeness](002-fase5-onboarding-completeness.md) | Done     |
 | 003 | [Fase 6: form polish](003-fase6-form-polish.md) | Done      |
 | 004 | [Fase 7: flexible sections](004-fase7-flexible-sections.md) | Approved  |
+| 005 | [Cloudflare Workers + Cloud PDF](005-cloudflare-workers-cloud-pdf.md) | Done |
