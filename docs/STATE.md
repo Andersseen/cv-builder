@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-28 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a Cloudflare Pages y presentación pública del repo renovada. Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
+**Last updated**: 2026-07-28 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado de Cloudflare Pages a **Cloudflare Workers** (static assets + `POST /api/pdf`) y añadida la tercera vía de export **Cloud PDF** con Browser Run ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
 
 ## In progress
 
@@ -14,7 +14,7 @@ _Nothing currently in progress. Ready for next phase planning._
 - 5 templates (Modern, Classic, Minimal, Creative, Executive) with per-CV accent/background/primary color/font settings. **Templates now support ordered, visible, and custom sections via `getOrderedSections()` and render custom sections dynamically.**
 - Autosave to IndexedDB (Dexie) with debounce + saved indicator; data survives reloads.
 - Dark/light theme with localStorage persistence and system-preference fallback.
-- Multi-page image PDF export and text-based print export.
+- Multi-page image PDF export, text-based print export, y **Cloud PDF** server-side vía Cloudflare Browser Run (`worker/index.ts`, `POST /api/pdf`).
 - **Fase 0**: QA manual del flujo completo en desktop; e2e extendido con flujo real.
 - **Fase 1**: Export/import JSON por CV + backup completo + validación estructural + `navigator.storage.persist()` + banner de datos locales.
 - **Fase 2**: Editor usable en viewports <lg con overlay de preview y render off-screen para export.
@@ -27,23 +27,36 @@ _Nothing currently in progress. Ready for next phase planning._
   - `@utility input-field` y `input-field-resize-none` en `src/styles.css`; aplicadas a todos los `volt-input`/`volt-textarea`/`volt-native-select` de los 7 formularios.
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
-- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 70 unit tests green, 12 e2e tests green.
-- **Deployment**: Cloudflare Pages es el único target. Proyecto `cv-builder`, config en `wrangler.jsonc`, SPA fallback en `public/_redirects`, cache/seguridad en `public/_headers`. `pnpm deploy` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
+- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
+- **Deployment**: Cloudflare Workers es el único target. Worker `cv-builder` definido en `wrangler.jsonc` (`main: worker/index.ts`, assets desde `dist/analog/public`, SPA fallback nativo con `not_found_handling`, `/api/*` al Worker con `run_worker_first`, binding `BROWSER` de Browser Run). `pnpm deploy` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
 
 ## Known issues
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
-2. **`cv-builder.andersseen.dev` no resuelve todavía** (bloqueado, requiere acción manual): el dominio está añadido al proyecto de Pages pero la zona `andersseen.dev` tiene un registro wildcard `*`, así que el subdominio resuelve al proxy de Cloudflare sin llegar al proyecto y devuelve 404. Falta crear un CNAME específico `cv-builder` → `cv-builder-8on.pages.dev` (proxied) en el dashboard de DNS. El token OAuth de wrangler no tiene scope de DNS. Mientras tanto la URL viva es <https://cv-builder-8on.pages.dev>.
-3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` llega hasta `wrangler pages deploy` y falla ahí con "necessary to set a CLOUDFLARE_API_TOKEN". `CLOUDFLARE_ACCOUNT_ID` ya está configurado como secret del repo. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy` en local sí funciona (wrangler usa el login OAuth).
+2. **`cv-builder.andersseen.dev` pendiente de re-adjuntar al Worker** (bloqueado, requiere acción manual): el dominio sigue asignado al proyecto **Pages** viejo. Tras el primer `wrangler deploy` a producción: quitar el dominio del proyecto Pages y añadirlo en Workers → `cv-builder` → Settings → Domains & Routes → Add Custom Domain. Como la zona `andersseen.dev` está en Cloudflare, el dashboard crea el registro automáticamente (el problema del wildcard `*` de la era Pages ya no aplica). Mientras tanto la URL viva será `cv-builder.<subdomain>.workers.dev` tras el deploy.
+3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita el secret para `wrangler deploy`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy` en local sí funciona (wrangler usa el login OAuth).
+4. **Proyecto Pages viejo `cv-builder` sin borrar** (manual): sigue existiendo en el dashboard tras la migración a Workers. Borrarlo cuando el Worker esté verificado en producción para evitar confusiones (el `pages.dev` subdomain seguirá sirviendo el build viejo hasta entonces).
 
 ## Next steps (in rough priority order)
 
-0. **Desbloquear el dominio y el CI** (ver Known issues 2 y 3): crear el CNAME `cv-builder` en la zona `andersseen.dev` y añadir el secret `CLOUDFLARE_API_TOKEN` al repo. Son las dos únicas cosas que no se pueden hacer sin acceso al dashboard.
+0. **Primer deploy del Worker + dominio** (ver Known issues 2–4): `pnpm deploy` en local, adjuntar `cv-builder.andersseen.dev` como Custom Domain del Worker, borrar el proyecto Pages viejo, añadir el secret `CLOUDFLARE_API_TOKEN` al repo, y revisar el usage de Browser Run en el dashboard.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-07-28 (tarde)** — **Migración Pages → Workers + tercera vía de PDF con Browser Run (spec 005).**
+  - `wrangler.jsonc` migrado al formato Workers: `main: worker/index.ts`, `assets` con `not_found_handling: "single-page-application"` y `run_worker_first: ["/api/*"]`, binding `BROWSER` de Browser Run, `compatibility_flags: ["nodejs_compat"]` (lo pide `@cloudflare/puppeteer`). Eliminado `public/_redirects` (el SPA fallback ahora es nativo); `public/_headers` se mantiene (soportado en Workers assets).
+  - Nuevo `worker/index.ts`: sirve assets vía binding `ASSETS`; `POST /api/pdf` recibe un documento HTML completo y lo renderiza con `@cloudflare/puppeteer` (`emulateMediaType("print")` + `setContent` + `page.pdf({ preferCSSPageSize: true, printBackground: true })`); guardas de método/tamaño (5 MB) y errores JSON 400/404/405/413/500.
+  - Cliente: `buildPdfDocument()` pura en `infrastructure/export/pdf-document.ts` (reutiliza `buildPrintStylesheet()` y la convención `#print-wrapper`) + 5 tests. Nuevo servicio `CloudPdfExport` que POSTea el documento y descarga el blob.
+  - **Hallazgo clave (fix durante verificación real)**: el documento debe llevar los estilos **inlineados**, no linkeados. El navegador server-side renderiza un documento `setContent()` con origen opaco `null`; el `<link rel="stylesheet" crossorigin>` que emite Vite muere por CORS, y en dev local además por Private Network Access (`loopback`). `CloudPdfExport` ahora fetchea cada hoja linkeada y la inlinea como `<style>` — documento autocontenido, cero subrecursos. Verificado end-to-end contra `wrangler dev` real: el PDF del CV de ejemplo sale idéntico al preview (header con gradiente, tipografía, pills de skills), 2 páginas A4, texto seleccionable.
+  - UI: tercera opción "Cloud PDF (server)" en el dropdown del toolbar (con nota transparente de que el HTML sale del navegador), output `exportCloudPdf` cableado en `editor.page.ts`/`editor.html` con `isExporting` + toasts.
+  - Deps (regla 11, aprobadas en el plan): `wrangler@^4`, `@cloudflare/puppeteer`, `@cloudflare/workers-types` — todas devDeps. Scripts: `deploy` → `wrangler deploy`, `deploy:preview` → `wrangler versions upload`, nuevo `dev:worker`. `deploy.yml` ahora usa `command: deploy`.
+  - e2e: `e2e/cloud-pdf.spec.ts` con `/api/pdf` mockeado (la suite corre contra Vite dev, sin Worker) — verifica el POST con el documento y la descarga, y el toast de error. Helper `createResume` endurecido contra la carrera de carga inicial (espera a `app-cv-card, app-empty-state`).
+  - Verificado: `pnpm lint`, `pnpm test` (75), `pnpm build`, `pnpm e2e` (14) verdes; `wrangler deploy --dry-run` OK; prueba real con `wrangler dev` + `curl` → PDF A4 válido a sangre completa con fondos (verificado visualmente), y 405/404/400 correctos.
+  - **Pendiente (manual)**: `pnpm deploy` a producción, Custom Domain al Worker, borrar el proyecto Pages viejo, revisar límites de Browser Run (free tier: 10 min/día).
+  - Docs actualizados: AGENTS.md, README.md, ARCHITECTURE.md, CONTEXT.md (excepción de privacidad documentada), specs 005 + índice.
 
 - **2026-07-28** — **Automatización de Claude Code: hooks, skills, subagentes y MCP.**
   - `.mcp.json`: añadidos `angular-cli` (`pnpm exec ng mcp`, el servidor MCP que trae el CLI de Angular 21 — best practices, docs y `modernize`) y `cloudflare-docs` (HTTP remoto, para no inventar sintaxis de `_headers`/`_redirects`/wrangler). Los tres servidores verificados con `claude mcp list`.

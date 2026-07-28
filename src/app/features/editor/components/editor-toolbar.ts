@@ -203,6 +203,20 @@ import { CompletenessScore } from "./completeness-score";
                 </button>
                 <div class="border-t border-border"></div>
                 <button
+                  data-testid="export-cloud-pdf"
+                  (click)="onExportCloudPdf()"
+                  class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
+                >
+                  <span class="text-lg leading-none mt-0.5">☁️</span>
+                  <div>
+                    <div class="font-medium">Cloud PDF (server)</div>
+                    <div class="text-xs text-muted-foreground mt-0.5">
+                      Selectable text · Pixel-perfect · CV HTML is sent to our Cloudflare Worker
+                    </div>
+                  </div>
+                </button>
+                <div class="border-t border-border"></div>
+                <button
                   (click)="onExportJson()"
                   class="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-accent transition-colors flex items-start gap-3"
                 >
@@ -241,6 +255,7 @@ export class EditorToolbar {
   readonly redo = output<void>();
   readonly exportPdf = output<void>();
   readonly printPdf = output<void>();
+  readonly exportCloudPdf = output<void>();
   readonly exportJson = output<void>();
   readonly tabSelected = output<string>();
 
@@ -254,6 +269,11 @@ export class EditorToolbar {
   onExportImage() {
     this.dropdownOpen.set(false);
     this.exportPdf.emit();
+  }
+
+  onExportCloudPdf() {
+    this.dropdownOpen.set(false);
+    this.exportCloudPdf.emit();
   }
 
   onExportJson() {

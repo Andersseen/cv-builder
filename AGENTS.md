@@ -1,6 +1,6 @@
 # Agent Guide — Modern CV Builder
 
-You are working on **Modern CV Builder**: a 100% client-side Angular 21 app for creating resumes with live preview and PDF export. No backend, no auth — everything is stored locally in IndexedDB.
+You are working on **Modern CV Builder**: an Angular 21 app for creating resumes with live preview and PDF export. No accounts, no auth — CVs are stored locally in IndexedDB. The only server round-trip is the opt-in Cloud PDF export, which renders on the project's own Cloudflare Worker.
 
 ## Session protocol (do this every session)
 
@@ -13,22 +13,24 @@ You are working on **Modern CV Builder**: a 100% client-side Angular 21 app for 
 ```bash
 pnpm install     # install deps (pnpm is the package manager, not npm)
 pnpm start       # dev server at http://localhost:5173 (Vite default)
+pnpm dev:worker  # build + wrangler dev: full stack at http://localhost:8787 (incl. /api/pdf)
 pnpm build       # production build → dist/analog/public
 pnpm lint        # ESLint + angular-eslint
 pnpm test        # unit tests (Vitest)
 pnpm e2e         # end-to-end tests (Playwright)
-pnpm deploy      # build + deploy to Cloudflare Pages (production)
+pnpm deploy      # build + deploy to Cloudflare Workers (production)
 ```
 
 **Before declaring work done, run `pnpm lint`, `pnpm test`, `pnpm e2e` and `pnpm build`** — all four must be green (CI runs the first three plus the build). TypeScript is fully strict and `strictTemplates` is on, so the compiler catches most mistakes.
 
 ## Deployment
 
-**Cloudflare Pages is the only deployment target.** Do not add config for other hosts.
+**Cloudflare Workers is the only deployment target.** Do not add config for other hosts.
 
-- Project: `cv-builder` · production URL: <https://cv-builder.andersseen.dev> (fallback: `cv-builder-8on.pages.dev`)
-- Config: [wrangler.jsonc](wrangler.jsonc) (`pages_build_output_dir: dist/analog/public`)
-- SPA fallback lives in `public/_redirects`; cache + security headers in `public/_headers`. Both are copied verbatim into the build output by Vite — edit them there, not in `dist/`.
+- Worker: `cv-builder` · production URL: <https://cv-builder.andersseen.dev> (fallback: `cv-builder.workers.dev` subdomain)
+- Config: [wrangler.jsonc](wrangler.jsonc) — `main: worker/index.ts`, static assets from `dist/analog/public`, SPA fallback via `not_found_handling: "single-page-application"`, `/api/*` routed to the Worker via `run_worker_first`, Browser Run binding `BROWSER`.
+- `worker/index.ts` serves the static app and exposes `POST /api/pdf` (server-side PDF via `@cloudflare/puppeteer`). Keep it thin — no business logic belongs there.
+- Cache + security headers live in `public/_headers` (supported natively by Workers static assets), copied verbatim into the build output — edit them there, not in `dist/`.
 - Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) then [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
 
 ## Stack
@@ -39,6 +41,7 @@ pnpm deploy      # build + deploy to Cloudflare Pages (production)
 - **Tailwind CSS v4** — CSS-first config in `src/styles.css` (`@theme` block), semantic HSL tokens, dark mode via `.dark` class on `<html>`
 - **Dexie 4** — IndexedDB wrapper (the only persistence)
 - **html-to-image + jspdf** — image-based PDF export; native print dialog for text-based export
+- **Cloudflare Workers + Browser Run** (`@cloudflare/puppeteer`, devDep) — Worker in `worker/index.ts` serves the app and renders the third, server-side PDF path at `POST /api/pdf`
 - **TypeScript 5.8 strict** — all strict flags on
 
 ## Golden rules
@@ -64,18 +67,18 @@ pnpm deploy      # build + deploy to Cloudflare Pages (production)
 
 ## Where things live (quick map)
 
-| Concern                                                     | File                                                                  |
-| ----------------------------------------------------------- | --------------------------------------------------------------------- |
-| Routes (3 lazy pages: landing `/`, `/dashboard`, `/editor`) | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` |
-| Domain models (`Cv`, sections, settings, `TemplateInfo`)    | `src/app/domain/models/cv-model.ts`                                   |
-| Default/factory CV                                          | `src/app/domain/models/cv-defaults.ts`                                |
-| Template catalog (add new templates here)                   | `src/app/domain/models/template-registry.ts`                          |
-| Central state (signals store, CRUD, deep-merge patch)       | `src/app/application/state/cv.ts`                                     |
-| Debounced autosave (800 ms)                                 | `src/app/application/services/autosave.ts`                            |
-| IndexedDB schema / repository                               | `src/app/infrastructure/persistence/`                                 |
-| PDF export (image-based) + print export (text-based)        | `src/app/infrastructure/export/`                                      |
-| Design system tokens (Tailwind v4 `@theme` + HSL vars)      | `src/styles.css`                                                      |
-| Theme service (dark/light, localStorage)                    | `src/app/core/services/theme.ts`                                      |
-| Toasts                                                      | `src/app/core/services/toast.ts` + `src/app/shared/components/toast/` |
+| Concern                                                                    | File                                                                  |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Routes (3 lazy pages: landing `/`, `/dashboard`, `/editor`)                | `src/app/pages/(home).page.ts`, `dashboard.page.ts`, `editor.page.ts` |
+| Domain models (`Cv`, sections, settings, `TemplateInfo`)                   | `src/app/domain/models/cv-model.ts`                                   |
+| Default/factory CV                                                         | `src/app/domain/models/cv-defaults.ts`                                |
+| Template catalog (add new templates here)                                  | `src/app/domain/models/template-registry.ts`                          |
+| Central state (signals store, CRUD, deep-merge patch)                      | `src/app/application/state/cv.ts`                                     |
+| Debounced autosave (800 ms)                                                | `src/app/application/services/autosave.ts`                            |
+| IndexedDB schema / repository                                              | `src/app/infrastructure/persistence/`                                 |
+| PDF exports: image-based + print (client) + cloud (server, via `/api/pdf`) | `src/app/infrastructure/export/` + `worker/index.ts`                  |
+| Design system tokens (Tailwind v4 `@theme` + HSL vars)                     | `src/styles.css`                                                      |
+| Theme service (dark/light, localStorage)                                   | `src/app/core/services/theme.ts`                                      |
+| Toasts                                                                     | `src/app/core/services/toast.ts` + `src/app/shared/components/toast/` |
 
 Full architecture and data flow: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

@@ -57,16 +57,19 @@ Key consequences for any change you make:
 
 ## Export subsystem (`infrastructure/export/`)
 
-Two intentionally different strategies — keep both:
+Three intentionally different strategies — keep all three:
 
-|                       | `PdfExport` (pdf-export.ts)                             | `PrintExport` (print-export.ts)                              |
-| --------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
-| Mechanism             | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | hidden iframe + `print-stylesheet.ts` + browser print dialog |
-| Text selectable / ATS | ❌                                                      | ✅                                                           |
-| Fidelity              | pixel-perfect                                           | high                                                         |
-| File size             | 2–5 MB                                                  | ~100 KB                                                      |
+|                       | `PdfExport` (pdf-export.ts)                             | `PrintExport` (print-export.ts)                           | `CloudPdfExport` (cloud-pdf-export.ts)                    |
+| --------------------- | ------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| Mechanism             | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | cloned DOM + `print-stylesheet.ts` + browser print dialog | POST full HTML doc to `/api/pdf` → Cloudflare Browser Run |
+| Text selectable / ATS | ❌                                                      | ✅                                                        | ✅                                                        |
+| Fidelity              | pixel-perfect                                           | high                                                      | pixel-perfect                                             |
+| File size             | 2–5 MB                                                  | ~100 KB                                                   | ~100–300 KB                                               |
+| Data leaves browser   | never                                                   | never                                                     | to the project's own Worker only                          |
 
-Both capture the DOM node `#resume-content` (rendered by `ResumePreview`). `a4.ts` holds A4 mm constants. If you change resume template markup, verify **both** export paths.
+All three capture the DOM node `.resume-content` (rendered by `ResumePreview`). `a4.ts` holds A4 mm constants. If you change resume template markup, verify **all three** export paths.
+
+`CloudPdfExport` builds the server-side document with the pure `buildPdfDocument()` (`pdf-document.ts`): all `<head>` styles **inlined** (linked CSS is fetched and inlined — a linked stylesheet dies on CORS/Private-Network-Access checks inside the server browser's opaque-origin document) + the same `buildPrintStylesheet()` used by `PrintExport`, with the resume wrapped in `#print-wrapper`. The Worker (`worker/index.ts`, outside the Angular layers) renders that document with `@cloudflare/puppeteer` and returns `application/pdf`. Everything else is served from static assets via the `ASSETS` binding; `/api/*` is routed to the Worker first (`run_worker_first` in `wrangler.jsonc`).
 
 ## Template system
 
@@ -99,4 +102,12 @@ AnalogJS **file-based routing** under `src/app/pages/`. Page components are defa
 - `src/app/pages/dashboard.page.ts` → `/dashboard`
 - `src/app/pages/editor.page.ts` → `/editor`
 
-A wildcard/catch-all route is not needed because the app is a single-page application and unmatched paths are handled by the static file server.
+A wildcard/catch-all route is not needed because the app is a single-page application and unmatched paths are handled by the hosting layer (`not_found_handling: "single-page-application"` in `wrangler.jsonc`).
+
+## Deployment (Cloudflare Workers)
+
+The app deploys as a single **Cloudflare Worker** with static assets (migrated from Pages — see `docs/specs/005-cloudflare-workers-cloud-pdf.md`):
+
+- `wrangler.jsonc`: `main: worker/index.ts`, `assets.directory: dist/analog/public` (Vite copies `public/` there), `browser` binding for Browser Run.
+- `worker/index.ts`: `POST /api/pdf` → Puppeteer render → `application/pdf`; other `/api/*` → 404; everything else → `env.ASSETS.fetch(request)`.
+- SPA fallback: `not_found_handling: "single-page-application"` (there is no `_redirects` file). Cache/security headers stay in `public/_headers`, which Workers static assets support natively.
