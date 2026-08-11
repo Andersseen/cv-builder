@@ -69,7 +69,7 @@ Three intentionally different strategies — keep all three:
 
 All three capture the DOM node `.resume-content` (rendered by `ResumePreview`). `a4.ts` holds A4 mm constants. If you change resume template markup, verify **all three** export paths.
 
-`CloudPdfExport` builds the server-side document with the pure `buildPdfDocument()` (`pdf-document.ts`): all `<head>` styles **inlined** (linked CSS is fetched and inlined — a linked stylesheet dies on CORS/Private-Network-Access checks inside the server browser's opaque-origin document) + the same `buildPrintStylesheet()` used by `PrintExport`, with the resume wrapped in `#print-wrapper`. The Worker (`worker/index.ts`, outside the Angular layers) renders that document with `@cloudflare/puppeteer` and returns `application/pdf`. Everything else is served from static assets via the `ASSETS` binding; `/api/*` is routed to the Worker first (`run_worker_first` in `wrangler.jsonc`).
+`CloudPdfExport` builds the server-side document with the pure `buildPdfDocument()` (`pdf-document.ts`): all `<head>` styles **inlined** (linked CSS is fetched and inlined — a linked stylesheet dies on CORS/Private-Network-Access checks inside the server browser's opaque-origin document) + the same `buildPrintStylesheet()` used by `PrintExport`, with the resume wrapped in `#print-wrapper`. The standalone PDF Worker (`worker/index.ts`, outside the Angular layers) renders that document with `@cloudflare/puppeteer` and returns `application/pdf`. Production routes `cv-builder.andersseen.dev/api/*` to this Worker so the frontend can keep calling `/api/pdf` on the same origin.
 
 ## Template system
 
@@ -102,12 +102,14 @@ AnalogJS **file-based routing** under `src/app/pages/`. Page components are defa
 - `src/app/pages/dashboard.page.ts` → `/dashboard`
 - `src/app/pages/editor.page.ts` → `/editor`
 
-A wildcard/catch-all route is not needed because the app is a single-page application and unmatched paths are handled by the hosting layer (`not_found_handling: "single-page-application"` in `wrangler.jsonc`).
+A wildcard/catch-all route is not needed in Angular because the app is a single-page application and unmatched paths are handled by the hosting layer (`public/_redirects` on Cloudflare Pages).
 
-## Deployment (Cloudflare Workers)
+## Deployment (Cloudflare Pages + Workers)
 
-The app deploys as a single **Cloudflare Worker** with static assets (migrated from Pages — see `docs/specs/005-cloudflare-workers-cloud-pdf.md`):
+The app and service deploy separately on Cloudflare:
 
-- `wrangler.jsonc`: `main: worker/index.ts`, `assets.directory: dist/analog/public` (Vite copies `public/` there), `browser` binding for Browser Run.
-- `worker/index.ts`: `POST /api/pdf` → Puppeteer render → `application/pdf`; other `/api/*` → 404; everything else → `env.ASSETS.fetch(request)`.
-- SPA fallback: `not_found_handling: "single-page-application"` (there is no `_redirects` file). Cache/security headers stay in `public/_headers`, which Workers static assets support natively.
+- `wrangler.jsonc`: Cloudflare Pages config with `pages_build_output_dir: dist/analog/public`.
+- `public/_redirects`: SPA fallback (`/* /index.html 200`) for deep links like `/dashboard`.
+- `public/_headers`: cache/security headers copied into the Pages build output.
+- `worker/wrangler.jsonc`: standalone Worker service `cv-builder-pdf`, Browser Run binding, and route `cv-builder.andersseen.dev/api/*`.
+- `worker/index.ts`: `POST /api/pdf` → Puppeteer render → `application/pdf`; other paths → 404.

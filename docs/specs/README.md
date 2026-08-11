@@ -34,3 +34,4 @@ Specs force the design decisions to happen in prose, where they are cheap, inste
 | 003 | [Fase 6: form polish](003-fase6-form-polish.md) | Done      |
 | 004 | [Fase 7: flexible sections](004-fase7-flexible-sections.md) | Approved  |
 | 005 | [Cloudflare Workers + Cloud PDF](005-cloudflare-workers-cloud-pdf.md) | Done |
+| 006 | [Cloudflare Pages app + Worker services](006-cloudflare-pages-app-worker-services.md) | Done |

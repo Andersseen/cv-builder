@@ -225,7 +225,7 @@ All three routes are lazy — landing visitors never download the editor.
 | Language       | **TypeScript 5.9**, all strict flags                       | Plus `strictTemplates` for Angular templates      |
 | Tests          | **Vitest** (75) + **Playwright** (14)                      | Unit for pure logic, e2e for the real flow        |
 | Lint / format  | ESLint + angular-eslint, Prettier                          | Enforced in CI                                    |
-| Hosting        | **Cloudflare Workers** (static assets + `/api/pdf` Worker) | App and PDF API on one edge deployment, free tier |
+| Hosting        | **Cloudflare Pages** + **Cloudflare Workers**              | Static app on Pages, PDF service on a Worker      |
 
 ---
 
@@ -234,7 +234,8 @@ All three routes are lazy — landing visitors never download the editor.
 | Command               | What it does                                                    |
 | --------------------- | --------------------------------------------------------------- |
 | `pnpm start`          | Dev server on `http://localhost:5173`                           |
-| `pnpm dev:worker`     | Build + `wrangler dev`: full stack on `:8787` (with `/api/pdf`) |
+| `pnpm dev:pages`      | Build + local Cloudflare Pages server                           |
+| `pnpm dev:worker`     | Local Cloud PDF Worker server                                   |
 | `pnpm build`          | Production build → `dist/analog/public`                         |
 | `pnpm preview`        | Serve the production build locally                              |
 | `pnpm test`           | Unit tests (Vitest, single run)                                 |
@@ -243,26 +244,31 @@ All three routes are lazy — landing visitors never download the editor.
 | `pnpm e2e:ui`         | Playwright in UI mode                                           |
 | `pnpm lint`           | ESLint over the repo                                            |
 | `pnpm format`         | Prettier write                                                  |
-| `pnpm deploy:prod`    | Build and deploy to Cloudflare Workers production               |
-| `pnpm deploy:preview` | Build and upload a preview version to Cloudflare                |
+| `pnpm deploy:prod`    | Build and deploy the Pages app + PDF Worker                     |
+| `pnpm deploy:pages`   | Deploy `dist/analog/public` to Cloudflare Pages                 |
+| `pnpm deploy:worker`  | Deploy the standalone Cloud PDF Worker                          |
+| `pnpm deploy:preview` | Build and upload a Pages preview deployment                     |
 
 ---
 
 ## ☁️ Deployment
 
-One target, one command. The app deploys as a single
-[Cloudflare Worker](https://developers.cloudflare.com/workers/) with static assets — the same
-Worker serves the SPA and renders PDFs server-side via
-[Browser Run](https://developers.cloudflare.com/browser-run/how-to/pdf-generation/).
+The app and service are split by responsibility:
+[Cloudflare Pages](https://developers.cloudflare.com/pages/) serves the static Angular app, and
+a standalone [Cloudflare Worker](https://developers.cloudflare.com/workers/) renders PDFs
+server-side via [Browser Run](https://developers.cloudflare.com/browser-run/).
 
 ```bash
-pnpm deploy:prod     # build + wrangler deploy
+pnpm deploy:prod     # build + deploy Pages app + PDF Worker
 ```
 
-Configuration lives in [wrangler.jsonc](wrangler.jsonc): static assets from
-`dist/analog/public`, SPA fallback via `not_found_handling`, `/api/*` routed to the Worker
-(`worker/index.ts`), and the Browser Run binding. `public/_headers` sets cache and security
-headers.
+Pages configuration lives in [wrangler.jsonc](wrangler.jsonc), with
+`pages_build_output_dir: dist/analog/public`. `public/_redirects` keeps SPA deep links working,
+and `public/_headers` sets cache and security headers.
+
+The PDF service configuration lives in [worker/wrangler.jsonc](worker/wrangler.jsonc). In
+production, Cloudflare should route `cv-builder.andersseen.dev/api/*` to the `cv-builder-pdf`
+Worker so the browser can keep posting to `/api/pdf` on the same origin.
 
 **Continuous deployment** — every push to `main` runs
 [`ci.yml`](.github/workflows/ci.yml) (lint → test → build) and
@@ -271,7 +277,7 @@ repository secrets:
 
 | Secret                  | Where to get it                                                            |
 | ----------------------- | -------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare dashboard → My Profile → API Tokens → _Edit Cloudflare Workers_ |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare dashboard → My Profile → API Tokens → Pages + Workers deploy permissions |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID                        |
 
 > **Browser Run free tier:** 10 minutes of browser time per day at $0 (a PDF takes ~2–4 s).
@@ -304,7 +310,8 @@ src/
 ├── styles.css                   # Tailwind v4 @theme + design tokens
 └── main.ts                      # zoneless bootstrap
 worker/
-└── index.ts                     # Cloudflare Worker: static assets + POST /api/pdf (Browser Run)
+├── index.ts                     # Cloudflare Worker: POST /api/pdf (Browser Run)
+└── wrangler.jsonc               # Worker service config + /api/* route
 ```
 
 ---
