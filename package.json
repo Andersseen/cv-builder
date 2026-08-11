@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "dev:pages": "pnpm build && wrangler pages dev dist/analog/public",
-    "dev:worker": "wrangler dev --config worker/wrangler.jsonc",
+    "dev:worker": "wrangler dev --config worker/wrangler.jsonc --port 8787",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

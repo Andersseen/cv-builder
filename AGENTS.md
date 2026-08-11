@@ -14,7 +14,7 @@ You are working on **Modern CV Builder**: an Angular 21 app for creating resumes
 pnpm install     # install deps (pnpm is the package manager, not npm)
 pnpm start       # dev server at http://localhost:5173 (Vite default)
 pnpm dev:pages   # build + Cloudflare Pages dev server
-pnpm dev:worker  # Cloud PDF Worker dev server
+pnpm dev:worker  # Cloud PDF Worker dev server at http://localhost:8787
 pnpm build       # production build → dist/analog/public
 pnpm lint        # ESLint + angular-eslint
 pnpm test        # unit tests (Vitest)
@@ -33,6 +33,7 @@ pnpm deploy:prod # build + deploy Pages app and PDF Worker (production)
 - Pages config: [wrangler.jsonc](wrangler.jsonc) — `pages_build_output_dir: dist/analog/public`.
 - Worker config: [worker/wrangler.jsonc](worker/wrangler.jsonc) — `main: index.ts`, Browser Run binding `BROWSER`, route for `/api/*`.
 - `worker/index.ts` exposes `POST /api/pdf` (server-side PDF via `@cloudflare/puppeteer`). Keep it thin — no business logic belongs there.
+- Local Cloud PDF needs `pnpm dev:worker` and `pnpm start` running together; `vite.config.ts` has a dev-only middleware that forwards `/api/pdf` to `http://127.0.0.1:8787/api/pdf` before Analog's `/api` dev router can 404 it.
 - Cache + security headers live in `public/_headers`; SPA fallback lives in `public/_redirects`. Vite copies both into the build output — edit them in `public/`, not in `dist/`.
 - Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) then [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
 

@@ -43,6 +43,7 @@ None.
 - `worker/index.ts` — remove static asset serving from the Worker.
 - `public/_redirects` — restore SPA fallback for Pages.
 - `package.json` — split local/dev/deploy scripts.
+- `vite.config.ts` — dev-only `/api/pdf` proxy middleware for local Worker testing.
 - `.github/workflows/deploy.yml` — deploy Pages and Worker separately.
 - `README.md` — update deployment docs.
 - `AGENTS.md` — update project deployment guidance.
@@ -79,3 +80,4 @@ None.
 ## Deviations
 
 - Wrangler Worker dry-run succeeded, but Wrangler attempted to write logs under `~/Library/Preferences/.wrangler/logs` and printed a sandbox `EPERM`; the command still exited 0 and validated the Worker bundle/bindings.
+- Local Vite testing needed a custom middleware instead of `server.proxy`: Analog/Nitro registers its own `/api` dev router and returned `404 Cannot find any route matching /pdf` before Vite's proxy could forward the request.
