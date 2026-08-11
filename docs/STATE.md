@@ -29,7 +29,7 @@ _Nothing currently in progress. Ready for next phase planning._
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
 - **Deployment**: Cloudflare es el único platform target. App estática en Pages (`wrangler.jsonc`, `pages_build_output_dir: dist/analog/public`, `public/_redirects` para SPA fallback, `public/_headers` para cache/seguridad) y servicio PDF en Worker separado `cv-builder-pdf` (`worker/wrangler.jsonc`, Browser Run binding `BROWSER`, ruta `cv-builder.andersseen.dev/api/*`). `pnpm deploy:prod` despliega ambos; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
-- **Local Cloud PDF dev**: arrancar `pnpm dev:worker` (Worker en `127.0.0.1:8787`) y `pnpm start` (Vite en `127.0.0.1:5173`). `vite.config.ts` intercepta `/api/pdf` antes del router dev de Analog y lo reenvía al Worker local.
+- **Local Cloud PDF dev**: `pnpm start` levanta el Worker (`localhost:8787`) y luego Vite (`localhost:5173`). `vite.config.ts` intercepta `/api/pdf` antes del router dev de Analog y lo reenvía al Worker local.
 
 ## Known issues
 
@@ -51,11 +51,11 @@ _Nothing currently in progress. Ready for next phase planning._
   - `wrangler.jsonc` vuelve a Cloudflare Pages (`pages_build_output_dir: dist/analog/public`) y se restaura `public/_redirects` para SPA fallback.
   - Añadido `worker/wrangler.jsonc` para el Worker separado `cv-builder-pdf`, con `BROWSER` de Browser Run y ruta `cv-builder.andersseen.dev/api/*`.
   - `worker/index.ts` deja de servir assets vía `ASSETS`; ahora solo responde `POST /api/pdf`, otros `/api/*` con 404, y cualquier otra ruta con 404.
-  - Scripts divididos: `dev:pages`, `dev:worker`, `deploy:pages`, `deploy:worker`, `deploy:prod` compuesto; `deploy:preview` vuelve a Pages. `dev:worker` fija el puerto 8787.
+  - Scripts divididos: `dev:app`, `dev:pages`, `dev:worker`, `deploy:pages`, `deploy:worker`, `deploy:prod` compuesto; `deploy:preview` vuelve a Pages. `dev:worker` fija el puerto 8787 y `pnpm start` usa `scripts/dev-local.mjs` para levantar Worker + app en orden.
   - Añadido middleware dev en `vite.config.ts` para reenviar `/api/pdf` a `http://127.0.0.1:8787/api/pdf`; esto evita el 404 de Analog/Nitro (`Cannot find any route matching /pdf`) cuando se usa `pnpm start`.
   - `.github/workflows/deploy.yml` ahora despliega Pages primero y Worker después.
   - Docs actualizados: AGENTS.md, README.md, ARCHITECTURE.md, CONTEXT.md, spec 006 + índice.
-  - Verificado: `pnpm lint`, `pnpm test` (75), `pnpm build`, `pnpm e2e` (14) verdes. `wrangler deploy --dry-run --config worker/wrangler.jsonc` validó bundle/bindings y salió 0; imprimió un `EPERM` no bloqueante al intentar escribir logs fuera del sandbox. Prueba local real: `POST :8787/api/pdf` y `POST :5174/api/pdf` devuelto como `application/pdf`.
+  - Verificado: `pnpm lint`, `pnpm test` (75), `pnpm build`, `pnpm e2e` (14) verdes. `wrangler deploy --dry-run --config worker/wrangler.jsonc` validó bundle/bindings y salió 0; imprimió un `EPERM` no bloqueante al intentar escribir logs fuera del sandbox. Prueba local real: `pnpm start` + `POST localhost:5173/api/pdf` devuelto como `application/pdf`.
 
 - **2026-07-28 (noche)** — **Deploy a producción + fix de scripts y workflows.**
   - El fallo de CI en `deploy.yml` era el known issue #3 (`CLOUDFLARE_API_TOKEN` ausente; verificado con `gh run view` y `gh secret list`). Sin arreglo posible desde código: requiere crear el token en el dashboard.

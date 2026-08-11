@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "start": "vite",
+    "dev:app": "vite",
+    "start": "node scripts/dev-local.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "dev:pages": "pnpm build && wrangler pages dev dist/analog/public",

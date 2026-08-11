@@ -22,7 +22,7 @@ function cloudPdfDevProxy(): Plugin {
             JSON.stringify({
               error: "Cloud PDF Worker is not reachable locally",
               detail,
-              hint: "Run `pnpm dev:worker` in another terminal, then retry Cloud PDF from the Vite app.",
+              hint: "Restart local dev with `pnpm start`, or run `pnpm dev:worker` in another terminal alongside `pnpm dev:app`.",
             }),
           );
         }

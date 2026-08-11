@@ -233,7 +233,7 @@ All three routes are lazy — landing visitors never download the editor.
 
 | Command               | What it does                                                    |
 | --------------------- | --------------------------------------------------------------- |
-| `pnpm start`          | Dev server on `http://localhost:5173`                           |
+| `pnpm start`          | Local app + Cloud PDF Worker (`:5173` + `:8787`)                |
 | `pnpm dev:pages`      | Build + local Cloudflare Pages server                           |
 | `pnpm dev:worker`     | Local Cloud PDF Worker server on `http://localhost:8787`         |
 | `pnpm build`          | Production build → `dist/analog/public`                         |
@@ -249,9 +249,9 @@ All three routes are lazy — landing visitors never download the editor.
 | `pnpm deploy:worker`  | Deploy the standalone Cloud PDF Worker                          |
 | `pnpm deploy:preview` | Build and upload a Pages preview deployment                     |
 
-For local Cloud PDF, run `pnpm dev:worker` in one terminal and `pnpm start` in another.
-The Vite dev server intercepts `/api/pdf` before Analog's dev API router and forwards it to
-the local Worker, matching the same-origin `/api/pdf` contract used in production.
+For local Cloud PDF, use `pnpm start`. It starts the Worker first, then Vite. The Vite dev
+server intercepts `/api/pdf` before Analog's dev API router and forwards it to the local Worker,
+matching the same-origin `/api/pdf` contract used in production.
 
 ---
 
