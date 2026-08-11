@@ -47,6 +47,8 @@ jobs:
       - name: Deploy app to Cloudflare Pages
         uses: cloudflare/wrangler-action@v4
         with:
+          # This token must include Account: Cloudflare Pages:Edit.
+          # The old Workers-only token fails here with Cloudflare API code 10000.
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist/analog/public --project-name=cv-builder --branch=main
@@ -54,6 +56,8 @@ jobs:
       - name: Deploy PDF service to Cloudflare Workers
         uses: cloudflare/wrangler-action@v4
         with:
+          # This same token must also include Account: Workers Scripts:Edit
+          # and Zone: Workers Routes:Edit for the /api/* route.
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config worker/wrangler.jsonc

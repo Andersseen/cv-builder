@@ -35,7 +35,7 @@ _Nothing currently in progress. Ready for next phase planning._
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
 2. **Cloudflare routing pendiente de revisar tras la migración** (manual): `cv-builder.andersseen.dev` debe apuntar al proyecto Pages `cv-builder`, y la ruta Worker `cv-builder.andersseen.dev/api/*` debe apuntar a `cv-builder-pdf`. Así la app puede seguir llamando `/api/pdf` sin CORS.
-3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita permisos para desplegar Pages y Workers. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear/actualizar el token en Cloudflare → My Profile → API Tokens con permisos de Pages + Workers, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy:prod` en local usa el login OAuth de Wrangler.
+3. **`CLOUDFLARE_API_TOKEN` sin permisos de Pages** (bloqueado, requiere acción manual): el deploy de 2026-08-11 falló en `wrangler pages deploy` con `Authentication error [code: 10000]`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear/actualizar el token en Cloudflare → My Profile → API Tokens con `Cloudflare Pages:Edit`, `Workers Scripts:Edit`, `Workers Routes:Edit` y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`.
 4. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar `cv-builder.andersseen.dev` en Pages + `cv-builder-pdf` para `/api/*`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
 
 ## Next steps (in rough priority order)
@@ -46,6 +46,13 @@ _Nothing currently in progress. Ready for next phase planning._
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-08-11** — **Limpieza Vercel + diagnóstico deploy Cloudflare.**
+  - Confirmado en GitHub Actions: `Deploy / Cloudflare Pages + Worker` falló en `wrangler pages deploy dist/analog/public --project-name=cv-builder --branch=main` por `Authentication error [code: 10000]`. Causa: `CLOUDFLARE_API_TOKEN` existe, pero no tiene permiso `Cloudflare Pages:Edit`.
+  - `.github/workflows/deploy.yml` documenta permisos mínimos para el token: `Cloudflare Pages:Edit`, `Workers Scripts:Edit`, `Workers Routes:Edit`.
+  - Eliminada la referencia obsoleta a Vercel en `docs/plan/CONTEXT.md`; README deja claro que no hay config Vercel y Cloudflare es el único target.
+  - Desactivado y borrado desde GitHub el deployment Vercel reciente (`vercel[bot]`, environment `Preview`, id `5854616570`). Si Vercel sigue conectado como GitHub App/proyecto externo, volverá a crear deployments hasta desconectarlo en Vercel.
+  - `eslint.config.mjs` ignora explícitamente `test-results/**` y `playwright-report/**` para que `pnpm lint` no falle si los artefactos de Playwright no existen.
 
 - **2026-08-11** — **Migración Workers monolítico → Pages app + Worker PDF (spec 006).**
   - `wrangler.jsonc` vuelve a Cloudflare Pages (`pages_build_output_dir: dist/analog/public`) y se restaura `public/_redirects` para SPA fallback.

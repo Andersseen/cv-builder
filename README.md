@@ -281,10 +281,13 @@ repository secrets:
 
 | Secret                  | Where to get it                                                            |
 | ----------------------- | -------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare dashboard → My Profile → API Tokens → Pages + Workers deploy permissions |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token with `Cloudflare Pages:Edit`, `Workers Scripts:Edit`, and `Workers Routes:Edit` |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID                        |
 
 > **Browser Run free tier:** 10 minutes of browser time per day at $0 (a PDF takes ~2–4 s).
+> **No Vercel:** Cloudflare is the only deployment target. If Vercel still posts GitHub checks,
+> disconnect this repository from the Vercel project/integration; there is no Vercel config in
+> this repo.
 > Usage is visible in the Cloudflare dashboard under Compute → Browser Run.
 
 ---

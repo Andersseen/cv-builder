@@ -8,8 +8,9 @@
 ## 1. Qué es el producto
 
 **Modern CV Builder**: app 100% client-side para crear currículums con preview en vivo y
-export a PDF. Sin backend, sin cuentas, sin analytics — todo se guarda en IndexedDB del
-navegador. Desplegada en Vercel como build estático.
+export a PDF. Sin cuentas ni analytics — todo se guarda en IndexedDB del navegador.
+Desplegada en Cloudflare Pages; el único servicio server-side es el Worker propio para el
+Cloud PDF opt-in.
 
 **Principios de producto** (úsalos para resolver dudas de diseño):
 
