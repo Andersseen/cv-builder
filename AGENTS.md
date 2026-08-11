@@ -12,25 +12,29 @@ You are working on **Modern CV Builder**: an Angular 21 app for creating resumes
 
 ```bash
 pnpm install     # install deps (pnpm is the package manager, not npm)
-pnpm start       # dev server at http://localhost:5173 (Vite default)
-pnpm dev:worker  # build + wrangler dev: full stack at http://localhost:8787 (incl. /api/pdf)
+pnpm start       # local app + Cloud PDF Worker (:5173 + :8787)
+pnpm dev:pages   # build + Cloudflare Pages dev server
+pnpm dev:worker  # Cloud PDF Worker dev server at http://localhost:8787
 pnpm build       # production build → dist/analog/public
 pnpm lint        # ESLint + angular-eslint
 pnpm test        # unit tests (Vitest)
 pnpm e2e         # end-to-end tests (Playwright)
-pnpm deploy:prod # build + deploy to Cloudflare Workers (production)
+pnpm deploy:prod # build + deploy Pages app and PDF Worker (production)
 ```
 
 **Before declaring work done, run `pnpm lint`, `pnpm test`, `pnpm e2e` and `pnpm build`** — all four must be green (CI runs the first three plus the build). TypeScript is fully strict and `strictTemplates` is on, so the compiler catches most mistakes.
 
 ## Deployment
 
-**Cloudflare Workers is the only deployment target.** Do not add config for other hosts.
+**Cloudflare is the only deployment platform.** Apps live on Cloudflare Pages; server-side services live in Cloudflare Workers. Do not add config for other hosts.
 
-- Worker: `cv-builder` · production URL: <https://cv-builder.andersseen.dev> (fallback: `cv-builder.workers.dev` subdomain)
-- Config: [wrangler.jsonc](wrangler.jsonc) — `main: worker/index.ts`, static assets from `dist/analog/public`, SPA fallback via `not_found_handling: "single-page-application"`, `/api/*` routed to the Worker via `run_worker_first`, Browser Run binding `BROWSER`.
-- `worker/index.ts` serves the static app and exposes `POST /api/pdf` (server-side PDF via `@cloudflare/puppeteer`). Keep it thin — no business logic belongs there.
-- Cache + security headers live in `public/_headers` (supported natively by Workers static assets), copied verbatim into the build output — edit them there, not in `dist/`.
+- Pages project: `cv-builder` · production URL: <https://cv-builder.andersseen.dev>.
+- PDF Worker: `cv-builder-pdf` · route `cv-builder.andersseen.dev/api/*` so the client can keep calling `/api/pdf`.
+- Pages config: [wrangler.jsonc](wrangler.jsonc) — `pages_build_output_dir: dist/analog/public`.
+- Worker config: [worker/wrangler.jsonc](worker/wrangler.jsonc) — `main: index.ts`, Browser Run binding `BROWSER`, route for `/api/*`.
+- `worker/index.ts` exposes `POST /api/pdf` (server-side PDF via `@cloudflare/puppeteer`). Keep it thin — no business logic belongs there.
+- Local Cloud PDF uses `pnpm start`, which starts `pnpm dev:worker` first and then `pnpm dev:app`; `vite.config.ts` has a dev-only middleware that forwards `/api/pdf` to `http://127.0.0.1:8787/api/pdf` before Analog's `/api` dev router can 404 it.
+- Cache + security headers live in `public/_headers`; SPA fallback lives in `public/_redirects`. Vite copies both into the build output — edit them in `public/`, not in `dist/`.
 - Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) then [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
 
 ## Stack
@@ -41,7 +45,7 @@ pnpm deploy:prod # build + deploy to Cloudflare Workers (production)
 - **Tailwind CSS v4** — CSS-first config in `src/styles.css` (`@theme` block), semantic HSL tokens, dark mode via `.dark` class on `<html>`
 - **Dexie 4** — IndexedDB wrapper (the only persistence)
 - **html-to-image + jspdf** — image-based PDF export; native print dialog for text-based export
-- **Cloudflare Workers + Browser Run** (`@cloudflare/puppeteer`, devDep) — Worker in `worker/index.ts` serves the app and renders the third, server-side PDF path at `POST /api/pdf`
+- **Cloudflare Pages + Workers + Browser Run** (`@cloudflare/puppeteer`, devDep) — Pages serves the app; Worker in `worker/index.ts` renders the third, server-side PDF path at `POST /api/pdf`
 - **TypeScript 5.8 strict** — all strict flags on
 
 ## Golden rules

@@ -3,10 +3,12 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "start": "vite",
+    "dev:app": "vite",
+    "start": "node scripts/dev-local.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "dev:worker": "pnpm build && wrangler dev",
+    "dev:pages": "pnpm build && wrangler pages dev dist/analog/public",
+    "dev:worker": "wrangler dev --config worker/wrangler.jsonc --port 8787",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -14,8 +16,10 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "deploy:prod": "pnpm build && wrangler deploy",
-    "deploy:preview": "pnpm build && wrangler versions upload"
+    "deploy:prod": "pnpm build && pnpm deploy:pages && pnpm deploy:worker",
+    "deploy:pages": "wrangler pages deploy dist/analog/public --project-name=cv-builder --branch=main",
+    "deploy:worker": "wrangler deploy --config worker/wrangler.jsonc",
+    "deploy:preview": "pnpm build && wrangler pages deploy dist/analog/public --project-name=cv-builder"
   },
   "dependencies": {
     "@angular/animations": "^21.2.18",

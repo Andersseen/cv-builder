@@ -2,7 +2,6 @@ import puppeteer from "@cloudflare/puppeteer";
 
 interface Env {
   BROWSER: Fetcher;
-  ASSETS: Fetcher;
 }
 
 /** Payload for POST /api/pdf: a complete, self-contained HTML document. */
@@ -89,8 +88,6 @@ export default {
       return jsonError(404, "Not found");
     }
 
-    // Requests reaching here matched `run_worker_first` or fell through the
-    // asset router — defer to the static assets (SPA fallback included).
-    return env.ASSETS.fetch(request);
+    return jsonError(404, "Not found");
   },
 };

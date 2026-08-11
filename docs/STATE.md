@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-07-28 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado de Cloudflare Pages a **Cloudflare Workers** (static assets + `POST /api/pdf`) y añadida la tercera vía de export **Cloud PDF** con Browser Run ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
+**Last updated**: 2026-08-11 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a **Cloudflare Pages para la app** + **Cloudflare Worker separado para servicios** (`POST /api/pdf`) ([spec 006](specs/006-cloudflare-pages-app-worker-services.md)). Cloud PDF con Browser Run sigue disponible como export opt-in ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
 
 ## In progress
 
@@ -28,23 +28,34 @@ _Nothing currently in progress. Ready for next phase planning._
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
-- **Deployment**: Cloudflare Workers es el único target. Worker `cv-builder` definido en `wrangler.jsonc` (`main: worker/index.ts`, assets desde `dist/analog/public`, SPA fallback nativo con `not_found_handling`, `/api/*` al Worker con `run_worker_first`, binding `BROWSER` de Browser Run). `pnpm deploy:prod` despliega a producción; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
+- **Deployment**: Cloudflare es el único platform target. App estática en Pages (`wrangler.jsonc`, `pages_build_output_dir: dist/analog/public`, `public/_redirects` para SPA fallback, `public/_headers` para cache/seguridad) y servicio PDF en Worker separado `cv-builder-pdf` (`worker/wrangler.jsonc`, Browser Run binding `BROWSER`, ruta `cv-builder.andersseen.dev/api/*`). `pnpm deploy:prod` despliega ambos; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
+- **Local Cloud PDF dev**: `pnpm start` levanta el Worker (`localhost:8787`) y luego Vite (`localhost:5173`). `vite.config.ts` intercepta `/api/pdf` antes del router dev de Analog y lo reenvía al Worker local.
 
 ## Known issues
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
-2. **`cv-builder.andersseen.dev` pendiente de re-adjuntar al Worker** (bloqueado, requiere acción manual): el dominio sigue asignado al proyecto **Pages** viejo. Pasos: quitar el dominio del proyecto Pages y añadirlo en Workers → `cv-builder` → Settings → Domains & Routes → Add Custom Domain. Como la zona `andersseen.dev` está en Cloudflare, el dashboard crea el registro automáticamente (el problema del wildcard `*` de la era Pages ya no aplica). La URL viva en producción es <https://cv-builder.andriipap01.workers.dev>.
-3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita el secret para `wrangler deploy`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear el token en Cloudflare → My Profile → API Tokens → plantilla *Edit Cloudflare Workers*, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy:prod` en local sí funciona (wrangler usa el login OAuth).
-4. **Proyecto Pages viejo `cv-builder` sin borrar** (manual): sigue existiendo en el dashboard tras la migración a Workers. Borrarlo cuando el Worker esté verificado en producción para evitar confusiones (el `pages.dev` subdomain seguirá sirviendo el build viejo hasta entonces).
+2. **Cloudflare routing pendiente de revisar tras la migración** (manual): `cv-builder.andersseen.dev` debe apuntar al proyecto Pages `cv-builder`, y la ruta Worker `cv-builder.andersseen.dev/api/*` debe apuntar a `cv-builder-pdf`. Así la app puede seguir llamando `/api/pdf` sin CORS.
+3. **Falta `CLOUDFLARE_API_TOKEN`** (bloqueado, requiere acción manual): `deploy.yml` necesita permisos para desplegar Pages y Workers. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear/actualizar el token en Cloudflare → My Profile → API Tokens con permisos de Pages + Workers, y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`. Mientras tanto, `pnpm deploy:prod` en local usa el login OAuth de Wrangler.
+4. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar `cv-builder.andersseen.dev` en Pages + `cv-builder-pdf` para `/api/*`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
 
 ## Next steps (in rough priority order)
 
-0. ~~Primer deploy del Worker~~ **hecho** (2026-07-28, <https://cv-builder.andriipap01.workers.dev>). Queda (ver Known issues 2–4): adjuntar `cv-builder.andersseen.dev` como Custom Domain del Worker, borrar el proyecto Pages viejo, añadir el secret `CLOUDFLARE_API_TOKEN` al repo, y revisar el usage de Browser Run en el dashboard.
+0. Completar la parte manual de Cloudflare tras spec 006: Pages `cv-builder` en `cv-builder.andersseen.dev`, Worker route `cv-builder.andersseen.dev/api/*` → `cv-builder-pdf`, secret `CLOUDFLARE_API_TOKEN` con permisos Pages + Workers, y retirar el Worker monolítico antiguo cuando producción esté verificada.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-08-11** — **Migración Workers monolítico → Pages app + Worker PDF (spec 006).**
+  - `wrangler.jsonc` vuelve a Cloudflare Pages (`pages_build_output_dir: dist/analog/public`) y se restaura `public/_redirects` para SPA fallback.
+  - Añadido `worker/wrangler.jsonc` para el Worker separado `cv-builder-pdf`, con `BROWSER` de Browser Run y ruta `cv-builder.andersseen.dev/api/*`.
+  - `worker/index.ts` deja de servir assets vía `ASSETS`; ahora solo responde `POST /api/pdf`, otros `/api/*` con 404, y cualquier otra ruta con 404.
+  - Scripts divididos: `dev:app`, `dev:pages`, `dev:worker`, `deploy:pages`, `deploy:worker`, `deploy:prod` compuesto; `deploy:preview` vuelve a Pages. `dev:worker` fija el puerto 8787 y `pnpm start` usa `scripts/dev-local.mjs` para levantar Worker + app en orden.
+  - Añadido middleware dev en `vite.config.ts` para reenviar `/api/pdf` a `http://127.0.0.1:8787/api/pdf`; esto evita el 404 de Analog/Nitro (`Cannot find any route matching /pdf`) cuando se usa `pnpm start`.
+  - `.github/workflows/deploy.yml` ahora despliega Pages primero y Worker después.
+  - Docs actualizados: AGENTS.md, README.md, ARCHITECTURE.md, CONTEXT.md, spec 006 + índice.
+  - Verificado: `pnpm lint`, `pnpm test` (75), `pnpm build`, `pnpm e2e` (14) verdes. `wrangler deploy --dry-run --config worker/wrangler.jsonc` validó bundle/bindings y salió 0; imprimió un `EPERM` no bloqueante al intentar escribir logs fuera del sandbox. Prueba local real: `pnpm start` + `POST localhost:5173/api/pdf` devuelto como `application/pdf`.
 
 - **2026-07-28 (noche)** — **Deploy a producción + fix de scripts y workflows.**
   - El fallo de CI en `deploy.yml` era el known issue #3 (`CLOUDFLARE_API_TOKEN` ausente; verificado con `gh run view` y `gh secret list`). Sin arreglo posible desde código: requiere crear el token en el dashboard.

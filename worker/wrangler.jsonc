@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "cv-builder-pdf",
+  "compatibility_date": "2026-07-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "index.ts",
+  "routes": [
+    {
+      "pattern": "cv-builder.andersseen.dev/api/*",
+      "zone_name": "andersseen.dev",
+    },
+  ],
+  "browser": {
+    "binding": "BROWSER",
+  },
+}

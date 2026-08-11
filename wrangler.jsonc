@@ -1,19 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
   "name": "cv-builder",
-  "compatibility_date": "2026-07-25",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "worker/index.ts",
-  "assets": {
-    "directory": "dist/analog/public",
-    "binding": "ASSETS",
-    // SPA fallback: serve index.html for any path that doesn't match an asset
-    // (replaces the Pages-era public/_redirects rule).
-    "not_found_handling": "single-page-application",
-    // API calls must hit the Worker before the asset router.
-    "run_worker_first": ["/api/*"],
-  },
-  "browser": {
-    "binding": "BROWSER",
-  },
+  "pages_build_output_dir": "dist/analog/public",
 }

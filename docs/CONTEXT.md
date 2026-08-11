@@ -26,13 +26,13 @@ Job seekers who want a clean, professional resume quickly, and who care (or shou
    - 5 templates: Modern, Classic, Minimal, Creative, Executive
    - Per-CV customization: accent color, background color, primary color
    - Autosave to IndexedDB (800 ms debounce) with "last saved" indicator
-   - Three export paths: **image PDF** (pixel-perfect, heavy, not ATS-friendly), **print/PDF via browser dialog** (text-selectable, light, ATS-friendly) and **Cloud PDF** (server-rendered by the project's Cloudflare Worker via Browser Run — text-selectable AND pixel-perfect, but the resume HTML leaves the browser for that one request)
+   - Three export paths: **image PDF** (pixel-perfect, heavy, not ATS-friendly), **print/PDF via browser dialog** (text-selectable, light, ATS-friendly) and **Cloud PDF** (server-rendered by the project's PDF Worker via Browser Run — text-selectable AND pixel-perfect, but the resume HTML leaves the browser for that one request)
 4. **Dark/light theme** for the app UI (resume preview always renders on white — a resume is a print artifact).
 
 ## Product principles (use these to resolve design questions)
 
 1. **The resume is the product.** Preview fidelity and PDF output quality beat any app-UI concern.
-2. **Data never leaves the browser.** Any feature requiring a server, analytics, or third-party API is out of scope unless the user explicitly decides otherwise. **Approved exception**: the opt-in Cloud PDF export sends the resume HTML to the project's own Cloudflare Worker (`POST /api/pdf`, see spec 005) — never to third parties, never stored, and always initiated by the user.
+2. **Data never leaves the browser.** Any feature requiring a server, analytics, or third-party API is out of scope unless the user explicitly decides otherwise. **Approved exception**: the opt-in Cloud PDF export sends the resume HTML to the project's own Cloudflare Worker service (`POST /api/pdf`, see specs 005 and 006) — never to third parties, never stored, and always initiated by the user.
 3. **Fast and simple beats feature-rich.** Prefer improving the existing flow over adding new sections/settings.
 4. **Templates must be genuinely distinct** — different layouts (sidebar, header-accent, single-column), not just recolors.
 
