@@ -5,21 +5,23 @@ import {
   output,
   signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput, VoltNativeSelect } from "@voltui/components";
 
 import { Skill, SkillLevel } from "../../../domain/models/cv-model";
 import { createDefaultSkill } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
+import { VoltNativeSelectField } from "../../../shared/forms/volt-native-select-field";
 
 @Component({
   selector: "app-skills-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltNativeSelect],
+  imports: [
+    FormField,
+    VoltNativeSelectField,
+    VoltButton,
+    VoltInput,
+    VoltNativeSelect,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -40,8 +42,7 @@ import { moveItem } from "../../../core/utils/array";
 
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,7 +52,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="name"
+                [formField]="skillForm.name"
                 class="input-field"
                 placeholder="TypeScript, React, Docker..."
               />
@@ -61,7 +62,8 @@ import { moveItem } from "../../../core/utils/array";
                 >Level *</label
               >
               <volt-native-select
-                formControlName="level"
+                appVoltSelectField
+                [formField]="skillForm.level"
                 class="input-field"
               >
                 @for (level of levels; track level) {
@@ -80,7 +82,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="skillForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -154,69 +156,76 @@ export class SkillsForm {
   readonly items = input.required<Skill[]>();
   readonly itemsChange = output<Skill[]>();
   readonly removed = output<Skill>();
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
-  readonly levels: SkillLevel[] = [
+
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
+
+  protected readonly levels: SkillLevel[] = [
     "Beginner",
     "Intermediate",
     "Advanced",
     "Expert",
   ];
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    name: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    level: new FormControl<SkillLevel>("Beginner", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Skill>(createDefaultSkill());
+
+  protected readonly skillForm = form(this.draft, (skill) => {
+    required(skill.name);
+    required(skill.level);
   });
 
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultSkill().id, level: "Beginner" });
+    this.skillForm().reset(createDefaultSkill());
     this.showForm.set(true);
   }
-  edit(skill: Skill) {
+
+  protected edit(skill: Skill): void {
     this.editingId.set(skill.id);
-    this.form.patchValue(skill);
+    this.skillForm().reset({ ...skill });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.skillForm().reset(createDefaultSkill());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.skillForm().invalid()) {
+      this.skillForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Skill;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((s) => (s.id === this.editingId() ? value : s)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = { ...this.draft() };
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((s) => (s.id === editingId ? value : s))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
+
+  protected remove(id: string): void {
     const removed = this.items().find((s) => s.id === id);
     if (!removed) return;
     this.itemsChange.emit(this.items().filter((s) => s.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  move(index: number, direction: "up" | "down") {
+
+  protected move(index: number, direction: "up" | "down"): void {
     this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
 }

@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-08-12 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a **Cloudflare Pages para la app** + **Cloudflare Worker separado para servicios** (`POST /api/pdf`) ([spec 006](specs/006-cloudflare-pages-app-worker-services.md)). Cloud PDF con Browser Run sigue disponible como export opt-in ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
+**Last updated**: 2026-08-12 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. **Angular 22 + Signal Forms**: los 8 formularios del editor migrados desde Reactive Forms ([docs/signal-forms-migration.md](signal-forms-migration.md)). Deployment migrado a **Cloudflare Pages para la app** + **Cloudflare Worker separado para servicios** (`POST /api/pdf`) ([spec 006](specs/006-cloudflare-pages-app-worker-services.md)). Cloud PDF con Browser Run sigue disponible como export opt-in ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
 
 ## In progress
 
@@ -27,7 +27,8 @@ _Nothing currently in progress. Ready for next phase planning._
   - `@utility input-field` y `input-field-resize-none` en `src/styles.css`; aplicadas a todos los `volt-input`/`volt-textarea`/`volt-native-select` de los 7 formularios.
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
-- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
+- **Angular 22 + Signal Forms**: `@angular/*` 22.1.1, AnalogJS 2.7, Vite 8, TypeScript 6.0, Vitest 4. Los 8 formularios del editor usan `form()` + `[formField]` (`@angular/forms/signals`); no queda ni un `FormGroup` en `src/`. `PersonalInfoForm` y `CustomSectionForm` usan `model()` para escribir directo al store (sin `effect`/`patchValue`/`valueChanges`); los 6 editores con draft mantienen su buffer privado y semántica de Cancel.
+- **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. Vitest ahora tiene 2 proyectos: `domain` (Node, rápido) y `component` (jsdom + TestBed zoneless, ficheros `*.ct.spec.ts`). 184 unit/component tests green, 22 e2e tests green.
 - **Deployment**: Cloudflare es el único platform target. App estática en Pages (`wrangler.jsonc`, `pages_build_output_dir: dist/analog/public`, `public/_redirects` para SPA fallback, `public/_headers` para cache/seguridad) y servicio PDF en Worker separado `cv-builder-pdf` (`worker/wrangler.jsonc`, Browser Run binding `BROWSER`, `workers.dev` habilitado). En producción el cliente llama a `https://cv-builder-pdf.andriipap01.workers.dev/api/pdf` con CORS restringido; `pnpm deploy:prod` despliega ambos; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
 - **Local Cloud PDF dev**: `pnpm start` levanta el Worker (`localhost:8787`) y luego Vite (`localhost:5173`). `vite.config.ts` intercepta `/api/pdf` antes del router dev de Analog y lo reenvía al Worker local.
 
@@ -36,6 +37,8 @@ _Nothing currently in progress. Ready for next phase planning._
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
 2. **Cloudflare production verification pendiente** (manual): tras el siguiente deploy verde, verificar `cv-builder.andersseen.dev` en Pages y que Cloud PDF responde desde `cv-builder-pdf.andriipap01.workers.dev`.
 3. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar Pages + `cv-builder-pdf`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
+4. **Peer ranges desactualizados en las libs de UI**: `@voltui/components`, `angular-movement`, `lumen-icons` y `quartz-headless` siguen declarando `@angular/core: ^21`. pnpm avisa de peers no satisfechos; build y tests van verdes, pero una instalación con `--strict-peer-dependencies` fallaría. No hay release upstream que amplíe el rango todavía.
+5. **`volt-native-select` no es un control de formulario**: no implementa `ControlValueAccessor` ni expone `value`. Se puentea con `src/app/shared/forms/volt-native-select-field.ts` (directiva local `appVoltSelectField`). Arreglo real pendiente en Volt UI — ver §7 de [signal-forms-migration.md](signal-forms-migration.md).
 
 ## Next steps (in rough priority order)
 
@@ -43,8 +46,19 @@ _Nothing currently in progress. Ready for next phase planning._
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
+4. Propuesta upstream a Volt UI: `FormValueControl` en `VoltNativeSelect` y `FormCheckboxControl` en `VoltCheckbox` — permitiría borrar el shim local (§7 de `signal-forms-migration.md`).
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-08-12** — **Angular 22 + migración a Signal Forms.**
+  - Upgrade a Angular 22.1.1 (+ AnalogJS 2.7, Vite 8, TypeScript 6.0.3, Vitest 4.1, angular-eslint 22). **Cero cambios de código fuente**: build, lint y los 75 tests existentes pasaron en Angular 22 antes de tocar los formularios.
+  - Infraestructura de component tests nueva: `vitest.config.ts` con 2 proyectos (`domain` en Node, `component` en jsdom con `@analogjs/vitest-angular` + TestBed zoneless), `tsconfig.spec.json` y `src/test-setup.ts`.
+  - Migrados los 8 formularios a Signal Forms. Eliminados 38 `new FormControl`, 8 `new FormGroup`, 15 `Validators.*`, 8 `patchValue`, 8 `getRawValue`, 3 suscripciones `valueChanges` y 2 `effect()` de mirroring. El editor ya no importa RxJS.
+  - **Bug pre-existente encontrado y arreglado**: los selects de nivel (Skills) y proficiency (Languages) lanzaban `NG01203: No value accessor` y estaban muertos en producción — `volt-native-select` no implementa CVA. Verificado en navegador real contra el código anterior. Shim local en `src/app/shared/forms/volt-native-select-field.ts`; Volt UI sin tocar.
+  - **Fuga arreglada**: `CustomSectionForm` tenía un `valueChanges.subscribe()` sin `takeUntilDestroyed`.
+  - Footgun de arrays anidados documentado: iterar el `FieldTree` en `@for` lanza `NG01904 Orphan field` al borrar un item; hay que iterar el modelo e indexar `sectionForm.items[i]`.
+  - Tests: 75 → 184 unit/component, 14 → 22 e2e. Cada test de componente se escribió primero contra la implementación con Reactive Forms.
+  - Evidencia completa en [docs/signal-forms-migration.md](signal-forms-migration.md).
 
 - **2026-08-12** — **Fix CI deploy sin Workers Routes.**
   - El run `31575112085` seguía fallando al escribir `/zones/.../workers/routes` aunque Pages y el upload del Worker ya funcionaban.

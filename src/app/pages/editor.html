@@ -54,7 +54,7 @@
           @switch (activeTab()) { @case ("personal") {
           <app-personal-info-form
             [data]="cvStore.activeCv()!.sections.personal"
-            (changed)="updatePersonalInfo($event)"
+            (dataChange)="updatePersonalInfo($event)"
           />
           } @case ("experience") {
           <app-experience-form

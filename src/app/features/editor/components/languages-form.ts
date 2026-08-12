@@ -5,21 +5,23 @@ import {
   output,
   signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput, VoltNativeSelect } from "@voltui/components";
 
 import { Language, LanguageProficiency } from "../../../domain/models/cv-model";
 import { createDefaultLanguage } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
+import { VoltNativeSelectField } from "../../../shared/forms/volt-native-select-field";
 
 @Component({
   selector: "app-languages-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltNativeSelect],
+  imports: [
+    FormField,
+    VoltNativeSelectField,
+    VoltButton,
+    VoltInput,
+    VoltNativeSelect,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -40,8 +42,7 @@ import { moveItem } from "../../../core/utils/array";
 
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,7 +52,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="name"
+                [formField]="languageForm.name"
                 class="input-field"
                 placeholder="Spanish, English, German..."
               />
@@ -61,7 +62,8 @@ import { moveItem } from "../../../core/utils/array";
                 >Proficiency *</label
               >
               <volt-native-select
-                formControlName="proficiency"
+                appVoltSelectField
+                [formField]="languageForm.proficiency"
                 class="input-field"
               >
                 @for (level of levels; track level) {
@@ -80,7 +82,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="languageForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -150,9 +152,11 @@ export class LanguagesForm {
   readonly items = input.required<Language[]>();
   readonly itemsChange = output<Language[]>();
   readonly removed = output<Language>();
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
-  readonly levels: LanguageProficiency[] = [
+
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
+
+  protected readonly levels: LanguageProficiency[] = [
     "Basic",
     "Conversational",
     "Professional",
@@ -160,63 +164,65 @@ export class LanguagesForm {
     "Native",
   ];
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    name: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    proficiency: new FormControl<LanguageProficiency>("Professional", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Language>(createDefaultLanguage());
+
+  protected readonly languageForm = form(this.draft, (lang) => {
+    required(lang.name);
+    required(lang.proficiency);
   });
 
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({
-      id: createDefaultLanguage().id,
-      proficiency: "Professional",
-    });
+    this.languageForm().reset(createDefaultLanguage());
     this.showForm.set(true);
   }
-  edit(lang: Language) {
+
+  protected edit(lang: Language): void {
     this.editingId.set(lang.id);
-    this.form.patchValue(lang);
+    this.languageForm().reset({ ...lang });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.languageForm().reset(createDefaultLanguage());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.languageForm().invalid()) {
+      this.languageForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Language;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((l) => (l.id === this.editingId() ? value : l)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = { ...this.draft() };
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((l) => (l.id === editingId ? value : l))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
+
+  protected remove(id: string): void {
     const removed = this.items().find((l) => l.id === id);
     if (!removed) return;
     this.itemsChange.emit(this.items().filter((l) => l.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  move(index: number, direction: "up" | "down") {
+
+  protected move(index: number, direction: "up" | "down"): void {
     this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
 }

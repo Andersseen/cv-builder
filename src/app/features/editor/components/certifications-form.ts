@@ -5,12 +5,7 @@ import {
   output,
   signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput } from "@voltui/components";
 
 import { Certification } from "../../../domain/models/cv-model";
@@ -19,7 +14,7 @@ import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-certifications-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput],
+  imports: [FormField, VoltButton, VoltInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -40,8 +35,7 @@ import { moveItem } from "../../../core/utils/array";
 
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,7 +45,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="name"
+                [formField]="certificationForm.name"
                 class="input-field"
                 placeholder="AWS Certified Solutions Architect"
               />
@@ -62,7 +56,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="issuer"
+                [formField]="certificationForm.issuer"
                 class="input-field"
                 placeholder="Amazon Web Services"
               />
@@ -73,7 +67,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="month"
-                formControlName="date"
+                [formField]="certificationForm.date"
                 class="input-field"
               />
             </div>
@@ -83,7 +77,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="url"
+                [formField]="certificationForm.url"
                 class="input-field"
                 placeholder="https://..."
               />
@@ -100,7 +94,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="certificationForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -180,65 +174,71 @@ export class CertificationsForm {
   readonly itemsChange = output<Certification[]>();
   readonly removed = output<Certification>();
 
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    name: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    issuer: new FormControl("", { nonNullable: true }),
-    date: new FormControl("", { nonNullable: true }),
-    url: new FormControl("", { nonNullable: true }),
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Certification>(createDefaultCertification());
+
+  protected readonly certificationForm = form(this.draft, (cert) => {
+    required(cert.name);
   });
 
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultCertification().id });
+    this.certificationForm().reset(createDefaultCertification());
     this.showForm.set(true);
   }
-  edit(cert: Certification) {
-    this.editingId.set(cert.id);
-    this.form.patchValue(cert);
+
+  protected edit(entry: Certification): void {
+    this.editingId.set(entry.id);
+    this.certificationForm().reset({ ...entry });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.certificationForm().reset(createDefaultCertification());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.certificationForm().invalid()) {
+      this.certificationForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Certification;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((c) => (c.id === this.editingId() ? value : c)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = { ...this.draft() };
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((e) => (e.id === editingId ? value : e))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
-    const removed = this.items().find((c) => c.id === id);
+
+  protected remove(id: string): void {
+    const removed = this.items().find((e) => e.id === id);
     if (!removed) return;
-    this.itemsChange.emit(this.items().filter((c) => c.id !== id));
+    this.itemsChange.emit(this.items().filter((e) => e.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  move(index: number, direction: "up" | "down") {
+
+  protected move(index: number, direction: "up" | "down"): void {
     this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
-  formatDate(dateString: string): string {
+
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;
