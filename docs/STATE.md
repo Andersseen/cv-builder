@@ -2,7 +2,7 @@
 
 > **How to use this file**: read it at the start of every session to know where work stands. **Update it at the end of every session**: move finished items to the log, add new known issues, keep "Next steps" honest. Keep it short — this is a status board, not a changelog archive.
 
-**Last updated**: 2026-08-11 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a **Cloudflare Pages para la app** + **Cloudflare Worker separado para servicios** (`POST /api/pdf`) ([spec 006](specs/006-cloudflare-pages-app-worker-services.md)). Cloud PDF con Browser Run sigue disponible como export opt-in ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
+**Last updated**: 2026-08-12 · **Active branch**: `main`. Fases 0–7 de [docs/plan/PLAN.md](plan/PLAN.md) completadas. Deployment migrado a **Cloudflare Pages para la app** + **Cloudflare Worker separado para servicios** (`POST /api/pdf`) ([spec 006](specs/006-cloudflare-pages-app-worker-services.md)). Cloud PDF con Browser Run sigue disponible como export opt-in ([spec 005](specs/005-cloudflare-workers-cloud-pdf.md)). Automatización de Claude Code (hooks, skills, subagentes, MCP) configurada en `.claude/`.
 
 ## In progress
 
@@ -35,17 +35,22 @@ _Nothing currently in progress. Ready for next phase planning._
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
 2. **Cloudflare routing pendiente de revisar tras la migración** (manual): `cv-builder.andersseen.dev` debe apuntar al proyecto Pages `cv-builder`, y la ruta Worker `cv-builder.andersseen.dev/api/*` debe apuntar a `cv-builder-pdf`. Así la app puede seguir llamando `/api/pdf` sin CORS.
-3. **`CLOUDFLARE_API_TOKEN` sin permisos de Pages** (bloqueado, requiere acción manual): el deploy de 2026-08-11 falló en `wrangler pages deploy` con `Authentication error [code: 10000]`. `CLOUDFLARE_ACCOUNT_ID` ya está configurado. Crear/actualizar el token en Cloudflare → My Profile → API Tokens con `Cloudflare Pages:Edit`, `Workers Scripts:Edit`, `Workers Routes:Edit` y añadirlo con `gh secret set CLOUDFLARE_API_TOKEN`.
+3. **`CLOUDFLARE_API_TOKEN` sin permiso de rutas Worker en la zona** (bloqueado, requiere acción manual): el deploy de 2026-08-11 ya sube Pages correctamente y también sube el Worker `cv-builder-pdf`, pero falla al crear/actualizar la ruta `cv-builder.andersseen.dev/api/*` con `Authentication error [code: 10000]` contra `/zones/.../workers/routes`. El token necesita `Account: Cloudflare Pages:Edit`, `Account: Workers Scripts:Edit` y `Zone: Workers Routes:Edit` para la zona `andersseen.dev`; después actualizar el secret `CLOUDFLARE_API_TOKEN` y relanzar el workflow.
 4. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar `cv-builder.andersseen.dev` en Pages + `cv-builder-pdf` para `/api/*`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
 
 ## Next steps (in rough priority order)
 
-0. Completar la parte manual de Cloudflare tras spec 006: Pages `cv-builder` en `cv-builder.andersseen.dev`, Worker route `cv-builder.andersseen.dev/api/*` → `cv-builder-pdf`, secret `CLOUDFLARE_API_TOKEN` con permisos Pages + Workers, y retirar el Worker monolítico antiguo cuando producción esté verificada.
+0. Completar la parte manual de Cloudflare tras spec 006: añadir `Zone: Workers Routes:Edit` para `andersseen.dev` al token usado como `CLOUDFLARE_API_TOKEN`, relanzar deploy, verificar Pages `cv-builder` en `cv-builder.andersseen.dev` y Worker route `cv-builder.andersseen.dev/api/*` → `cv-builder-pdf`, y retirar el Worker monolítico antiguo cuando producción esté verificada.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-08-12** — **Diagnóstico CI deploy Cloudflare.**
+  - Revisado el run `31515154446` de GitHub Actions: `pages deploy dist/analog/public --project-name=cv-builder --branch=main` termina correctamente y publica `https://e0f5870d.cv-builder-8on.pages.dev`.
+  - `wrangler deploy --config worker/wrangler.jsonc` sube el Worker `cv-builder-pdf` y detecta el binding `BROWSER`, pero falla al crear/actualizar la route `cv-builder.andersseen.dev/api/*` por `Authentication error [code: 10000]` en `/zones/61f26584b39c36626b9eedbc24ad833a/workers/routes`.
+  - Causa: el token tiene permisos de account suficientes para Pages/Worker script, pero le falta `Zone: Workers Routes:Edit` para `andersseen.dev`. No conviene quitar la route del config solo para pasar CI, porque rompería `/api/pdf` en producción.
 
 - **2026-08-11** — **Limpieza Vercel + diagnóstico deploy Cloudflare.**
   - Confirmado en GitHub Actions: `Deploy / Cloudflare Pages + Worker` falló en `wrangler pages deploy dist/analog/public --project-name=cv-builder --branch=main` por `Authentication error [code: 10000]`. Causa: `CLOUDFLARE_API_TOKEN` existe, pero no tiene permiso `Cloudflare Pages:Edit`.
