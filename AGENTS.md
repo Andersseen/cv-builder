@@ -1,6 +1,6 @@
 # Agent Guide — Modern CV Builder
 
-You are working on **Modern CV Builder**: an Angular 21 app for creating resumes with live preview and PDF export. No accounts, no auth — CVs are stored locally in IndexedDB. The only server round-trip is the opt-in Cloud PDF export, which renders on the project's own Cloudflare Worker.
+You are working on **Modern CV Builder**: an Angular 22 app for creating resumes with live preview and PDF export. No accounts, no auth — CVs are stored locally in IndexedDB. The only server round-trip is the opt-in Cloud PDF export, which renders on the project's own Cloudflare Worker.
 
 ## Session protocol (do this every session)
 
@@ -39,14 +39,14 @@ pnpm deploy:prod # build + deploy Pages app and PDF Worker (production)
 
 ## Stack
 
-- **Angular 21** — standalone components only, signals everywhere, zoneless change detection (`provideZonelessChangeDetection`). Upgraded from 19 to unblock the user's UI libs (`@voltui/components` etc., which require Angular ^21).
-- **AnalogJS 2.x + Vite 6** — meta-framework with file-based routing and Vite-based dev/build
+- **Angular 22** — standalone components only, signals everywhere, zoneless change detection (`provideZonelessChangeDetection`). Editor forms use **Signal Forms** (`@angular/forms/signals`); Reactive Forms is no longer used anywhere. See [docs/signal-forms-migration.md](docs/signal-forms-migration.md).
+- **AnalogJS 2.7 + Vite 8** — meta-framework with file-based routing and Vite-based dev/build
 - **Zone.js removed** — `provideExperimentalZonelessChangeDetection()` is used at bootstrap
 - **Tailwind CSS v4** — CSS-first config in `src/styles.css` (`@theme` block), semantic HSL tokens, dark mode via `.dark` class on `<html>`
 - **Dexie 4** — IndexedDB wrapper (the only persistence)
 - **html-to-image + jspdf** — image-based PDF export; native print dialog for text-based export
 - **Cloudflare Pages + Workers + Browser Run** (`@cloudflare/puppeteer`, devDep) — Pages serves the app; Worker in `worker/index.ts` renders the third, server-side PDF path at `POST /api/pdf`
-- **TypeScript 5.8 strict** — all strict flags on
+- **TypeScript 6.0 strict** — all strict flags on (required by `@angular/build@22`)
 
 ## Golden rules
 

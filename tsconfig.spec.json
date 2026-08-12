@@ -1,0 +1,11 @@
+/* TypeScript program used by the Vitest `component` project. The AnalogJS
+   Angular plugin needs a tsconfig that includes both the components under test
+   and their spec files, otherwise it cannot compile their decorators. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": ["vitest/globals", "node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+}

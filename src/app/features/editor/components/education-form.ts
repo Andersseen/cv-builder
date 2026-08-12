@@ -5,12 +5,7 @@ import {
   output,
   signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput } from "@voltui/components";
 
 import { Education } from "../../../domain/models/cv-model";
@@ -19,7 +14,7 @@ import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-education-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput],
+  imports: [FormField, VoltButton, VoltInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -40,8 +35,7 @@ import { moveItem } from "../../../core/utils/array";
 
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <h3 class="text-sm font-medium text-muted-foreground">
@@ -54,7 +48,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="degree"
+                [formField]="educationForm.degree"
                 class="input-field"
                 placeholder="Bachelor of Science"
               />
@@ -65,7 +59,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="institution"
+                [formField]="educationForm.institution"
                 class="input-field"
                 placeholder="MIT"
               />
@@ -76,7 +70,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="location"
+                [formField]="educationForm.location"
                 class="input-field"
                 placeholder="Cambridge, MA"
               />
@@ -87,7 +81,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="month"
-                formControlName="graduationDate"
+                [formField]="educationForm.graduationDate"
                 class="input-field"
               />
             </div>
@@ -97,7 +91,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="gpa"
+                [formField]="educationForm.gpa"
                 class="input-field"
                 placeholder="3.8 / 4.0"
               />
@@ -113,7 +107,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="educationForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -195,72 +189,74 @@ export class EducationForm {
   readonly items = input.required<Education[]>();
   readonly itemsChange = output<Education[]>();
   readonly removed = output<Education>();
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    degree: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    institution: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    location: new FormControl("", { nonNullable: true }),
-    graduationDate: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    gpa: new FormControl("", { nonNullable: true }),
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
+
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Education>(createDefaultEducation());
+
+  protected readonly educationForm = form(this.draft, (edu) => {
+    required(edu.degree);
+    required(edu.institution);
+    required(edu.graduationDate);
   });
 
-  move(index: number, direction: "up" | "down") {
-    this.itemsChange.emit(moveItem(this.items(), index, direction));
-  }
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultEducation().id });
+    this.educationForm().reset(createDefaultEducation());
     this.showForm.set(true);
   }
-  edit(edu: Education) {
-    this.editingId.set(edu.id);
-    this.form.patchValue(edu);
+
+  protected edit(entry: Education): void {
+    this.editingId.set(entry.id);
+    this.educationForm().reset({ ...entry });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.educationForm().reset(createDefaultEducation());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.educationForm().invalid()) {
+      this.educationForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Education;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((e) => (e.id === this.editingId() ? value : e)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = { ...this.draft() };
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((e) => (e.id === editingId ? value : e))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
+
+  protected remove(id: string): void {
     const removed = this.items().find((e) => e.id === id);
     if (!removed) return;
     this.itemsChange.emit(this.items().filter((e) => e.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  formatDate(dateString: string): string {
+
+  protected move(index: number, direction: "up" | "down"): void {
+    this.itemsChange.emit(moveItem(this.items(), index, direction));
+  }
+
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;

@@ -1,18 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  input,
-  output,
-  signal,
-} from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { ChangeDetectionStrategy, Component, model } from "@angular/core";
+import { FormField, email, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { PersonalInfo } from "../../../domain/models/cv-model";
@@ -61,9 +48,21 @@ export function resizeImageToDataUrl(
   });
 }
 
+/**
+ * Personal information editor — the one *continuously synchronised* form in the
+ * editor: every keystroke must reach the store so the live preview updates
+ * while typing.
+ *
+ * `data` is a `model()`, so the `WritableSignal` handed to `form()` writes
+ * straight back out through `dataChange`. The store stays the single source of
+ * truth and the component holds no copy of it: no `patchValue`, no
+ * `valueChanges`, no mirroring `effect`. Values pushed in from the parent
+ * update the fields without echoing back out, because writing an input does not
+ * emit its change output.
+ */
 @Component({
   selector: "app-personal-info-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
+  imports: [FormField, VoltButton, VoltInput, VoltTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -76,9 +75,9 @@ export function resizeImageToDataUrl(
         <div
           class="relative w-20 h-20 rounded-full overflow-hidden bg-muted border-2 border-border flex items-center justify-center shrink-0"
         >
-          @if (avatarPreview()) {
+          @if (personalForm.avatarUrl().value()) {
             <img
-              [src]="avatarPreview()"
+              [src]="personalForm.avatarUrl().value()"
               alt="Avatar"
               class="w-full h-full object-cover"
             />
@@ -116,7 +115,7 @@ export function resizeImageToDataUrl(
                 (change)="onAvatarSelected($event)"
               />
             </label>
-            @if (avatarPreview()) {
+            @if (personalForm.avatarUrl().value()) {
               <volt-button
                 type="button"
                 (click)="removeAvatar()"
@@ -132,7 +131,7 @@ export function resizeImageToDataUrl(
         </div>
       </div>
 
-      <form [formGroup]="form" class="space-y-4">
+      <form class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-foreground/80 mb-1.5"
@@ -140,12 +139,13 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="text"
-              formControlName="fullName"
+              [formField]="personalForm.fullName"
               class="input-field"
               placeholder="John Doe"
             />
             @if (
-              form.controls.fullName.touched && form.controls.fullName.invalid
+              personalForm.fullName().touched() &&
+              personalForm.fullName().invalid()
             ) {
               <p class="text-destructive text-xs mt-1">Full Name is required</p>
             }
@@ -157,11 +157,13 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="email"
-              formControlName="email"
+              [formField]="personalForm.email"
               class="input-field"
               placeholder="john&#64;example.com"
             />
-            @if (form.controls.email.touched && form.controls.email.invalid) {
+            @if (
+              personalForm.email().touched() && personalForm.email().invalid()
+            ) {
               <p class="text-destructive text-xs mt-1">
                 Valid email is required
               </p>
@@ -174,7 +176,7 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="tel"
-              formControlName="phone"
+              [formField]="personalForm.phone"
               class="input-field"
               placeholder="+1 (555) 123-4567"
             />
@@ -186,7 +188,7 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="text"
-              formControlName="location"
+              [formField]="personalForm.location"
               class="input-field"
               placeholder="New York, NY"
             />
@@ -198,7 +200,7 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="url"
-              formControlName="website"
+              [formField]="personalForm.website"
               class="input-field"
               placeholder="https://johndoe.com"
             />
@@ -210,7 +212,7 @@ export function resizeImageToDataUrl(
             >
             <volt-input
               type="url"
-              formControlName="linkedin"
+              [formField]="personalForm.linkedin"
               class="input-field"
               placeholder="https://linkedin.com/in/johndoe"
             />
@@ -222,7 +224,7 @@ export function resizeImageToDataUrl(
             >Professional Summary</label
           >
           <volt-textarea
-            formControlName="summary"
+            [formField]="personalForm.summary"
             [rows]="4"
             class="input-field-resize-none"
             placeholder="Brief overview of your professional background and key achievements..."
@@ -233,72 +235,41 @@ export function resizeImageToDataUrl(
   `,
 })
 export class PersonalInfoForm {
-  readonly data = input.required<PersonalInfo>();
-  readonly changed = output<PersonalInfo>();
+  /**
+   * Two-way bound personal info. The parent passes the store's value in and
+   * receives every edit back through `dataChange`.
+   */
+  readonly data = model.required<PersonalInfo>();
 
-  avatarPreview = signal<string>("");
-
-  form = new FormGroup({
-    fullName: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    email: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.email],
-    }),
-    phone: new FormControl("", { nonNullable: true }),
-    location: new FormControl("", { nonNullable: true }),
-    website: new FormControl("", { nonNullable: true }),
-    linkedin: new FormControl("", { nonNullable: true }),
-    summary: new FormControl("", { nonNullable: true }),
+  protected readonly personalForm = form(this.data, (p) => {
+    required(p.fullName);
+    email(p.email);
   });
 
-  constructor() {
-    effect(() => {
-      const d = this.data();
-      this.form.patchValue(d, { emitEvent: false });
-      this.avatarPreview.set(d.avatarUrl || "");
-    });
-
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.changed.emit({
-        ...this.form.getRawValue(),
-        avatarUrl: this.avatarPreview(),
-      });
-    });
-  }
-
-  onAvatarSelected(event: Event): void {
+  protected onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input?.files?.[0];
     if (!file) return;
 
     resizeImageToDataUrl(file)
-      .then((dataUrl) => {
-        this.avatarPreview.set(dataUrl);
-        this.emitCurrentState();
-      })
+      .then((dataUrl) => this.setAvatar(dataUrl))
       .catch(() => {
         // Fallback: store the original data URL if resizing fails.
         const reader = new FileReader();
-        reader.onload = () => {
-          this.avatarPreview.set(reader.result as string);
-          this.emitCurrentState();
-        };
+        reader.onload = () => this.setAvatar(reader.result as string);
         reader.readAsDataURL(file);
       });
   }
 
-  removeAvatar(): void {
-    this.avatarPreview.set("");
-    this.emitCurrentState();
+  protected removeAvatar(): void {
+    this.setAvatar("");
   }
 
-  private emitCurrentState(): void {
-    this.changed.emit({
-      ...this.form.getRawValue(),
-      avatarUrl: this.avatarPreview(),
-    });
+  /**
+   * The avatar lives in the same `PersonalInfo` model as every other field, so
+   * writing it goes through the form like any other edit.
+   */
+  private setAvatar(avatarUrl: string): void {
+    this.personalForm.avatarUrl().value.set(avatarUrl);
   }
 }

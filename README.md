@@ -217,8 +217,8 @@ All three routes are lazy — landing visitors never download the editor.
 
 | Layer          | Choice                                                     | Why                                               |
 | -------------- | ---------------------------------------------------------- | ------------------------------------------------- |
-| Framework      | **Angular 21**, standalone + signals                       | Zoneless change detection, no NgModules anywhere  |
-| Meta-framework | **AnalogJS 2.6** + **Vite 6**                              | File-based routing, fast dev server, static build |
+| Framework      | **Angular 22**, standalone + signals + Signal Forms        | Zoneless change detection, no NgModules anywhere  |
+| Meta-framework | **AnalogJS 2.7** + **Vite 8**                              | File-based routing, fast dev server, static build |
 | Styling        | **Tailwind CSS v4**                                        | CSS-first `@theme` config, semantic HSL tokens    |
 | Persistence    | **Dexie 4** over IndexedDB                                 | The only storage — CVs never leave the browser    |
 | PDF export     | `html-to-image` + `jspdf`, native print, **Browser Run**   | Pixel-perfect _and_ ATS-friendly paths            |
@@ -360,6 +360,6 @@ Issues and pull requests are welcome. Before you open a PR:
 
 **[cv-builder.andersseen.dev](https://cv-builder.andersseen.dev)**
 
-<sub>Built with Angular 21, signals and a single Cloudflare Worker.</sub>
+<sub>Built with Angular 22, signals and a single Cloudflare Worker.</sub>
 
 </div>

@@ -5,12 +5,7 @@ import {
   output,
   signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { Project } from "../../../domain/models/cv-model";
@@ -19,7 +14,7 @@ import { moveItem } from "../../../core/utils/array";
 
 @Component({
   selector: "app-projects-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
+  imports: [FormField, VoltButton, VoltInput, VoltTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -40,8 +35,7 @@ import { moveItem } from "../../../core/utils/array";
 
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,7 +45,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="name"
+                [formField]="projectForm.name"
                 class="input-field"
                 placeholder="Portfolio Website"
               />
@@ -62,7 +56,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="url"
+                [formField]="projectForm.url"
                 class="input-field"
                 placeholder="https://github.com/you/project"
               />
@@ -75,7 +69,7 @@ import { moveItem } from "../../../core/utils/array";
             >
             <volt-input
               type="text"
-              formControlName="technologies"
+              [formField]="projectForm.technologies"
               class="input-field"
               placeholder="Angular, TypeScript, Tailwind"
             />
@@ -86,7 +80,7 @@ import { moveItem } from "../../../core/utils/array";
               >Description</label
             >
             <volt-textarea
-              formControlName="description"
+              [formField]="projectForm.description"
               [rows]="3"
               class="input-field-resize-none"
               placeholder="What the project does and your role..."
@@ -107,7 +101,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="projectForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -188,62 +182,67 @@ export class ProjectsForm {
   readonly itemsChange = output<Project[]>();
   readonly removed = output<Project>();
 
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    name: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    url: new FormControl("", { nonNullable: true }),
-    technologies: new FormControl("", { nonNullable: true }),
-    description: new FormControl("", { nonNullable: true }),
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Project>(createDefaultProject());
+
+  protected readonly projectForm = form(this.draft, (proj) => {
+    required(proj.name);
   });
 
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultProject().id });
+    this.projectForm().reset(createDefaultProject());
     this.showForm.set(true);
   }
-  edit(proj: Project) {
-    this.editingId.set(proj.id);
-    this.form.patchValue(proj);
+
+  protected edit(entry: Project): void {
+    this.editingId.set(entry.id);
+    this.projectForm().reset({ ...entry });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.projectForm().reset(createDefaultProject());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.projectForm().invalid()) {
+      this.projectForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Project;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((p) => (p.id === this.editingId() ? value : p)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = { ...this.draft() };
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((e) => (e.id === editingId ? value : e))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
-    const removed = this.items().find((p) => p.id === id);
+
+  protected remove(id: string): void {
+    const removed = this.items().find((e) => e.id === id);
     if (!removed) return;
-    this.itemsChange.emit(this.items().filter((p) => p.id !== id));
+    this.itemsChange.emit(this.items().filter((e) => e.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  move(index: number, direction: "up" | "down") {
+
+  protected move(index: number, direction: "up" | "down"): void {
     this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
 }

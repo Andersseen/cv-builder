@@ -1,29 +1,42 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
-  input,
+  computed,
+  model,
   output,
-  signal,
 } from "@angular/core";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
-import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
-import { CustomSection, CustomItem } from "../../../domain/models/cv-model";
+import { FormField, form, required } from "@angular/forms/signals";
+import { VoltButton, VoltInput } from "@voltui/components";
+
+import { CustomItem, CustomSection } from "../../../domain/models/cv-model";
+import { createDefaultCustomItem } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
 
+/**
+ * Custom-section editor: a section title plus a nested, reorderable list of
+ * items.
+ *
+ * Like personal info this synchronises continuously rather than buffering a
+ * draft, so `section` is a two-way `model()` and `form()` writes straight
+ * through it. The whole `CustomSection` — title *and* items — is one typed
+ * model: the nested item fields bind with `[formField]` exactly like top-level
+ * ones, replacing the previous mix of a `FormGroup` for the title and a
+ * hand-maintained `signal<CustomItem[]>` with manual `[value]`/`(input)`
+ * plumbing.
+ *
+ * Structural edits (add / remove / reorder) are not field bindings, so they
+ * still go through the array field's own value signal.
+ */
 @Component({
   selector: "app-custom-section-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
+  imports: [FormField, VoltButton, VoltInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-foreground">Edit Custom Section</h3>
+        <h3 class="text-lg font-semibold text-foreground">
+          Edit Custom Section
+        </h3>
         <button
           type="button"
           (click)="removed.emit()"
@@ -33,14 +46,14 @@ import { moveItem } from "../../../core/utils/array";
         </button>
       </div>
 
-      <form [formGroup]="form" class="space-y-4">
+      <form class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-foreground/80 mb-1.5"
             >Section Title *</label
           >
           <volt-input
             type="text"
-            formControlName="title"
+            [formField]="sectionForm.title"
             class="input-field"
             placeholder="Volunteering, Awards, Publications..."
           />
@@ -61,9 +74,7 @@ import { moveItem } from "../../../core/utils/array";
         </div>
 
         @for (item of items(); track item.id; let i = $index) {
-          <div
-            class="p-4 bg-muted border border-border rounded-xl space-y-3"
-          >
+          <div class="p-4 bg-muted border border-border rounded-xl space-y-3">
             <div class="flex items-start justify-between gap-2">
               <span class="text-xs font-medium text-muted-foreground"
                 >#{{ i + 1 }}</span
@@ -105,8 +116,7 @@ import { moveItem } from "../../../core/utils/array";
                 >
                 <input
                   type="text"
-                  [value]="item.title"
-                  (input)="updateItem(i, 'title', $event)"
+                  [formField]="sectionForm.items[i].title"
                   class="input-field"
                   placeholder="Award name / Project title"
                 />
@@ -117,8 +127,7 @@ import { moveItem } from "../../../core/utils/array";
                 >
                 <input
                   type="text"
-                  [value]="item.subtitle"
-                  (input)="updateItem(i, 'subtitle', $event)"
+                  [formField]="sectionForm.items[i].subtitle"
                   class="input-field"
                   placeholder="Issuer / Year / Organization"
                 />
@@ -129,8 +138,7 @@ import { moveItem } from "../../../core/utils/array";
                 >Description</label
               >
               <textarea
-                [value]="item.description"
-                (input)="updateItem(i, 'description', $event)"
+                [formField]="sectionForm.items[i].description"
                 rows="3"
                 class="input-field-resize-none"
                 placeholder="Supports **bold**, *italic*, and - bullet lines."
@@ -149,71 +157,42 @@ import { moveItem } from "../../../core/utils/array";
   `,
 })
 export class CustomSectionForm {
-  readonly section = input.required<CustomSection>();
-  readonly sectionChange = output<CustomSection>();
+  /**
+   * Two-way bound custom section. The parent passes the store's value in and
+   * receives every edit back through `sectionChange`.
+   */
+  readonly section = model.required<CustomSection>();
   readonly removed = output<void>();
 
-  items = signal<CustomItem[]>([]);
-
-  form = new FormGroup({
-    title: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+  protected readonly sectionForm = form(this.section, (s) => {
+    required(s.title);
   });
 
-  constructor() {
-    effect(() => {
-      const section = this.section();
-      this.form.patchValue({ title: section.title }, { emitEvent: false });
-      this.items.set(section.items ?? []);
-    });
+  /**
+   * The item list as plain data, for `@for`.
+   *
+   * The template deliberately iterates this rather than the `sectionForm.items`
+   * field tree. Tracking a `FieldTree` pulled out of an array field throws
+   * NG01904 ("orphan field") as soon as an item is removed — the tracking
+   * expression still evaluates against the field for the index that just
+   * vanished. Tracking plain data by `id` and indexing back into
+   * `sectionForm.items[i]` keeps DOM identity stable across add/remove/reorder.
+   */
+  protected readonly items = computed(() => this.sectionForm.items().value());
 
-    this.form.valueChanges.subscribe(() => {
-      this.emitChange();
-    });
+  protected addItem(): void {
+    this.updateItems((items) => [...items, createDefaultCustomItem()]);
   }
 
-  addItem(): void {
-    this.items.update((items) => [
-      ...items,
-      {
-        id: crypto.randomUUID(),
-        title: "",
-        subtitle: "",
-        description: "",
-      },
-    ]);
-    this.emitChange();
+  protected removeItem(index: number): void {
+    this.updateItems((items) => items.filter((_, i) => i !== index));
   }
 
-  removeItem(index: number): void {
-    this.items.update((items) => items.filter((_, i) => i !== index));
-    this.emitChange();
+  protected moveItem(index: number, direction: "up" | "down"): void {
+    this.updateItems((items) => moveItem(items, index, direction));
   }
 
-  moveItem(index: number, direction: "up" | "down"): void {
-    this.items.update((items) => moveItem(items, index, direction));
-    this.emitChange();
-  }
-
-  updateItem(
-    index: number,
-    field: keyof CustomItem,
-    event: Event,
-  ): void {
-    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
-    this.items.update((items) =>
-      items.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
-    );
-    this.emitChange();
-  }
-
-  private emitChange(): void {
-    this.sectionChange.emit({
-      ...this.section(),
-      title: this.form.value.title ?? "",
-      items: this.items(),
-    });
+  private updateItems(fn: (items: CustomItem[]) => CustomItem[]): void {
+    this.sectionForm.items().value.update(fn);
   }
 }

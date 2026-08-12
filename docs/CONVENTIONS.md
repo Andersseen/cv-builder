@@ -29,7 +29,7 @@ Follow existing code style exactly. When in doubt, open a similar existing file 
 **Templates**
 
 - Built-in control flow only: `@if`, `@for (… ; track item.id)`, `@switch`. Never structural directives (`*ngIf`, `*ngFor`).
-- Forms: **typed Reactive Forms** (`FormGroup`/`FormControl` with `Validators`), not template-driven `ngModel`.
+- Forms: **Signal Forms** (`form()` over a `signal()` model, `[formField]` bindings, schema validation from `@angular/forms/signals`). Never Reactive Forms (`FormGroup`/`FormControl`) or template-driven `ngModel`. Continuously-synced forms use a `model()` input so the form writes straight through to the parent; draft editors keep a private `signal<T>` buffer and `input()`/`output()`. See [signal-forms-migration.md](signal-forms-migration.md).
 - Icons are inline SVG (heroicons-style paths) or emoji for tab icons. There is no icon library — don't add one.
 
 **Services**

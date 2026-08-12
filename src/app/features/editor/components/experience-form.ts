@@ -5,22 +5,23 @@ import {
   output,
   signal,
 } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from "@angular/forms";
+import { FormField, disabled, form, required } from "@angular/forms/signals";
 import { VoltButton, VoltInput, VoltTextarea } from "@voltui/components";
 
 import { Experience } from "../../../domain/models/cv-model";
 import { createDefaultExperience } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
 
+/**
+ * Work-experience editor.
+ *
+ * Unlike personal info, this is a *draft* editor: `draft` is a private edit
+ * buffer that never touches `items()` until the user submits. Cancelling
+ * discards it, so a stored entry is only ever replaced by an explicit Update.
+ */
 @Component({
   selector: "app-experience-form",
-  imports: [ReactiveFormsModule, VoltButton, VoltInput, VoltTextarea],
+  imports: [FormField, VoltButton, VoltInput, VoltTextarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -39,11 +40,10 @@ import { moveItem } from "../../../core/utils/array";
         </volt-button>
       </div>
 
-      <!-- Form -->
+      <!-- Draft -->
       @if (showForm()) {
         <form
-          [formGroup]="form"
-          (ngSubmit)="onSubmit()"
+          (submit)="onSubmit($event)"
           class="space-y-4 bg-muted rounded-xl p-5 border border-border"
         >
           <h3 class="text-sm font-medium text-muted-foreground">
@@ -57,7 +57,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="jobTitle"
+                [formField]="experienceForm.jobTitle"
                 class="input-field"
                 placeholder="Software Engineer"
               />
@@ -68,7 +68,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="company"
+                [formField]="experienceForm.company"
                 class="input-field"
                 placeholder="Tech Corp"
               />
@@ -79,7 +79,7 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="text"
-                formControlName="location"
+                [formField]="experienceForm.location"
                 class="input-field"
                 placeholder="San Francisco, CA"
               />
@@ -90,26 +90,28 @@ import { moveItem } from "../../../core/utils/array";
               >
               <volt-input
                 type="month"
-                formControlName="startDate"
+                [formField]="experienceForm.startDate"
                 class="input-field"
               />
             </div>
             <div>
-              @if (!form.controls.current.value) {
+              <!-- An end date is not applicable while the role is current, so
+                   the schema disables it and the field drops out of the form. -->
+              @if (!experienceForm.endDate().disabled()) {
                 <label
                   class="block text-sm font-medium text-foreground/80 mb-1.5"
                   >End Date</label
                 >
                 <volt-input
                   type="month"
-                  formControlName="endDate"
+                  [formField]="experienceForm.endDate"
                   class="input-field"
                 />
               }
               <label class="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  formControlName="current"
+                  [formField]="experienceForm.current"
                   class="w-4 h-4 rounded border-border text-primary focus:ring-ring bg-card"
                 />
                 <span class="text-sm text-foreground/80"
@@ -124,7 +126,7 @@ import { moveItem } from "../../../core/utils/array";
               >Description</label
             >
             <volt-textarea
-              formControlName="description"
+              [formField]="experienceForm.description"
               [rows]="3"
               class="input-field-resize-none"
               placeholder="Key responsibilities and achievements..."
@@ -141,7 +143,7 @@ import { moveItem } from "../../../core/utils/array";
             </volt-button>
             <volt-button
               type="submit"
-              [disabled]="form.invalid"
+              [disabled]="experienceForm().invalid()"
               class="px-4 py-2 text-sm text-accent-foreground bg-accent rounded-lg hover:bg-accent/90
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -230,87 +232,90 @@ export class ExperienceForm {
   readonly itemsChange = output<Experience[]>();
   readonly removed = output<Experience>();
 
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
+  protected readonly showForm = signal(false);
+  protected readonly editingId = signal<string | null>(null);
 
-  form = new FormGroup({
-    id: new FormControl("", { nonNullable: true }),
-    jobTitle: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    company: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    location: new FormControl("", { nonNullable: true }),
-    startDate: new FormControl("", {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    endDate: new FormControl("", { nonNullable: true }),
-    current: new FormControl(false, { nonNullable: true }),
-    description: new FormControl("", { nonNullable: true }),
+  /** The edit buffer. Never the same object as an entry in `items()`. */
+  private readonly draft = signal<Experience>(createDefaultExperience());
+
+  protected readonly experienceForm = form(this.draft, (exp) => {
+    required(exp.jobTitle);
+    required(exp.company);
+    required(exp.startDate);
+    disabled(exp.endDate, ({ valueOf }) => valueOf(exp.current));
   });
 
-  constructor() {
-    this.form.controls.current.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((isCurrent) => {
-        if (isCurrent) {
-          this.form.controls.endDate.setValue("");
-          this.form.controls.endDate.disable();
-        } else {
-          this.form.controls.endDate.enable();
-        }
-      });
-  }
-
-  toggleForm() {
+  protected toggleForm(): void {
     if (this.showForm()) this.cancelEdit();
     else this.startNew();
   }
-  startNew() {
+
+  protected startNew(): void {
     this.editingId.set(null);
-    this.form.reset({ id: createDefaultExperience().id, current: false });
+    this.experienceForm().reset(createDefaultExperience());
     this.showForm.set(true);
   }
-  edit(exp: Experience) {
+
+  protected edit(exp: Experience): void {
     this.editingId.set(exp.id);
-    this.form.patchValue(exp);
+    // Copy, so typing in the draft cannot reach the stored entry.
+    this.experienceForm().reset({ ...exp });
     this.showForm.set(true);
   }
-  cancelEdit() {
+
+  protected cancelEdit(): void {
     this.showForm.set(false);
     this.editingId.set(null);
-    this.form.reset();
+    this.experienceForm().reset(createDefaultExperience());
   }
-  onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+
+  /**
+   * Submission stays explicit and synchronous: the "action" is a local array
+   * update, so Signal Forms' async `submit()` API would only add a Promise
+   * round-trip. The native submit event is stopped here instead of relying on
+   * a form-level directive.
+   */
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.experienceForm().invalid()) {
+      this.experienceForm().markAsTouched();
       return;
     }
-    const value = this.form.getRawValue() as Experience;
-    if (this.editingId()) {
-      this.itemsChange.emit(
-        this.items().map((e) => (e.id === this.editingId() ? value : e)),
-      );
-    } else {
-      this.itemsChange.emit([...this.items(), value]);
-    }
+
+    const value = this.normalize(this.draft());
+    const editingId = this.editingId();
+
+    this.itemsChange.emit(
+      editingId
+        ? this.items().map((e) => (e.id === editingId ? value : e))
+        : [...this.items(), value],
+    );
     this.cancelEdit();
   }
-  remove(id: string) {
+
+  /**
+   * A current role has no end date. The draft keeps whatever the user typed —
+   * so un-ticking the box brings it back — but the saved entry must not carry
+   * a stale one.
+   */
+  private normalize(exp: Experience): Experience {
+    return exp.current ? { ...exp, endDate: "" } : { ...exp };
+  }
+
+  protected remove(id: string): void {
     const removed = this.items().find((e) => e.id === id);
     if (!removed) return;
     this.itemsChange.emit(this.items().filter((e) => e.id !== id));
     this.removed.emit(removed);
     if (this.editingId() === id) this.cancelEdit();
   }
-  move(index: number, direction: "up" | "down") {
+
+  protected move(index: number, direction: "up" | "down"): void {
     this.itemsChange.emit(moveItem(this.items(), index, direction));
   }
-  formatDate(dateString: string): string {
+
+  protected formatDate(dateString: string): string {
     if (!dateString) return "";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;

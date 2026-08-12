@@ -3,16 +3,17 @@ import {
   provideZonelessChangeDetection,
 } from "@angular/core";
 import { provideServerRendering } from "@angular/platform-server";
-import { provideNoopAnimations } from "@angular/platform-browser/animations";
 import { provideFileRouter } from "@analogjs/router";
 import { provideMovement } from "angular-movement";
 
+// No `provideNoopAnimations()`: `@angular/animations` is not a dependency any
+// more, and `provideMovement({ disabled: true })` is what actually keeps
+// angular-movement inert during prerendering.
 export const config: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideServerRendering(),
     provideFileRouter(),
-    provideNoopAnimations(),
     provideMovement({ disabled: true }),
   ],
 };
