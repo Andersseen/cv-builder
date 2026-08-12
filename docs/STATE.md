@@ -28,24 +28,29 @@ _Nothing currently in progress. Ready for next phase planning._
   - Selector de fuente en `template-selector.ts` con 4 opciones seguras para print; `settings.fontFamily` cableado a las 5 plantillas y al `resume-preview`; preview y exports respetan la fuente elegida.
 - **Fase 7**: secciones flexibles. Modelo extendido con `sections.customSections`, `settings.sectionVisibility` y `settings.sectionOrder`; helpers puros `getOrderedSections`, `isSectionVisible`, `moveSection`, `toggleSectionVisibility`, `createCustomSection` con tests. Nuevo tab "Sections" en el editor (`editor-tabs.ts`, `editor.page.ts`, `editor.html`) con visibilidad/reorden de secciones y CRUD de secciones personalizadas. Las 5 plantillas renderizan por orden, respetan visibilidad y muestran custom sections.
 - **Tooling**: ESLint + angular-eslint + Prettier + Vitest + Playwright. 75 unit tests green, 14 e2e tests green.
-- **Deployment**: Cloudflare es el único platform target. App estática en Pages (`wrangler.jsonc`, `pages_build_output_dir: dist/analog/public`, `public/_redirects` para SPA fallback, `public/_headers` para cache/seguridad) y servicio PDF en Worker separado `cv-builder-pdf` (`worker/wrangler.jsonc`, Browser Run binding `BROWSER`, ruta `cv-builder.andersseen.dev/api/*`). `pnpm deploy:prod` despliega ambos; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
+- **Deployment**: Cloudflare es el único platform target. App estática en Pages (`wrangler.jsonc`, `pages_build_output_dir: dist/analog/public`, `public/_redirects` para SPA fallback, `public/_headers` para cache/seguridad) y servicio PDF en Worker separado `cv-builder-pdf` (`worker/wrangler.jsonc`, Browser Run binding `BROWSER`, `workers.dev` habilitado). En producción el cliente llama a `https://cv-builder-pdf.andriipap01.workers.dev/api/pdf` con CORS restringido; `pnpm deploy:prod` despliega ambos; `.github/workflows/deploy.yml` lo hace en cada push a `main`.
 - **Local Cloud PDF dev**: `pnpm start` levanta el Worker (`localhost:8787`) y luego Vite (`localhost:5173`). `vite.config.ts` intercepta `/api/pdf` antes del router dev de Analog y lo reenvía al Worker local.
 
 ## Known issues
 
 1. **Vite dev warnings** (non-blocking): `[@analogjs/vite-plugin-angular]` warns that pre-bundled `node_modules/.vite/deps/*.js` and `@analogjs/router/fesm2022/*.mjs` contain Angular decorators but are not in the TypeScript program. Dev-only warning from the stable 2.6.3 plugin.
-2. **Cloudflare routing pendiente de revisar tras la migración** (manual): `cv-builder.andersseen.dev` debe apuntar al proyecto Pages `cv-builder`, y la ruta Worker `cv-builder.andersseen.dev/api/*` debe apuntar a `cv-builder-pdf`. Así la app puede seguir llamando `/api/pdf` sin CORS.
-3. **`CLOUDFLARE_API_TOKEN` sin permiso de rutas Worker en la zona** (bloqueado, requiere acción manual): el deploy de 2026-08-11 ya sube Pages correctamente y también sube el Worker `cv-builder-pdf`, pero falla al crear/actualizar la ruta `cv-builder.andersseen.dev/api/*` con `Authentication error [code: 10000]` contra `/zones/.../workers/routes`. El token necesita `Account: Cloudflare Pages:Edit`, `Account: Workers Scripts:Edit` y `Zone: Workers Routes:Edit` para la zona `andersseen.dev`; después actualizar el secret `CLOUDFLARE_API_TOKEN` y relanzar el workflow.
-4. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar `cv-builder.andersseen.dev` en Pages + `cv-builder-pdf` para `/api/*`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
+2. **Cloudflare production verification pendiente** (manual): tras el siguiente deploy verde, verificar `cv-builder.andersseen.dev` en Pages y que Cloud PDF responde desde `cv-builder-pdf.andriipap01.workers.dev`.
+3. **Worker antiguo `cv-builder` puede quedar vivo** (manual): tras verificar Pages + `cv-builder-pdf`, borrar o desactivar el Worker monolítico antiguo para evitar confusiones.
 
 ## Next steps (in rough priority order)
 
-0. Completar la parte manual de Cloudflare tras spec 006: añadir `Zone: Workers Routes:Edit` para `andersseen.dev` al token usado como `CLOUDFLARE_API_TOKEN`, relanzar deploy, verificar Pages `cv-builder` en `cv-builder.andersseen.dev` y Worker route `cv-builder.andersseen.dev/api/*` → `cv-builder-pdf`, y retirar el Worker monolítico antiguo cuando producción esté verificada.
+0. Relanzar deploy con el Worker en `workers.dev`, verificar Pages `cv-builder` en `cv-builder.andersseen.dev`, verificar Cloud PDF contra `cv-builder-pdf.andriipap01.workers.dev`, y retirar el Worker monolítico antiguo cuando producción esté verificada.
 1. **Fase 8** — PWA y offline real (requiere aprobación del usuario para nueva dependencia `vite-plugin-pwa` o service worker a mano).
 2. Consider running `pnpm format` once repo-wide in an isolated commit to normalize formatting.
 3. Phase 8+ a11y: enable eslint template accessibility rules and fix findings.
 
 ## Session log (newest first, keep last ~10)
+
+- **2026-08-12** — **Fix CI deploy sin Workers Routes.**
+  - El run `31575112085` seguía fallando al escribir `/zones/.../workers/routes` aunque Pages y el upload del Worker ya funcionaban.
+  - Se quitó la route de `worker/wrangler.jsonc` y se habilitó `workers_dev: true` para que CI despliegue solo el script `cv-builder-pdf`, sin permisos de zona.
+  - `CloudPdfExport` ahora usa `/api/pdf` solo en local; en producción llama a `https://cv-builder-pdf.andriipap01.workers.dev/api/pdf`.
+  - `worker/index.ts` añade CORS para `cv-builder.andersseen.dev`, `cv-builder-8on.pages.dev`, previews `*.cv-builder-8on.pages.dev` y localhost/127.0.0.1 en puertos 517x.
 
 - **2026-08-12** — **Diagnóstico CI deploy Cloudflare.**
   - Revisado el run `31515154446` de GitHub Actions: `pages deploy dist/analog/public --project-name=cv-builder --branch=main` termina correctamente y publica `https://e0f5870d.cv-builder-8on.pages.dev`.

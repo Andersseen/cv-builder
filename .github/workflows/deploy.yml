@@ -56,8 +56,8 @@ jobs:
       - name: Deploy PDF service to Cloudflare Workers
         uses: cloudflare/wrangler-action@v4
         with:
-          # This same token must also include Account: Workers Scripts:Edit
-          # and Zone: Workers Routes:Edit scoped to andersseen.dev for the /api/* route.
+          # This token only needs Account: Workers Scripts:Edit because the
+          # Worker is exposed on workers.dev; CI does not manage zone routes.
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config worker/wrangler.jsonc

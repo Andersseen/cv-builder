@@ -2,13 +2,16 @@ import { Injectable } from "@angular/core";
 import { Cv } from "../../domain/models/cv-model";
 import { buildPdfDocument } from "./pdf-document";
 
+const PRODUCTION_CLOUD_PDF_ENDPOINT =
+  "https://cv-builder-pdf.andriipap01.workers.dev/api/pdf";
+
 /**
  * Server-rendered PDF export via Cloudflare Browser Run.
  *
  * Strategy: build a self-contained HTML document from the live preview
  * (resume markup + all page styles + the print stylesheet), POST it to the
- * project's own Cloudflare Worker at `/api/pdf`, which renders it in a
- * headless browser and returns a real A4 PDF.
+ * project's own Cloudflare Worker, which renders it in a headless browser and
+ * returns a real A4 PDF.
  *
  * ## Trade-offs vs the client-side exports
  *
@@ -39,7 +42,7 @@ export class CloudPdfExport {
       baseHref: document.location.origin,
     });
 
-    const response = await fetch("/api/pdf", {
+    const response = await fetch(this.resolveEndpoint(), {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ document: documentHtml }),
@@ -55,6 +58,27 @@ export class CloudPdfExport {
   }
 
   // ─── Private helpers ─────────────────────────────────────────
+
+  /**
+   * Local dev keeps the same-origin `/api/pdf` path because Vite proxies it to
+   * the local Worker. Production calls the standalone workers.dev service so CI
+   * does not need zone-level Workers Routes permissions.
+   */
+  private resolveEndpoint(): string {
+    const configuredEndpoint = import.meta.env["VITE_CLOUD_PDF_ENDPOINT"];
+    if (configuredEndpoint) {
+      return configuredEndpoint;
+    }
+
+    if (
+      document.location.hostname === "localhost" ||
+      document.location.hostname === "127.0.0.1"
+    ) {
+      return "/api/pdf";
+    }
+
+    return PRODUCTION_CLOUD_PDF_ENDPOINT;
+  }
 
   /**
    * Collect every stylesheet in the document head as INLINE `<style>` tags.

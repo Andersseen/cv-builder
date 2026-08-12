@@ -29,9 +29,9 @@ pnpm deploy:prod # build + deploy Pages app and PDF Worker (production)
 **Cloudflare is the only deployment platform.** Apps live on Cloudflare Pages; server-side services live in Cloudflare Workers. Do not add config for other hosts.
 
 - Pages project: `cv-builder` · production URL: <https://cv-builder.andersseen.dev>.
-- PDF Worker: `cv-builder-pdf` · route `cv-builder.andersseen.dev/api/*` so the client can keep calling `/api/pdf`.
+- PDF Worker: `cv-builder-pdf` · exposed on `https://cv-builder-pdf.andriipap01.workers.dev/api/pdf`; production client calls that endpoint with Worker-side CORS.
 - Pages config: [wrangler.jsonc](wrangler.jsonc) — `pages_build_output_dir: dist/analog/public`.
-- Worker config: [worker/wrangler.jsonc](worker/wrangler.jsonc) — `main: index.ts`, Browser Run binding `BROWSER`, route for `/api/*`.
+- Worker config: [worker/wrangler.jsonc](worker/wrangler.jsonc) — `main: index.ts`, Browser Run binding `BROWSER`, `workers_dev: true`; CI does not manage zone-level Worker routes.
 - `worker/index.ts` exposes `POST /api/pdf` (server-side PDF via `@cloudflare/puppeteer`). Keep it thin — no business logic belongs there.
 - Local Cloud PDF uses `pnpm start`, which starts `pnpm dev:worker` first and then `pnpm dev:app`; `vite.config.ts` has a dev-only middleware that forwards `/api/pdf` to `http://127.0.0.1:8787/api/pdf` before Analog's `/api` dev router can 404 it.
 - Cache + security headers live in `public/_headers`; SPA fallback lives in `public/_redirects`. Vite copies both into the build output — edit them in `public/`, not in `dist/`.

@@ -61,7 +61,7 @@ Three intentionally different strategies — keep all three:
 
 |                       | `PdfExport` (pdf-export.ts)                             | `PrintExport` (print-export.ts)                           | `CloudPdfExport` (cloud-pdf-export.ts)                    |
 | --------------------- | ------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
-| Mechanism             | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | cloned DOM + `print-stylesheet.ts` + browser print dialog | POST full HTML doc to `/api/pdf` → Cloudflare Browser Run |
+| Mechanism             | `html-to-image` PNG @3x → `jspdf` A4, sliced into pages | cloned DOM + `print-stylesheet.ts` + browser print dialog | POST full HTML doc to Cloudflare Worker → Browser Run     |
 | Text selectable / ATS | ❌                                                      | ✅                                                        | ✅                                                        |
 | Fidelity              | pixel-perfect                                           | high                                                      | pixel-perfect                                             |
 | File size             | 2–5 MB                                                  | ~100 KB                                                   | ~100–300 KB                                               |
@@ -69,7 +69,7 @@ Three intentionally different strategies — keep all three:
 
 All three capture the DOM node `.resume-content` (rendered by `ResumePreview`). `a4.ts` holds A4 mm constants. If you change resume template markup, verify **all three** export paths.
 
-`CloudPdfExport` builds the server-side document with the pure `buildPdfDocument()` (`pdf-document.ts`): all `<head>` styles **inlined** (linked CSS is fetched and inlined — a linked stylesheet dies on CORS/Private-Network-Access checks inside the server browser's opaque-origin document) + the same `buildPrintStylesheet()` used by `PrintExport`, with the resume wrapped in `#print-wrapper`. The standalone PDF Worker (`worker/index.ts`, outside the Angular layers) renders that document with `@cloudflare/puppeteer` and returns `application/pdf`. Production routes `cv-builder.andersseen.dev/api/*` to this Worker so the frontend can keep calling `/api/pdf` on the same origin.
+`CloudPdfExport` builds the server-side document with the pure `buildPdfDocument()` (`pdf-document.ts`): all `<head>` styles **inlined** (linked CSS is fetched and inlined — a linked stylesheet dies on CORS/Private-Network-Access checks inside the server browser's opaque-origin document) + the same `buildPrintStylesheet()` used by `PrintExport`, with the resume wrapped in `#print-wrapper`. The standalone PDF Worker (`worker/index.ts`, outside the Angular layers) renders that document with `@cloudflare/puppeteer` and returns `application/pdf`. Local dev uses same-origin `/api/pdf` through Vite middleware; production calls the `cv-builder-pdf` workers.dev endpoint with Worker-side CORS.
 
 ## Template system
 
@@ -111,5 +111,9 @@ The app and service deploy separately on Cloudflare:
 - `wrangler.jsonc`: Cloudflare Pages config with `pages_build_output_dir: dist/analog/public`.
 - `public/_redirects`: SPA fallback (`/* /index.html 200`) for deep links like `/dashboard`.
 - `public/_headers`: cache/security headers copied into the Pages build output.
-- `worker/wrangler.jsonc`: standalone Worker service `cv-builder-pdf`, Browser Run binding, and route `cv-builder.andersseen.dev/api/*`.
+- `worker/wrangler.jsonc`: standalone Worker service `cv-builder-pdf`, Browser Run binding, and `workers.dev` enabled.
 - `worker/index.ts`: `POST /api/pdf` → Puppeteer render → `application/pdf`; other paths → 404.
+
+Production Cloud PDF calls `https://cv-builder-pdf.andriipap01.workers.dev/api/pdf` directly with
+CORS restricted to the production Pages domains and local dev origins. Local dev keeps `/api/pdf`
+via Vite middleware so the app can talk to `wrangler dev` without changing browser code.

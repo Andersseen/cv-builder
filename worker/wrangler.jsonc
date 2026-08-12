@@ -4,12 +4,7 @@
   "compatibility_date": "2026-07-25",
   "compatibility_flags": ["nodejs_compat"],
   "main": "index.ts",
-  "routes": [
-    {
-      "pattern": "cv-builder.andersseen.dev/api/*",
-      "zone_name": "andersseen.dev",
-    },
-  ],
+  "workers_dev": true,
   "browser": {
     "binding": "BROWSER",
   },

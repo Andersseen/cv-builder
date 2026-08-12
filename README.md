@@ -251,7 +251,7 @@ All three routes are lazy — landing visitors never download the editor.
 
 For local Cloud PDF, use `pnpm start`. It starts the Worker first, then Vite. The Vite dev
 server intercepts `/api/pdf` before Analog's dev API router and forwards it to the local Worker,
-matching the same-origin `/api/pdf` contract used in production.
+matching the local same-origin `/api/pdf` contract.
 
 ---
 
@@ -271,8 +271,9 @@ Pages configuration lives in [wrangler.jsonc](wrangler.jsonc), with
 and `public/_headers` sets cache and security headers.
 
 The PDF service configuration lives in [worker/wrangler.jsonc](worker/wrangler.jsonc). In
-production, Cloudflare should route `cv-builder.andersseen.dev/api/*` to the `cv-builder-pdf`
-Worker so the browser can keep posting to `/api/pdf` on the same origin.
+production, the browser posts directly to the standalone `cv-builder-pdf` workers.dev endpoint
+(`https://cv-builder-pdf.andriipap01.workers.dev/api/pdf`) with CORS restricted to the production
+Pages domains and localhost. This keeps CI away from zone-level Workers Routes permissions.
 
 **Continuous deployment** — every push to `main` runs
 [`ci.yml`](.github/workflows/ci.yml) (lint → test → build) and
@@ -281,7 +282,7 @@ repository secrets:
 
 | Secret                  | Where to get it                                                            |
 | ----------------------- | -------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token with `Cloudflare Pages:Edit`, `Workers Scripts:Edit`, and `Workers Routes:Edit` |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token with `Cloudflare Pages:Edit` and `Workers Scripts:Edit` |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID                        |
 
 > **Browser Run free tier:** 10 minutes of browser time per day at $0 (a PDF takes ~2–4 s).
@@ -318,7 +319,7 @@ src/
 └── main.ts                      # zoneless bootstrap
 worker/
 ├── index.ts                     # Cloudflare Worker: POST /api/pdf (Browser Run)
-└── wrangler.jsonc               # Worker service config + /api/* route
+└── wrangler.jsonc               # Worker service config + workers.dev endpoint
 ```
 
 ---
