@@ -8,6 +8,7 @@ import {
   inputByPlaceholder,
   select,
   clickListEntry,
+  settle,
   type,
   choose,
   clickButton,
@@ -98,6 +99,7 @@ describe("SkillsForm", () => {
     await render([ts, go]);
 
     clickButton(fixture, "Edit");
+    await settle(fixture);
 
     expect(
       inputByPlaceholder(fixture, "TypeScript, React, Docker...").value,
@@ -253,6 +255,7 @@ describe("LanguagesForm", () => {
     await render([es, en]);
 
     clickListEntry(fixture, "Spanish");
+    await settle(fixture);
 
     expect(
       inputByPlaceholder(fixture, "Spanish, English, German...").value,

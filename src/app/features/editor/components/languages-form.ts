@@ -11,17 +11,10 @@ import { VoltButton, VoltInput, VoltNativeSelect } from "@voltui/components";
 import { Language, LanguageProficiency } from "../../../domain/models/cv-model";
 import { createDefaultLanguage } from "../../../domain/models/cv-defaults";
 import { moveItem } from "../../../core/utils/array";
-import { VoltNativeSelectField } from "../../../shared/forms/volt-native-select-field";
 
 @Component({
   selector: "app-languages-form",
-  imports: [
-    FormField,
-    VoltNativeSelectField,
-    VoltButton,
-    VoltInput,
-    VoltNativeSelect,
-  ],
+  imports: [FormField, VoltButton, VoltInput, VoltNativeSelect],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
@@ -61,15 +54,11 @@ import { VoltNativeSelectField } from "../../../shared/forms/volt-native-select-
               <label class="block text-sm font-medium text-foreground/80 mb-1.5"
                 >Proficiency *</label
               >
-              <volt-native-select
-                appVoltSelectField
-                [formField]="languageForm.proficiency"
-                class="input-field"
-              >
+              <select voltNativeSelect [formField]="languageForm.proficiency">
                 @for (level of levels; track level) {
                   <option [value]="level">{{ level }}</option>
                 }
-              </volt-native-select>
+              </select>
             </div>
           </div>
           <div class="flex justify-end gap-2">

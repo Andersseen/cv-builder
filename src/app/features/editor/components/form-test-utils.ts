@@ -86,13 +86,19 @@ export function check(
   fixture.detectChanges();
 }
 
-/** Pick a `<select>` option by value, then settle the view. */
+/**
+ * Pick a `<select>` option by value, then settle the view.
+ *
+ * A real browser fires `input` *and* `change` when the user picks an option, and
+ * Signal Forms' native binding listens for `input` — so both are dispatched.
+ */
 export function choose(
   fixture: ComponentFixture<unknown>,
   el: HTMLSelectElement,
   value: string,
 ): void {
   el.value = value;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
   el.dispatchEvent(new Event("change", { bubbles: true }));
   fixture.detectChanges();
 }
@@ -149,6 +155,21 @@ export function isButtonDisabled(
   ).find((b) => (b.textContent ?? "").trim() === text);
   if (!button) throw new Error(`No button with text "${text}"`);
   return button.disabled;
+}
+
+/**
+ * Let pending microtasks and a change-detection pass run.
+ *
+ * Needed after opening a form that contains a `<select>` whose `<option>`s come
+ * from `@for`: Signal Forms re-applies the field value to the select through a
+ * `MutationObserver` once the options exist, and that callback is a microtask a
+ * synchronous `detectChanges()` does not flush.
+ */
+export async function settle(
+  fixture: ComponentFixture<unknown>,
+): Promise<void> {
+  await fixture.whenStable();
+  fixture.detectChanges();
 }
 
 /** The component's rendered text content, whitespace-collapsed. */

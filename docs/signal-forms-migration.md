@@ -21,6 +21,22 @@ not work as hoped.
 | `angular-eslint` | 21.4.0  | 22.1.0 |
 | `@angular/cdk`   | 21.2.14 | 22.1.1 |
 
+UI libraries, bumped afterwards to their latest releases:
+
+| Package              | Before | After                  |
+| -------------------- | ------ | ---------------------- |
+| `@voltui/components` | 0.6.0  | 1.0.0                  |
+| `angular-movement`   | 0.5.0  | 0.7.0                  |
+| `quartz-headless`    | 0.0.3  | 0.0.5                  |
+| `lumen-icons`        | 0.2.0  | 0.2.0 (already latest) |
+
+`@angular/animations` was **dropped entirely**. Nothing in `src/` imported it,
+`angular-movement` documents that it needs no animations setup, and
+`provideAnimations()` / `provideNoopAnimations()` are deprecated (Angular 20.2,
+removal intended in v23). Both providers were removed from `src/main.ts` and
+`src/app/app.config.server.ts`; `provideMovement({ disabled: true })` is what
+actually keeps motion inert during prerendering.
+
 Added (dev only, for component tests): `@analogjs/vitest-angular` 2.7.0 and
 `@analogjs/vite-plugin-angular` 2.7.0.
 
@@ -35,13 +51,15 @@ followed.
 
 ### Peer-range lag in the UI libraries
 
-`@voltui/components@0.6.0`, `angular-movement@0.5.0`, `lumen-icons@0.2.0` and
-`quartz-headless@0.0.3` all declare `@angular/core: ^21.x` peers. pnpm reports
+`@voltui/components@1.0.0`, `angular-movement@0.7.0`, `lumen-icons@0.2.0` and
+`quartz-headless@0.0.5` all declare `@angular/core: ^21.x` peers. pnpm reports
 these as unmet; nothing actually breaks (production build, 184 unit/component
 tests and 22 Playwright tests are green). No newer release of any of them
-widens the range yet — `@voltui/components@1.0.0` is still `^21.2.0`. This is a
-metadata lag, not an incompatibility, but it means `--strict-peer-dependencies`
-installs would fail.
+widens the range yet. This is a metadata lag, not an incompatibility, but it
+means `--strict-peer-dependencies` installs would fail.
+
+`quartz-headless` is bumped for consistency but is **not imported anywhere in
+`src/`** — a candidate for removal.
 
 ---
 
@@ -56,8 +74,8 @@ All eight. No component was left on Reactive Forms.
 | `EducationForm`      | draft buffer            | mechanical                                          |
 | `ProjectsForm`       | draft buffer            | mechanical                                          |
 | `CertificationsForm` | draft buffer            | mechanical                                          |
-| `SkillsForm`         | draft buffer + select   | needed the Volt select shim                         |
-| `LanguagesForm`      | draft buffer + select   | needed the Volt select shim                         |
+| `SkillsForm`         | draft buffer + select   | native `<select>` via `voltNativeSelect`            |
+| `LanguagesForm`      | draft buffer + select   | native `<select>` via `voltNativeSelect`            |
 | `CustomSectionForm`  | continuous sync + array | nested array; was a hybrid, now one typed model     |
 
 `SectionsManager` was not migrated because it never had a form — it is a
@@ -187,12 +205,16 @@ sync" problem simply stopped existing.
 
 **Result: CVA interop works, with exactly one exception.**
 
-| Volt control         | Implements CVA? | `[formField]` works?   |
-| -------------------- | --------------- | ---------------------- |
-| `volt-input`         | yes             | yes, out of the box    |
-| `volt-textarea`      | yes             | yes, out of the box    |
-| `volt-checkbox`      | yes             | (not used here)        |
-| `volt-native-select` | **no**          | **no** — needed a shim |
+**Result: every Volt control the editor uses binds with `[formField]`, with no
+adapter and no changes to Volt UI.** Getting there took an upstream release —
+see the `volt-native-select` story below.
+
+| Volt control               | How it binds                     | `[formField]` works? |
+| -------------------------- | -------------------------------- | -------------------- |
+| `volt-input`               | `ControlValueAccessor`           | yes, out of the box  |
+| `volt-textarea`            | `ControlValueAccessor`           | yes, out of the box  |
+| `volt-checkbox`            | `ControlValueAccessor`           | (not used here)      |
+| `select[voltNativeSelect]` | directive on a native `<select>` | yes, since 1.0.0     |
 
 `FormField` reads any `ControlValueAccessor` provided on its host element, so
 `<volt-input [formField]="personalForm.fullName" />` binds with no adapter, no
@@ -203,9 +225,9 @@ the touched-on-blur behaviour the validation UI depends on. Native `<input>`,
 
 ### The `volt-native-select` problem — and a pre-existing production bug
 
-`VoltNativeSelect` is a presentational wrapper: it renders its own `<select>`
-and projects the `<option>`s into it. It implements no `ControlValueAccessor`
-and exposes no `value` input at all.
+In `@voltui/components@0.6.0`, `VoltNativeSelect` was a _component_: it rendered
+its own `<select>` and projected the `<option>`s into it. It implemented no
+`ControlValueAccessor` and exposed no `value` input at all.
 
 Writing the regression tests for `SkillsForm` surfaced that this was **already
 broken in production, before the migration**:
@@ -221,38 +243,50 @@ existing skill never showed its stored level. It went unnoticed because the
 inputs still render — Angular throws during directive setup, not during
 templating — and no test opened those forms.
 
-Fix: a 60-line local directive, `src/app/shared/forms/volt-native-select-field.ts`,
-that declares the `value` model Signal Forms looks for on a custom control host
-and bridges it to the wrapper's inner `<select>` (`afterRenderEffect` for
-model→DOM so projected `<option>`s exist first; the bubbling `change` event for
-DOM→model). Volt UI itself was not modified.
+The migration first shipped a 60-line local shim
+(`shared/forms/volt-native-select-field.ts`) that declared the `value` model
+Signal Forms looks for and bridged it to the wrapper's inner `<select>`.
+
+**`@voltui/components@1.0.0` made the shim obsolete.** `VoltNativeSelect` became
+a _directive on a native select_ — selector `select[voltNativeSelect]`, same host
+classes — so the `<select>` now lives in the consumer's template and
+`[formField]` binds to it through Angular's native form-element path:
 
 ```html
-<volt-native-select appVoltSelectField [formField]="skillForm.level">
+<select voltNativeSelect [formField]="skillForm.level">
   @for (level of levels; track level) {
   <option [value]="level">{{ level }}</option>
   }
-</volt-native-select>
+</select>
 ```
 
-The opt-in `appVoltSelectField` attribute exists only to satisfy the repo's
-`@angular-eslint/directive-selector` `app` prefix rule; matching
-`volt-native-select[formField]` directly would be nicer but fails lint.
+The shim was deleted. This is the better fix by a wide margin: the control is a
+real form element, so it works with Signal Forms _and_ Reactive Forms _and_
+`ngModel` with no adapter of any kind, and the `NG01203` class of bug cannot
+recur.
 
-### Suggested Volt UI improvements (do NOT implement in this repo)
+Two notes for anyone binding a `<select>` whose `<option>`s come from `@for`:
 
-Filed here as a note for the upstream Volt UI project:
+- The native binding listens for **`input`**, not `change`. A test that
+  dispatches only `change` will silently fail to update the model (a real
+  browser fires both).
+- Angular re-applies the field value to the select via a `MutationObserver` once
+  the projected options exist. That callback is a microtask, so a component test
+  needs `await fixture.whenStable()` after opening the form before asserting the
+  select's value — see the `settle()` helper in `form-test-utils.ts`. In a real
+  browser it just works.
 
-1. **`VoltNativeSelect` should implement `FormValueControl<string>`** — add a
-   `value = model<string>('')` and bind it to the inner `<select>`. That single
-   change makes it work with Signal Forms _and_ fixes the Reactive Forms
-   `NG01203` for existing consumers, and would let this repo delete its shim.
-2. **`VoltCheckbox` should implement `FormCheckboxControl`** (`checked` model)
+### Remaining Volt UI suggestions (do NOT implement in this repo)
+
+Filed here as notes for the upstream Volt UI project:
+
+1. **`VoltCheckbox` could implement `FormCheckboxControl`** (`checked` model)
    rather than only `ControlValueAccessor`. CVA works today, but the native
    contract is cheaper and gives correct `touch` semantics.
-3. `volt-input` / `volt-textarea` could adopt `FormValueControl` too. Lower
+2. `volt-input` / `volt-textarea` could adopt `FormValueControl` too. Lower
    priority — the CVA path works well.
-4. Widen the Angular peer range to `^21.2.0 || ^22.0.0`.
+3. Widen the Angular peer range to `^21.2.0 || ^22.0.0`. Still `^21.2.0` as of
+   `@voltui/components@1.0.0` and `angular-movement@0.7.0`.
 
 ---
 
@@ -371,8 +405,10 @@ Experience` casts disappeared. Renaming a domain field is now a compile error
 
 ## 12. Line counts
 
-Across the eight form components: **2060 → 2025 lines (−35)**, plus 80 new lines
-for the Volt select shim. Net ≈ +45.
+Across the eight form components: **2060 → 2013 lines (−47)**. The 80-line Volt
+select shim that the migration originally needed was deleted once
+`@voltui/components@1.0.0` turned `VoltNativeSelect` into a directive on a native
+`<select>`, so the net change is just the −47.
 
 LOC is the wrong metric here and it is reported only because it is easy to
 measure honestly. The templates dominate these files and barely changed; what
@@ -416,7 +452,8 @@ The 13 that could not pass were the `volt-native-select` bug in §7.
 ## 14. Bugs and regressions found
 
 1. **`NG01203` on the Skills/Languages selects** — pre-existing production bug,
-   see §7. Fixed.
+   see §7. Fixed, first with a local shim and then properly by
+   `@voltui/components@1.0.0`, which let the shim be deleted.
 2. **Leaked subscription in `CustomSectionForm`** — `valueChanges.subscribe()`
    with no `takeUntilDestroyed`, see §4. Fixed by deletion.
 3. **`NG01904` orphan array fields** — a genuine Signal Forms footgun hit during
@@ -447,7 +484,11 @@ product decision outside this scope.
   synchronisation went away because the model input writes through, not because
   the form API changed.
 - **CVA interop is genuinely transparent.** No wrapper, no bridge, no changes to
-  Volt UI for three of the four controls.
+  Volt UI for three of the four controls — and after the 1.0.0 bump, for all
+  four. The best fix for the fourth was not a Signal Forms adapter at all but
+  making the control a plain `<select>`.
+- **`@angular/animations` was dead weight.** The app carried the dependency and
+  two deprecated providers without a single animation using them.
 - **Signal Forms is opinionated about values.** It will manage field _state_
   declaratively but refuses to derive _values_. That is defensible, and it does
   push value rules to explicit places, but it is a real difference from
@@ -464,7 +505,8 @@ architecture. The draft forms are roughly neutral on their own — a few lines
 longer in places — but migrating them keeps the editor consistent, and they
 gained the same type safety and schema-style validation.
 
-The costs are real but small: an explicit submit handler per draft form, a
-submit-time normalisation where a `valueChanges` write used to sit, and one
-60-line shim for a third-party control that was never form-compatible to begin
-with.
+The costs are real but small: an explicit submit handler per draft form and a
+submit-time normalisation where a `valueChanges` write used to sit. The one
+genuinely awkward piece — a local shim for a third-party control that was never
+form-compatible — disappeared when `@voltui/components@1.0.0` reshaped
+`VoltNativeSelect` into a directive on a native `<select>`.

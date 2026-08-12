@@ -22,7 +22,6 @@
     "deploy:preview": "pnpm build && wrangler pages deploy dist/analog/public --project-name=cv-builder"
   },
   "dependencies": {
-    "@angular/animations": "^22.1.1",
     "@angular/cdk": "^22.1.1",
     "@angular/common": "^22.1.1",
     "@angular/compiler": "^22.1.1",
@@ -32,13 +31,13 @@
     "@angular/platform-server": "^22.1.1",
     "@angular/router": "^22.1.1",
     "@tailwindcss/postcss": "^4.1.11",
-    "@voltui/components": "0.6.0",
-    "angular-movement": "0.5.0",
+    "@voltui/components": "1.0.0",
+    "angular-movement": "0.7.0",
     "dexie": "4.3.0",
     "html-to-image": "1.11.13",
     "jspdf": "2.5.2",
     "lumen-icons": "0.2.0",
-    "quartz-headless": "0.0.3",
+    "quartz-headless": "0.0.5",
     "rxjs": "^7.8.2",
     "tailwindcss": "^4.1.11",
     "tslib": "^2.8.1"
